@@ -20,7 +20,7 @@ Skills know about each other. Taches skills redirect to superpowers when they ov
 ```bash
 # Install both
 claude plugin install superpowers
-claude plugin install taches-principled-light
+claude plugin install https://github.com/Git-Fg/taches-principled-light
 ```
 
 Skills load automatically when their description matches your task.

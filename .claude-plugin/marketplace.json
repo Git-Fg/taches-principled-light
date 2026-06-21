@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "taches-principled-light",
+  "description": "Specialist Claude Code plugin — domain-driven design, first-principles reasoning, structured agent-driven dev, Rust lifecycle, MCP server expertise, git workflow, security audit, wiki management, session analytics, and the full task lifecycle from ideation through refinement to implementation. Pairs with superpowers for the complete development toolkit.",
+  "owner": {
+    "name": "Felix",
+    "email": "https://github.com/Git-Fg/taches-principled-light/issues"
+  },
+  "plugins": [
+    {
+      "name": "taches-principled-light",
+      "description": "Specialist Claude Code plugin — 22 skills across DDD, FPF, Rust, MCP, security, git, wiki, session analytics, task lifecycle, and more",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "taches-principled",
+  "version": "2.0.0",
+  "description": "Specialist Claude Code plugin — domain-driven design, first-principles reasoning, structured agent-driven dev, Rust lifecycle, MCP server expertise, git workflow, security audit, wiki management, session analytics, and the full task lifecycle from ideation through refinement to implementation. Pairs with superpowers for the complete development toolkit.",
+  "author": {
+    "name": "Felix",
+    "email": "https://github.com/Git-Fg/taches-principled/issues"
+  }
+}

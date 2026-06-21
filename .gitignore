@@ -1,0 +1,28 @@
+# Agent memory (per-session scratch)
+.claude/agent-memory/
+
+# Claude artifacts
+.principled/
+.principled/plans/
+
+# Attic for archived content
+.attic/
+
+# OS files
+.DS_Store
+
+# Python bytecode caches
+plugins/**/__pycache__/
+*.pyc
+
+# Mavis runtime (local plans, session state)
+.mavis/
+
+# MCP and local settings (personal config, never shipped)
+.mcp.json
+.claude/settings.local.json
+
+# OpenCode runtime (node_modules, tmp dylibs)
+.opencode/
+node_modules/
+handoff.md

@@ -1,0 +1,157 @@
+name: Refresh tp-cc-docs llms.txt Snapshot
+
+# Re-downloads https://code.claude.com/llms.txt and updates the embedded
+# snapshot inside plugins/core-principled/agents/tp-cc-docs.md if the
+# upstream index has drifted. Opens (or updates) a single PR on every
+# detected change; the branch is deleted after merge so the next drift
+# creates a fresh PR instead of accumulating stale ones.
+
+on:
+  schedule:
+    # Mondays at 07:17 UTC — off the :00 / :30 minute marks so we
+    # don't fight the global cron stampede. Anthropic's whats-new
+    # weekly digest drops around Monday morning UTC, so this catches
+    # the previous week's changes within hours of publication.
+    - cron: '17 7 * * 1'
+  workflow_dispatch: {}
+  # Allow edits to the agent file (e.g. manual snapshot updates) to
+  # retrigger the workflow so the index reflects the live URL.
+  push:
+    paths:
+      - 'plugins/core-principled/agents/tp-cc-docs.md'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  refresh:
+    name: Refresh embedded snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Need the full history so the auto-PR can branch off cleanly.
+          fetch-depth: 0
+
+      - name: Extract embedded llms.txt snapshot
+        id: extract
+        run: |
+          AGENT_FILE="plugins/core-principled/agents/tp-cc-docs.md"
+          if [ ! -f "$AGENT_FILE" ]; then
+            echo "embedded_present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Agent file $AGENT_FILE not found; this workflow depends on the tp-cc-docs agent from PR #5 being merged first."
+            exit 0
+          fi
+          # The agent file ends with the embedded snapshot. Extract the
+          # bytes after the `=== EMBEDDED INDEX — mirror of ... ===` line.
+          awk '/^=== EMBEDDED INDEX/{found=1; next} found' "$AGENT_FILE" > /tmp/embedded.txt
+          if [ ! -s /tmp/embedded.txt ]; then
+            echo "embedded_present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Could not extract embedded snapshot — no content found after the EMBEDDED INDEX marker."
+            exit 0
+          fi
+          EMBEDDED_HASH=$(sha256sum /tmp/embedded.txt | cut -d' ' -f1)
+          EMBEDDED_BYTES=$(wc -c < /tmp/embedded.txt)
+          echo "embedded_present=true" >> "$GITHUB_OUTPUT"
+          echo "embedded_hash=$EMBEDDED_HASH" >> "$GITHUB_OUTPUT"
+          echo "embedded_bytes=$EMBEDDED_BYTES" >> "$GITHUB_OUTPUT"
+          echo "Embedded snapshot: $EMBEDDED_BYTES bytes, sha256=$EMBEDDED_HASH"
+
+      - name: Download upstream llms.txt
+        id: download
+        run: |
+          # Anthropic serves a redirect for /llms.txt; -L follows it.
+          # -f fails on HTTP errors so the job aborts instead of
+          # silently diffing against a 404 page.
+          curl --fail --silent --show-error --location \
+            --max-time 30 \
+            -o /tmp/llms.txt \
+            https://code.claude.com/llms.txt
+          FRESH_HASH=$(sha256sum /tmp/llms.txt | cut -d' ' -f1)
+          FRESH_BYTES=$(wc -c < /tmp/llms.txt)
+          echo "fresh_hash=$FRESH_HASH" >> "$GITHUB_OUTPUT"
+          echo "fresh_bytes=$FRESH_BYTES" >> "$GITHUB_OUTPUT"
+          echo "Upstream llms.txt: $FRESH_BYTES bytes, sha256=$FRESH_HASH"
+          # Sanity check: the first line should be the docs title.
+          head -1 /tmp/llms.txt
+
+      - name: Compare embedded vs upstream
+        id: compare
+        if: steps.extract.outputs.embedded_present == 'true'
+        run: |
+          if [ "${{ steps.extract.outputs.embedded_hash }}" = "${{ steps.download.outputs.fresh_hash }}" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Embedded snapshot is up to date. No PR needed."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Drift detected. Diff summary (first 40 lines):"
+            diff -u /tmp/embedded.txt /tmp/llms.txt | head -40 || true
+          fi
+
+      - name: Update embedded snapshot in agent file
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          agent_file = Path("plugins/core-principled/agents/tp-cc-docs.md")
+          new_snapshot = Path("/tmp/llms.txt").read_text()
+
+          text = agent_file.read_text()
+          # Match: marker line, then a blank line, then everything to EOF.
+          # Capture group 1 is the prose we preserve; group 2 gets replaced.
+          pattern = re.compile(
+              r"(=== EMBEDDED INDEX[^\n]*\n+).*",
+              re.DOTALL,
+          )
+          new_text, n = pattern.subn(
+              lambda m: m.group(1) + new_snapshot,
+              text,
+              count=1,
+          )
+          if n == 0:
+              raise SystemExit("Marker not found in agent file; refusing to modify.")
+          if not new_text.endswith("\n"):
+              new_text += "\n"
+          agent_file.write_text(new_text)
+          print(f"Updated {agent_file}: {len(text)} -> {len(new_text)} bytes")
+          PY
+
+      - name: Open refresh PR
+        if: steps.compare.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # Reuse the same branch every run so we get a single, updated
+          # PR instead of an accumulating graveyard. delete-branch
+          # cleans up after merge.
+          branch: chore/refresh-cc-docs-snapshot
+          delete-branch: true
+          commit-message: |
+            chore(cc-docs): refresh embedded llms.txt snapshot
+
+            Auto-generated by .github/workflows/refresh-cc-docs.yml.
+
+            Source: https://code.claude.com/llms.txt
+            Previous sha256: ${{ steps.extract.outputs.embedded_hash }}
+            New sha256:      ${{ steps.download.outputs.fresh_hash }}
+          title: 'chore(cc-docs): refresh embedded llms.txt snapshot'
+          body: |
+            Auto-generated by `.github/workflows/refresh-cc-docs.yml` (weekly cron, Mondays 07:17 UTC).
+
+            The embedded `code.claude.com/llms.txt` snapshot inside `tp-cc-docs.md` has drifted from upstream. This PR re-downloads the canonical index and replaces the embedded copy.
+
+            - **Source:** `https://code.claude.com/llms.txt`
+            - **Previous size:** ${{ steps.extract.outputs.embedded_bytes }} bytes
+            - **New size:** ${{ steps.download.outputs.fresh_bytes }} bytes
+
+            Inspect the diff on `plugins/core-principled/agents/tp-cc-docs.md` to see what changed. Merge promptly — the `tp-cc-docs` agent uses the embedded snapshot as a routing hint, and stale entries will misroute questions about new features.
+
+            The branch `chore/refresh-cc-docs-snapshot` will be deleted automatically after merge. If upstream drifts again before this PR merges, the next workflow run will update the same PR in place.
+          add-paths: |
+            plugins/core-principled/agents/tp-cc-docs.md
+          # Send the diff only — no commits, tags, or unrelated files.
+          push-to-fork: false

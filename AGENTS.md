@@ -1,22 +1,27 @@
-# Taches Principled — Maintainer Note
+# Taches Principled
 
-Single-plugin repo. Skills only.
+You have both **superpowers** and **taches-principled-light** installed. They are designed to coexist.
 
-## Directory Layout
+## How They Fit Together
 
-- `skills/` — 23 self-contained skills. Each fully autonomous.
-- `.claude-plugin/plugin.json` — plugin manifest.
-- `CHANGELOG.md`, `README.md`, `LICENSE` — standard.
+- **superpowers** is your foundation — brainstorming, TDD, systematic debugging, code review, git worktrees, verification, plan execution, skill writing.
+- **taches-principled-light** adds specialist skills — DDD, first-principles reasoning, structured agent-driven dev, Rust, MCP, security, wiki, session analytics.
 
-## Adding a Skill
+## When Both Cover a Topic
 
-1. Create `skills/<name>/SKILL.md` with frontmatter + body.
-2. Follow `skill-authoring` METHODOLOGY mode for routing.
-3. No other files to touch.
+Each taches skill has a CONTRAST section. When a topic overlaps with superpowers, the skill redirects explicitly. Examples:
 
-## Subagent Spawn Convention
+- Want Red-Green-Refactor TDD? → superpowers' `test-driven-development` (taches' `test-orchestration` handles strategy and repair only)
+- Want to brainstorm a vague idea into a design? → superpowers' `brainstorming` (taches' `ideation` generates alternatives only)
+- Want root-cause debugging? → superpowers' `systematic-debugging`
+- Want per-task subagent execution? → superpowers' `subagent-driven-development` (taches' `sadd` does competitive generation)
+- Want collaborative skill creation? → superpowers' `writing-skills` (taches' `skill-authoring` optimizes routing only)
 
-Skills use platform-agnostic phrasing. Never name a specific tool.
+**The pattern: superpowers for fundamentals, taches-principled-light for depth.**
+
+## Subagent Convention
+
+All skills use platform-agnostic phrasing. Never name a specific tool.
 
 ### Explorer (read-only)
 
@@ -38,7 +43,8 @@ spawn a subagent generalist with the prompt:
 
 Use for: implementation, review, judgment, auditing, fixes.
 
-## Reference
+## Adding a Skill
 
-The `subagent-orchestration` skill is the canonical reference for
-multi-agent patterns. All other skills follow its conventions.
+1. Create `skills/<name>/SKILL.md` with frontmatter + body.
+2. Follow `skill-authoring` METHODOLOGY mode for routing.
+3. No other files to touch.

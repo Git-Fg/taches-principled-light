@@ -3,7 +3,7 @@
 **Audience:** anyone authoring or auditing subagent spawn instructions in this plugin.
 **Source of authority:** issues #35 (tp-wiki 5 principles from JSONL testing), #36 (3 universal gaps + P6 ground truth), #37, #38.
 
-This document defines 6 design principles for subagent contracts in the `taches-principled` marketplace. A contract is the agent's frontmatter (`description`) plus its body instructions. A well-designed contract makes LLM behavior auditable; a poorly-designed one produces plausible-looking but unreliable output.
+This document defines 6 design principles for subagent contracts in the `taches-principled-light` plugin. A contract is the agent's frontmatter (`description`) plus its body instructions. A well-designed contract makes LLM behavior auditable; a poorly-designed one produces plausible-looking but unreliable output.
 
 **The 6 principles, summarized:**
 

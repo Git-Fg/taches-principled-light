@@ -19,7 +19,7 @@ A scannable map of every log location Claude Code produces, when each is created
 
 `<encoded-cwd>` is the working directory with `/` replaced by `-`. Examples:
 
-- `/Users/felix/Documents/AutoPluginClaw/taches-principled` → `-Users-felix-Documents-AutoPluginClaw-taches-principled`
+- `/Users/felix/Documents/AutoPluginClaw/taches-principled-light` → `-Users-felix-Documents-AutoPluginClaw-taches-principled`
 - `/home/devadmin/projects/api` → `-home-devadmin-projects-api`
 
 This encoding is a Claude Code convention, not a marketplace invention. To recover the original path, replace every `-` with `/` (which only works on POSIX paths with no hyphens — Windows paths are ambiguous, but Claude Code stores the original `cwd` in each event for unambiguous recovery).

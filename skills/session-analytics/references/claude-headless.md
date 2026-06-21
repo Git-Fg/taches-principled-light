@@ -603,6 +603,6 @@ Claude Code encodes the working directory for the `~/.claude/projects/` director
 |----------|---------|
 | `/Users/felix/projects/api` | `-Users-felix-projects-api` |
 | `/home/devadmin/work` | `-home-devadmin-work` |
-| `/Users/felix/Documents/AutoPluginClaw/taches-principled` | `-Users-felix-Documents-AutoPluginClaw-taches-principled` |
+| `/Users/felix/Documents/AutoPluginClaw/taches-principled-light` | `-Users-felix-Documents-AutoPluginClaw-taches-principled` |
 
 This encoding is a Claude Code convention. To recover the original path, replace every `-` with `/` (which only works for POSIX paths with no hyphens — Windows paths are ambiguous, but each event's `cwd` field stores the unencoded value for unambiguous recovery).

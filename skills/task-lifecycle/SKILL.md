@@ -1,6 +1,13 @@
 ---
 name: task-lifecycle
-description: "Add a single small feature, refine a spec, implement it, and update docs through a 4-stage task lifecycle. Use when the user says 'add a feature', 'refine this spec', 'implement the task', 'build this one feature', 'update the docs', or names a draft / spec path. Modes: CAPTURE (draft), REFINE (spec), IMPLEMENT (code + verify), DOCUMENT (docs). NOT for: planning a multi-phase project from scratch (use `plan-lifecycle`); NOT for: small bug fixes or refactors (do inline); NOT for: brainstorming options before committing (use `ideation`)."
+description: >
+  Load when adding a single small feature through the full task lifecycle —
+  capturing a draft, refining the spec, implementing with verification, and
+  updating documentation. Use when the user says 'add a feature', 'refine this
+  spec', 'implement the task', 'build this one feature', or 'update the docs'.
+  Do NOT use for multi-phase project planning (use plan-lifecycle), small bug
+  fixes or refactors (do inline), or brainstorming before committing (use
+  generating-ideas).
 context: fork
 agent: general-purpose
 when_to_use: |
@@ -105,5 +112,5 @@ You MUST read `references/evaluation-protocol.md` BEFORE scoring any artifacts.
 Evaluation uses the shared judge protocol for chain-of-thought, scratchpad-first writing, MAX_ITERATIONS semantics, and full integrity rules.
 
 ## CONTRAST
-- NOT for: ddd (structure vs task execution), NOT for superpowers' `systematic-debugging` (analysis vs tracking), NOT for refine (improvement vs task closure), NOT for plan-do-check-act (plan vs do)
+- NOT for: restructuring-code (structure vs task execution), NOT for superpowers' `systematic-debugging` (analysis vs tracking), NOT for reviewing-and-polishing (improvement vs task closure), NOT for plan-do-check-act (plan vs do)
 - CONTRAST with superpowers' `writing-plans` + `executing-plans`: those skills handle multi-step feature plans with per-task subagent execution; this skill is for single-feature lifecycle management (CAPTURE → REFINE → IMPLEMENT → DOCUMENT) with isolated-fork execution at each stage.

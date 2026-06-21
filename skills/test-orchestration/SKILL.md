@@ -1,6 +1,14 @@
 ---
 name: test-orchestration
-description: "Plan test strategy and fix or add tests — coverage planning, mock strategy, fixture design, property-based testing, post-hoc coverage addition, and test repair. Use when user says 'plan tests', 'add coverage', 'fix failing tests', 'mock strategy', 'design a test suite', 'write tests for this', 'fix broken tests', 'restore test suite'. Two modes: STRATEGY (what to test, mock strategy, fixture design) and EXECUTE (write tests for existing code, fix failing tests). NOT for: new-feature red-green-refactor TDD (use superpowers' `test-driven-development`); NOT for: diagnosing why production code broke (use superpowers' `systematic-debugging`); NOT for: code review of a PR (use `refine` REVIEW)."
+description: >
+  Load when planning test strategy or fixing and adding tests — coverage
+  planning, mock strategy, fixture design, property-based testing, post-hoc
+  coverage addition, and test repair. Use when the user says 'plan tests',
+  'add coverage', 'fix failing tests', 'mock strategy', or 'design a test
+  suite'. Do NOT use for new-feature red-green-refactor TDD (use superpowers'
+  test-driven-development), diagnosing why production code broke (use
+  superpowers' systematic-debugging), or PR code review (use
+  reviewing-and-polishing).
 when_to_use: "Use for planning test suites, mocking, or fixing broken tests. Triggers: coverage strategy, add coverage, fix broken tests, mock strategy, fixture design. NOT for: red-green-refactor TDD cycles (use superpowers' `test-driven-development`)."
 argument-hint: "[mode] [target]"
 ---
@@ -34,7 +42,7 @@ IF refactoring → tests must already exist and pass before starting
 
 **DO NOT use this skill for:**
 - "Run the tests / see if they pass" — just run `cargo test` / `pytest` etc. directly; this skill is for *planning* and *fixing*, not for routine test runs
-- "Review my code quality" → `refine` REVIEW mode
+- "Review my code quality" → `reviewing-and-polishing` REVIEW mode
 - "Investigate a failing test's root cause" → superpowers' `systematic-debugging` (this skill fixes symptoms; systematic-debugging finds the underlying cause)
 - "Plan the project / break it into phases" → `plan-lifecycle`
 - "Scan code for security vulnerabilities" → `security` skill

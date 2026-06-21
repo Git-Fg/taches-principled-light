@@ -5,19 +5,30 @@ You have both **superpowers** and **taches-principled-light** installed. They ar
 ## How They Fit Together
 
 - **superpowers** is your foundation — brainstorming, TDD, systematic debugging, code review, git worktrees, verification, plan execution, skill writing.
-- **taches-principled-light** adds specialist skills — DDD, first-principles reasoning, structured agent-driven dev, Rust, MCP, security, wiki, session analytics.
+- **taches-principled-light** adds specialist skills — code restructuring, first-principles reasoning, competitive solving, guardrails, MCP engineering, security, wiki management, session analysis.
 
 ## When Both Cover a Topic
 
 Each taches skill has a CONTRAST section. When a topic overlaps with superpowers, the skill redirects explicitly. Examples:
 
 - Want Red-Green-Refactor TDD? → superpowers' `test-driven-development` (taches' `test-orchestration` handles strategy and repair only)
-- Want to brainstorm a vague idea into a design? → superpowers' `brainstorming` (taches' `ideation` generates alternatives only)
+- Want to brainstorm a vague idea into a design? → superpowers' `brainstorming` (taches' `generating-ideas` generates alternatives only)
 - Want root-cause debugging? → superpowers' `systematic-debugging`
-- Want per-task subagent execution? → superpowers' `subagent-driven-development` (taches' `sadd` does competitive generation)
-- Want collaborative skill creation? → superpowers' `writing-skills` (taches' `skill-authoring` optimizes routing only)
+- Want per-task subagent execution? → superpowers' `subagent-driven-development` (taches' `solving-competitively` does competitive generation)
+- Want collaborative skill creation? → superpowers' `writing-skills` (taches' `crafting-skills` creates and optimizes agent skills)
 
 **The pattern: superpowers for fundamentals, taches-principled-light for depth.**
+
+## Skill Discovery
+
+All taches skills use a uniform description pattern for fast routing:
+
+- **Load when…** — the primary trigger describing user intent
+- **Use when…** — concrete trigger phrases the user might say
+- **Do NOT use for…** — negative boundary; if your task matches this, skip the skill
+
+When scanning the skill index at startup, match user intent against the trigger phrases
+first; the NOT clauses define hard exclusion boundaries between sibling skills.
 
 ## Subagent Convention
 
@@ -46,5 +57,5 @@ Use for: implementation, review, judgment, auditing, fixes.
 ## Adding a Skill
 
 1. Create `skills/<name>/SKILL.md` with frontmatter + body.
-2. Follow `skill-authoring` METHODOLOGY mode for routing.
+2. Follow `crafting-skills` CREATE mode for authoring new skills; use OPTIMIZE mode for routing improvements.
 3. No other files to touch.

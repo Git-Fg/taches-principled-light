@@ -1,6 +1,14 @@
 ---
 name: git
-description: "Version control tasks — commit changes, review pull requests, manage issues and branches, advanced git operations. Use when the user says 'commit this', 'open a PR', 'review this PR', 'create a branch', 'create an issue', 'merge this', or 'git notes'. Four modes: SHIP, REVIEW, ISSUES, ADVANCED. NOT for: running pre-flight validation checks (use superpowers' `verification-before-completion`); NOT for: managing git worktrees (use superpowers' `using-git-worktrees`); NOT for: general code review of a PR's contents (use `refine` REVIEW)."
+description: >
+  Load when performing version control tasks — committing with conventional
+  messages, publishing pull requests, reviewing PRs with line-specific
+  comments, managing issues and branches, or advanced git operations. Use when
+  the user says 'commit this', 'open a PR', 'review this PR', 'create a branch',
+  or 'create an issue'. Do NOT use for pre-flight validation checks (use
+  superpowers' verification-before-completion), managing git worktrees (use
+  superpowers' using-git-worktrees), or general code review of PR contents (use
+  reviewing-and-polishing).
 allowed-tools: Bash(git *), Bash(gh *)
 when_to_use: |
   - User wants to commit code with conventional messages or publish a PR.
@@ -111,7 +119,7 @@ ADVANCED: Notes in `.git/refs/notes/` + additional working directories
 
 **DO NOT use this skill for:**
 - "Plan a project / feature / phase end-to-end" → the plan-lifecycle skill
-- "Review my code for design / architecture" → the marketplace's refine skill, REVIEW mode
+- "Review my code for design / architecture" → the marketplace's reviewing-and-polishing skill, REVIEW mode
 - "Investigate a bug / root cause" → superpowers' `systematic-debugging` skill
 - "Write a security audit of a project" → the marketplace's security skill
 - "Run a multi-phase task from a spec" → the marketplace's task-lifecycle skill

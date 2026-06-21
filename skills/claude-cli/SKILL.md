@@ -1,6 +1,12 @@
 ---
 name: claude-cli
-description: "Drive the Claude Code CLI from Bash — headless sessions, structured output, model/permission control, code reviews, and the `claude` subcommands (`claude ultrareview`, `claude agents`, `claude doctor`, `claude mcp`, `claude plugin`). Use when the user asks to 'spawn a headless Claude session', 'run a cloud code review', 'continue a previous Claude session', or 'change the model or permission mode'."
+description: >
+  Load when driving Claude Code CLI programmatically — headless sessions,
+  structured JSON output, model/permission control, cloud code reviews, or
+  session continuation. Use when the user says 'spawn a headless Claude
+  session', 'run a cloud code review', 'continue a Claude session', or 'change
+  the model or permission mode'. Do NOT use for interactive Claude use or
+  non-CLI Claude features.
 when_to_use: |
   - "Spawn a headless Claude session to run a task"
   - "Continue or resume a previous Claude Code session"
@@ -39,8 +45,8 @@ For MCP design/implementation/schema patterns (i.e., *building* MCP servers, not
 
 ## CONTRAST
 
-- NOT for: spawning in-process subagents within the current Claude Code session — use subagent-orchestration
-- NOT for: designing an MCP server from scratch — use `mcp-expertise` DESIGN mode
+- NOT for: spawning in-process subagents within the current Claude Code session — use orchestrating-subagents
+- NOT for: designing an MCP server from scratch — use engineering-mcp DESIGN mode
 - NOT for: writing a single Claude Code hook — see the official hooks docs
 - NOT for: managing installed plugins/MCP servers — use `claude plugin list` / `claude mcp list` directly in Bash
 
@@ -268,7 +274,7 @@ claude doctor
 
 Runs health checks on the Claude Code auto-updater. Reports whether updates are available, and whether the installation is healthy. The workspace trust dialog is skipped; stdio servers from `.mcp.json` are spawned for health checks. Use only in directories you trust.
 
-For deeper diagnostics (session analytics, hook events), use the marketplace's session-analytics skill.
+For deeper diagnostics (session analytics, hook events), use the marketplace's analyzing-sessions skill.
 
 ---
 
@@ -384,7 +390,7 @@ The CLI does not have a `--kill-agent` flag. To terminate a background agent:
 - From a script: send the process a signal. The session is a regular OS process; `kill <pid>` works but is unclean. Prefer the interactive view or letting the agent complete naturally.
 - Set a max budget with `--max-budget-usd` so the agent stops itself at the spend cap.
 
-For agent-runtime semantics (subagent orchestration, parallel dispatch, etc.), see the marketplace's subagent-orchestration skill. The CLI flags here are the surface; the orchestration pattern is the marketplace's separate concern.
+For agent-runtime semantics (subagent orchestration, parallel dispatch, etc.), see the marketplace's orchestrating-subagents skill. The CLI flags here are the surface; the orchestration pattern is the marketplace's separate concern.
 
 ---
 
@@ -617,14 +623,14 @@ claude --resume "$SESSION_ID" -p "Drill into the auth findings"
 - **MCP design principles** (why some tools decompose the way they do) → the marketplace's MCP expertise skill, DESIGN mode
 - **MCP implementation in Rust with rmcp + schemars** → the marketplace's MCP expertise skill, IMPLEMENT mode
 - **JSON Schema authoring details** → the marketplace's MCP expertise skill, SCHEMA mode
-- **Subagent orchestration patterns** (parallel dispatch, scratchpad, critic loops) → the marketplace's subagent-orchestration skill
-- **Session analytics and behavioral review** → the marketplace's session-analytics skill
+- **Subagent orchestration patterns** (parallel dispatch, scratchpad, critic loops) → the marketplace's orchestrating-subagents skill
+- **Session analytics and behavioral review** → the marketplace's analyzing-sessions skill
 
 ---
 
 ## §13. Key sources
 
 - [1] Claude Code CLI documentation — https://docs.claude.com/en/docs/claude-code
-- [2] Decomposition patterns (why 6 tools vs 1) — the mcp-expertise hub's design-decomposition.md reference (DESIGN mode)
+- [2] Decomposition patterns (why 6 tools vs 1) — the engineering-mcp hub's design-decomposition.md reference (DESIGN mode)
 - [3] Structured output with `--json-schema` — official Claude Code docs on JSON Schema validation
 - [4] Marketplace entry — `.claude-plugin/marketplace.json` in this repo

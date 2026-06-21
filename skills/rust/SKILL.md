@@ -1,6 +1,13 @@
 ---
 name: rust
-description: "Manage the full Rust project lifecycle — scaffold a new crate or workspace, configure CI/clippy/nextest, audit dependencies with cargo-deny, publish to crates.io, harden the supply chain. Use when the user says 'Rust', 'Cargo', 'new crate', 'cargo publish', 'cargo-deny', 'cargo-vet', 'cargo nextest', 'clippy', 'MSRV', or 'edition 2024'. Five modes: SCAFFOLD, WORKSPACE, QUALITY, RELEASE, REVIEW. NOT for: design / architecture reasoning across competing options (use `fpf`); NOT for: investigating a runtime bug (use superpowers' `systematic-debugging`)."
+description: >
+  Load when managing the full Rust project lifecycle — scaffolding a new crate
+  or workspace, configuring CI/clippy/nextest, auditing dependencies with
+  cargo-deny, publishing to crates.io, or hardening the supply chain. Use when
+  the user says 'Rust', 'Cargo', 'new crate', 'cargo publish', 'cargo-deny',
+  'clippy', or 'edition 2024'. Do NOT use for design reasoning across competing
+  options (use reasoning-from-principles) or investigating a runtime bug (use
+  superpowers' systematic-debugging).
 when_to_use: |
   - User wants to scaffold a new Rust crate or workspace
   - User wants to set up CI, clippy, nextest, coverage, or cargo-deny
@@ -253,16 +260,16 @@ A deduplicated, severity-ranked markdown report with the table format defined in
 - **WORKSPACE** — Premature workspace split (wait for a real signal: binary+lib, multi-bin, shared types >100 lines); `path = "..."` in a published crate (breaks for downstream users); sharing `dev-dependencies` at workspace level when members are heterogeneous (binary's test deps pollute the lib); nested workspace dirs when flat would do
 - **QUALITY** — `cargo-audit` and `cargo-deny` run redundantly (deny subsumes audit); `cargo test --release` (slower build, no perf signal); `RUSTFLAGS=-D warnings` for workspace members (denies warnings in transitive deps too); coverage target on day 1 (measure first, target after 2-3 months); pre-optimizing benchmarks; keeping N separate integration test binaries once `tests/` grows past 10-20 files (collapse into the single-binary multi-suite structure from `quality-testing-and-coverage.md` §4)
 - **RELEASE** — Publishing without `--dry-run`; deleting a version from CI history (only yank); using `cargo-release` to publish a workspace without testing the order; yanking for "minor" bugs (publish a new patch); removing a feature in the same release that deprecates it; `cargo publish --allow-dirty` without a `--dry-run` first; long-lived crates.io API tokens (use OIDC trusted publishing)
-- **REVIEW** — Spawning lenses sequentially (one a subagent generalist at a time, waiting for each to finish) instead of in parallel — destroys the isolation benefit and serializes a 5× slowdown; promoting an `(unverified)` finding to BLOCKER without reading the file — violates the P6 ground truth rule; modifying files mid-audit (REVIEW is read-only — if the user asks for fixes, route back to SCAFFOLD/WORKSPACE/QUALITY/RELEASE per dimension); using REVIEW for performance-regression analysis against a baseline commit (REVIEW does a smell-test, not a regression delta); using REVIEW to design alternative architectures (use `fpf` for design reasoning — REVIEW audits the existing code against existing standards)
+- **REVIEW** — Spawning lenses sequentially (one a subagent generalist at a time, waiting for each to finish) instead of in parallel — destroys the isolation benefit and serializes a 5× slowdown; promoting an `(unverified)` finding to BLOCKER without reading the file — violates the P6 ground truth rule; modifying files mid-audit (REVIEW is read-only — if the user asks for fixes, route back to SCAFFOLD/WORKSPACE/QUALITY/RELEASE per dimension); using REVIEW for performance-regression analysis against a baseline commit (REVIEW does a smell-test, not a regression delta); using REVIEW to design alternative architectures (use reasoning-from-principles for design reasoning — REVIEW audits the existing code against existing standards)
 
 ---
 
 ## CONTRAST
 
-- NOT for: design / architecture reasoning across competing options — use `fpf` (PROPOSE mode)
+- NOT for: design / architecture reasoning across competing options — use reasoning-from-principles (PROPOSE mode)
 - NOT for: investigating a runtime bug / root cause analysis — use superpowers' `systematic-debugging`
-- NOT for: improving an existing artifact (polish, clarity, structure) — use `refine`
-- NOT for: non-Rust project init (use a language-specific scaffold or `ideation`)
+- NOT for: improving an existing artifact (polish, clarity, structure) — use reviewing-and-polishing
+- NOT for: non-Rust project init (use a language-specific scaffold or `generating-ideas`)
 - NOT for: cross-language polyglot workspace (one Cargo workspace + npm/pip/etc.) — handle the non-Rust halves with their own language skills
 - NOT for (REVIEW vs QUALITY): setting up CI / clippy / nextest / coverage / cargo-deny / cargo-vet from scratch — use `QUALITY`. REVIEW audits the existing setup; it does not author it.
 - NOT for (REVIEW vs RELEASE `pre-publish review`): gating a specific version bump or running `cargo semver-checks` against the API delta since the last tag — use `RELEASE`. REVIEW audits the current state of the public API regardless of release timing.

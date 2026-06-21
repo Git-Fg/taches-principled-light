@@ -27,4 +27,4 @@ In EXECUTE mode, the fork runs a phase-by-phase implementation loop with milesto
 
 ## Why the fork is not for inner parallelism
 
-Pre-1.23.0, EXECUTE mode spawned parallel worker subagents (`tp-global-implementer` × N). Post-1.23.0, the orchestrator implements inline within the fork and spawns only a subagent generalist for isolated milestone review. The parallelism that mattered most (multiple critics reviewing the same milestone from different angles) is preserved; the parallelism that didn't (N implementations of the same code) was removed. The fork's value is outer isolation of a long reasoning chain, not inner parallelism.
+Pre-1.23.0, EXECUTE mode spawned parallel worker subagents (`a subagent generalist` × N). Post-1.23.0, the orchestrator implements inline within the fork and spawns only a subagent generalist for isolated milestone review. The parallelism that mattered most (multiple critics reviewing the same milestone from different angles) is preserved; the parallelism that didn't (N implementations of the same code) was removed. The fork's value is outer isolation of a long reasoning chain, not inner parallelism.

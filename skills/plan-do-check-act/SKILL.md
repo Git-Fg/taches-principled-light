@@ -1,7 +1,12 @@
 ---
 name: plan-do-check-act
-description: "Run a Plan-Do-Check-Act (PDCA) cycle to test a hypothesis with measurable success criteria. Use when user says 'run a PDCA cycle', 'test this hypothesis', 'A/B test this change', 'validate the improvement worked', 'standardize this change', 'experiment with X'. Four phases: PLAN (design the experiment), DO (implement small-scale), CHECK (measure results against success criteria), ACT (standardize or refine). NOT for: planning a multi-phase project (use `plan-lifecycle`); NOT for: continuous experimentation at scale (use `subagent-orchestration`)."
-when_to_use: "Use for proof-of-concepts, A/B tests, and validating improvements before standardization. Do NOT use for debugging (use superpowers' `systematic-debugging`) or code style (use refine)."
+description: >
+  Load when running a PDCA experiment — testing a hypothesis with measurable
+  criteria before standardizing a change. Use when the user says 'run a PDCA
+  cycle', 'test this hypothesis', 'A/B test this change', or 'validate the
+  improvement worked'. Do NOT use for multi-phase project planning (use
+  plan-lifecycle) or debugging (use superpowers' systematic-debugging).
+when_to_use: "Use for proof-of-concepts, A/B tests, and validating improvements before standardization. Do NOT use for debugging (use superpowers' `systematic-debugging`) or code style (use reviewing-and-polishing)."
 argument-hint: "[improvement goal or problem to address] [--cycle N]"
 ---
 
@@ -19,8 +24,8 @@ When this skill produces durable artifacts, write them to `docs/principled/` too
 
 - IMMEDIATELY when solving problems where outcomes need measurement — BEFORE concluding, standardizing, or shipping.
 - FIRST after a failed fix — validate the root cause was correct before closing the issue.
-- DO NOT use for debugging (use superpowers' `systematic-debugging` instead), for code style decisions (use refine in POLISH mode), or for architectural design (use kaizen or ideation).
-- CONTRAST with kaizen: kaizen prevents bad patterns from entering the codebase (proactive constraint); PDCA tests whether a change actually improves things (evidence-based validation). Use kaizen when writing new code; use PDCA when deciding whether to standardize or generalize an existing change.
+- DO NOT use for debugging (use superpowers' `systematic-debugging` instead), for code style decisions (use reviewing-and-polishing in POLISH mode), or for architectural design (use applying-guardrails or generating-ideas).
+- CONTRAST with applying-guardrails: kaizen prevents bad patterns from entering the codebase (proactive constraint); PDCA tests whether a change actually improves things (evidence-based validation). Use applying-guardrails when writing new code; use PDCA when deciding whether to standardize or generalize an existing change.
 
 ## Decision Router
 
@@ -105,8 +110,15 @@ Phase 2 always begins at small scale. Full rollout only after the Check phase co
 ### Failed experiments are learning, not failure
 ---
 
+## Gotchas
+
+- Do NOT run a PDCA cycle without a measurable success criterion. "It feels better" is not measurable.
+- Do NOT skip the CHECK phase. The cycle is worthless without comparing results against the hypothesis.
+- Do NOT standardize (ACT) before the CHECK phase confirms improvement. Standardizing a wrong change amplifies it.
+- Do NOT run more than 3 consecutive cycles on the same hypothesis without re-examining the hypothesis itself.
+
 ## CONTRAST
-- NOT for: ddd (structure vs design-time decisions), NOT for superpowers' `systematic-debugging` (debugging vs prevention), NOT for refine (artifact polishing), NOT for kaizen (incremental vs design-time)
+- NOT for: restructuring-code (structure vs design-time decisions), NOT for superpowers' `systematic-debugging` (debugging vs prevention), NOT for reviewing-and-polishing (artifact polishing), NOT for applying-guardrails (incremental vs design-time)
 
 ## Agent Spawn Map
 

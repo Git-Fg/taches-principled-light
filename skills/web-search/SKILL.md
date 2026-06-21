@@ -1,6 +1,12 @@
 ---
 name: web-search
-description: "Find and verify information on the web — web search, fact-checking, source evaluation, claim verification. Use when the user says 'find X on the web', 'look up Y', 'is this claim true', 'where did this number come from', 'verify this statement', 'research this topic', 'what do experts say about Z', 'is this real', 'fact-check', or 'look up the official docs'. NOT for: reading the local codebase (use a subagent explorer); NOT for: research that requires deep source traversal (use a subagent explorer); NOT for: evaluating competing design alternatives (use `sadd` JUDGE)."
+description: >
+  Load when finding or verifying information on the open web — web search,
+  fact-checking, source evaluation, or claim verification. Use when the user
+  says 'find X on the web', 'look up Y', 'is this claim true', 'verify this
+  statement', or 'fact-check'. Do NOT use for reading the local codebase (use
+  a subagent explorer), deep source traversal (use a subagent explorer), or
+  evaluating competing design alternatives (use solving-competitively).
 when_to_use: |
   Use when the user asks to find, look up, verify, fact-check, or research
   on the open web, or doubts a factual claim. Tool-agnostic — teaches the
@@ -95,6 +101,14 @@ Sometimes the right answer is to NOT search. Stop and answer from training knowl
 - The question is value-laden or contested where the open web is mostly noise (taste, ethics in a specific situation).
 
 Detailed: `references/when-not-to-search.md`.
+
+## Gotchas
+
+- Do NOT treat search results as authoritative without source evaluation. Check: authorship, date, corroboration.
+- Do NOT search for information already available in the local context or codebase — read locally first.
+- Do NOT use web search for evaluating competing design alternatives — use solving-competitively.
+- When a claim fails verification, MUST state what was found instead, not just "unverified."
+- Do NOT cite search result snippets as facts. Fetch and read the full source before citing.
 
 ## Failure Modes
 

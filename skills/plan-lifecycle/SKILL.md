@@ -1,6 +1,13 @@
 ---
 name: plan-lifecycle
-description: "Plan a multi-phase project end-to-end — break work into phases, write ROADMAP.md + per-phase PLAN.md files with critic checkpoints (PLAN mode), or run a plan with task outcomes and deviation log (EXECUTE mode). Use when the user says 'plan this project', 'start a new project', 'break down work into phases', 'run a plan', 'build something non-trivial', or 'this is a big change'. NOT for: single-plan documents with bite-sized tasks (use superpowers' `writing-plans`); NOT for: adding a single small feature with one-shot edits (use `task-lifecycle`); NOT for: brainstorming options (use `ideation`)."
+description: >
+  Load when planning or executing a multi-phase project — breaking work into
+  phases, writing ROADMAP.md + per-phase PLAN.md files with critic checkpoints,
+  or running a plan with deviation tracking. Use when the user says 'plan this
+  project', 'start a new project', 'break down work into phases', or 'run a
+  plan'. Do NOT use for single-plan documents with bite-sized tasks (use
+  superpowers' writing-plans), adding a single small feature (use
+  task-lifecycle), or brainstorming options (use generating-ideas).
 context: fork
 agent: general-purpose
 allowed-tools: Read, Write, Bash, Grep
@@ -8,7 +15,7 @@ when_to_use: "Use for multi-phase projects, feature breakdowns, running PLAN.md 
 argument-hint: "<PLAN|EXECUTE> [path|--phase N]"
 arguments: [mode, plan-path]
 skills:
-  - subagent-orchestration
+  - orchestrating-subagents
 ---
 
 You are the plan-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a mode (PLAN | EXECUTE) and an optional plan path or phase flag via $ARGUMENTS[0] and $ARGUMENTS[1].
@@ -44,7 +51,7 @@ When this skill produces durable artifacts, write them to `docs/principled/` too
 ## CONTRAST
 
 - NOT for: day-to-day task tracking or individual task SPECS — use task-lifecycle
-- NOT for: early-stage idea exploration before a project exists — use ideation
+- NOT for: early-stage idea exploration before a project exists — use generating-ideas
 - NOT for: small A/B tests at small scale — use plan-do-check-act
 - CONTRAST with superpowers' `writing-plans`: that skill writes a single implementation plan doc with bite-sized 2-5 minute tasks for a subagent to execute; this skill writes ROADMAP.md + per-phase PLAN.md with critic checkpoints for multi-phase projects. Use writing-plans for focused feature plans; use plan-lifecycle when the project needs phase decomposition with formal checkpoints.
 - CONTRAST with superpowers' `executing-plans` + `subagent-driven-development`: those skills execute plans without critic checkpoints or deviation logs; this skill's EXECUTE mode adds per-phase critic findings, deviation tracking, and next-phase recommendations.
@@ -82,7 +89,7 @@ Executes PLAN.md files using intelligent strategies based on checkpoint types.
 
 1. **Intake** — load the plan and execution context.
 2. **Strategy Selection** — analyze checkpoints to pick Strategy A (Autonomous), B (Segmented), or C (Sequential).
-3. **Implementation** — execute the tasks inline (the files are already in your context; implementation on files you are editing stays inline). spawn a subagent generalist for isolated review (see subagent-orchestration skill for the pattern).
+3. **Implementation** — execute the tasks inline (the files are already in your context; implementation on files you are editing stays inline). spawn a subagent generalist for isolated review (see orchestrating-subagents skill for the pattern).
 4. **Validation** — run verification commands and milestone reviews.
 
 **Execution strategies:** You MUST read `references/execution-strategies.md` BEFORE starting execution.

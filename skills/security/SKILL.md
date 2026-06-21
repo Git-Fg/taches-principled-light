@@ -1,6 +1,12 @@
 ---
 name: security
-description: "Scan for security vulnerabilities, exposed secrets, broken authentication, and compliance gaps before production deployment. Use when the user says 'security audit', 'dependency scan', 'find secrets', 'check for vulnerabilities', 'OWASP', 'compliance check', 'pre-deployment security review', 'is this safe to ship'. Four modes: SAST, DEPENDENCY-AUDIT, SECRETS-DETECTION, COMPLIANCE. NOT for: general code review (use `refine` REVIEW); NOT for: dependency policy on Rust (use `rust` skill)."
+description: >
+  Load when auditing for security vulnerabilities before production deployment
+  — SAST scanning, dependency auditing, secrets detection, or compliance checks
+  against OWASP, GDPR, SOC2, or PCI-DSS. Use when the user says 'security
+  audit', 'find secrets', 'check for vulnerabilities', or 'is this safe to
+  ship'. Do NOT use for general code review (use reviewing-and-polishing) or
+  Rust-specific dependency policy (use rust).
 allowed-tools: Read, Grep, Glob, Bash, Edit
 when_to_use: |
   - User is preparing for production deployment or major release.
@@ -14,13 +20,13 @@ argument-hint: "[mode] [target] [--severity critical|high|medium|low]"
 ## Routing Guidance
 
 - IMMEDIATELY before production deployment, before merging security-related PRs, or when fixing vulnerabilities.
-- Do NOT use for architecture design (use ddd) or general code quality (use refine REVIEW).
+- Do NOT use for architecture design (use restructuring-code) or general code quality (use reviewing-and-polishing REVIEW).
 
 ## CONTRAST
 
 - NOT for: investigating root causes of known bugs — use superpowers' `systematic-debugging`
-- NOT for: general code quality or polish — use refine
-- NOT for: architecture design and layering — use ddd
+- NOT for: general code quality or polish — use reviewing-and-polishing
+- NOT for: architecture design and layering — use restructuring-code
 - NOT for: incident postmortem of a past failure — use superpowers' `systematic-debugging`
 
 | If you need to... | Use this mode |

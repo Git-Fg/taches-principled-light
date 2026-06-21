@@ -1,8 +1,14 @@
 ---
 name: project-maintenance
-description: "Archive completed plans, deduplicate stale memory, and clean auto-memory at the end of a project. Use when the user says 'wrap up this plan', 'archive the project', 'clean up files', 'deduplicate memory', 'run memory cleanup', 'this project is done'. NOT for: managing CLAUDE.md or `.claude/rules/` (use `rules-orchestration`); NOT for: capturing individual session insights (use the `learn` command)."
+description: >
+  Load when wrapping up a project — archiving completed plans, deduplicating
+  stale memory, and cleaning auto-memory. Use when the user says 'wrap up this
+  plan', 'archive the project', 'clean up files', 'deduplicate memory', or 'this
+  project is done'. Do NOT use for managing CLAUDE.md or rules (use
+  managing-rules) or capturing individual session insights (use the learn
+  command).
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-when_to_use: "Use when wrapping up plans, deduplicating files, or running memory cleanup. CONTRAST: refine MEMORIZE (general insights); rules-orchestration SYNC (codify rules); rules-orchestration AUDIT (audit rules)."
+when_to_use: "Use when wrapping up plans, deduplicating files, or running memory cleanup. CONTRAST: reviewing-and-polishing MEMORIZE (general insights); managing-rules SYNC (codify rules); managing-rules AUDIT (audit rules)."
 argument-hint: "[plan-archive|memory-audit|memory-dedup|memory-archive|memory-clean] [path] [--abandoned] [--days 30]"
 ---
 
@@ -13,8 +19,8 @@ argument-hint: "[plan-archive|memory-audit|memory-dedup|memory-archive|memory-cl
 - When the user wants to preserve plan artifacts before starting fresh (PLAN-ARCHIVE).
 - When stale memory entries reference deleted projects or agents (MEMORY-ARCHIVE, MEMORY-CLEAN).
 - Do NOT use for ongoing plans (no `SUMMARY.md` yet) — plan-lifecycle EXECUTE mode first.
-- Do NOT use for auditing rules files — use `rules-orchestration` AUDIT mode.
-- Do NOT use for capturing general session insights — use `refine` MEMORIZE.
+- Do NOT use for auditing rules files — use managing-rules AUDIT mode.
+- Do NOT use for capturing general session insights — use reviewing-and-polishing MEMORIZE.
 
 ## What This Skill Changes
 
@@ -26,10 +32,10 @@ argument-hint: "[plan-archive|memory-audit|memory-dedup|memory-archive|memory-cl
 
 ## CONTRAST with Other Skills
 
-- **refine MEMORIZE** — captures general session insights into `docs/principled/memory/learnings.md` (one writer, ad-hoc insights).
+- **reviewing-and-polishing MEMORIZE** — captures general session insights into `docs/principled/memory/learnings.md` (one writer, ad-hoc insights).
 - **THIS, PLAN-ARCHIVE** — bundles completed plan artifacts into `docs/principled/attic/` and distills plan-specific learnings into the same file (the other writer, plan-specific).
-- **rules-orchestration SYNC** — the *reader* of `docs/principled/memory/learnings.md`; promotes durable entries into committed rules. Run PLAN-ARCHIVE (or MEMORIZE) before SYNC.
-- **rules-orchestration AUDIT** — audits CLAUDE.md / `.claude/rules/` hierarchy; this skill's memory modes audit `~/.claude/...` and `docs/principled/memory/`.
+- **managing-rules SYNC** — the *reader* of `docs/principled/memory/learnings.md`; promotes durable entries into committed rules. Run PLAN-ARCHIVE (or MEMORIZE) before SYNC.
+- **managing-rules AUDIT** — audits CLAUDE.md / `.claude/rules/` hierarchy; this skill's memory modes audit `~/.claude/...` and `docs/principled/memory/`.
 
 ## Decision Router
 

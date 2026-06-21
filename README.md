@@ -2,7 +2,7 @@
 
 **Version:** 2.0.0 · 22 skills
 
-A specialist Claude Code plugin. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
+A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
 ## Superpowers + Taches Principled
 
@@ -15,15 +15,51 @@ Install both. They're designed to coexist:
 
 Skills know about each other. Taches skills redirect to superpowers when they overlap — every skill with adjacent-domain overlap has a CONTRAST section pointing to the superpowers equivalent.
 
-## Quick Start
+## Installation by Platform
+
+### Claude Code
 
 ```bash
-# Install both
-claude plugin install superpowers
+# Install from marketplace (recommended)
+/plugin marketplace add Git-Fg/taches-principled-light
+/plugin install taches-principled-light
+
+# Or install directly from GitHub
 claude plugin install https://github.com/Git-Fg/taches-principled-light
 ```
 
-Skills load automatically when their description matches your task.
+### Kimi Code
+
+```bash
+# In the TUI, run:
+/plugins install https://github.com/Git-Fg/taches-principled-light
+
+# Then reload to activate:
+/reload
+```
+
+Pin to a specific branch/tag/commit:
+```bash
+/plugins install https://github.com/Git-Fg/taches-principled-light/tree/main
+/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v2.0.0
+```
+
+### Codex
+
+```bash
+# One-time marketplace registration (shell)
+codex plugin marketplace add Git-Fg/taches-principled-light
+
+# Then inside a Codex session, browse and install:
+/plugins
+```
+
+### Cursor
+
+Install via Cursor's plugin manager using the GitHub URL:
+```
+https://github.com/Git-Fg/taches-principled-light
+```
 
 ## What You Get
 

@@ -14,7 +14,7 @@ The right form is one line — `You MUST run \`agent-browser skills get core\` B
 
 The current `crafting-skills` allows this because:
 
-1. **The compendium has no rule against inlining dynamic content.** Rule 4 ("audience-aware file citations") covers *how* to cite internal references, not *whether* to cite external content. Rule 10 ("skip what the model already knows") is about facts the model has, not content the model can fetch on demand.
+1. **The compendium has no rule against inlining dynamic content.** Rule 7 ("audience-aware imperative") covers *how* to cite (contract vs framing form) but not *whether* to cite. Rule 10 ("skip what the model already knows") is about facts the model has, not content the model can fetch on demand.
 2. **No mode catches the failure after the fact.** CREATE produces a skill. OPTIMIZE only retunes the *description* (routing), not the body. There is no mode that reads a skill and asks "did you just inline content that lives in a CLI/library/other-skill?"
 3. **No mode observes the immediate post-creation use.** The user almost always uses a freshly-created skill right away. The transcripts of that use reveal exactly which parts of the skill failed to steer the agent — but nothing in the marketplace reads those transcripts and proposes edits.
 
@@ -33,7 +33,7 @@ Skills MUST cite the source of information instead of recreating it in the skill
 | Category | What it is | Citation form | Example |
 |---|---|---|---|
 | **Dynamic** | CLIs, libraries, web APIs, `--help` output | Imperative command + `BEFORE` | `You MUST run \`agent-browser skills get core\` BEFORE running any \`agent-browser\` command.` |
-| **Static intra-skill** | `references/X.md`, `scripts/Y.py`, `assets/Z.json` | Audience-aware imperative (Rule 4) | `You MUST read \`references/execute.md\` BEFORE writing the invocation.` |
+| **Static intra-skill** | `references/X.md`, `scripts/Y.py`, `assets/Z.json` | Audience-aware imperative (Rule 7) | `You MUST read \`references/execute.md\` BEFORE writing the invocation.` |
 | **Cross-skill** | Other marketplace skills (`evaluating-skills`, `general-critic`, etc.) | Name + protocol-applied form | `You MUST read \`evaluating-skills\` and apply its protocol BEFORE running the post-creation loop.` |
 
 | Cross-skill references MUST use the canonical verb form: **"read and apply"**. (Variations like "consult and follow" or "read the protocol" are acceptable synonyms but "read and apply" is canonical.)
@@ -45,7 +45,7 @@ The test for every paragraph in a skill body, applied in order:
 
 1. *Does the agent need this fact?* If no → delete (Rule 10).
 2. *Can the agent load this content on demand?* If yes → cite, don't inline (Rule 12).
-3. *Is the citation INTERNAL (contract) or EXTERNAL (framing)?* Encode audience in the verb form (Rule 4 + Rule 7).
+3. *Is the citation INTERNAL (contract) or EXTERNAL (framing)?* Encode audience in the verb form (Rule 7).
 4. *Is this content already cited elsewhere in the skill?* If yes → deduplicate, do not repeat.
 
 The antipattern the rule prevents: the agent inlining a 30-line summary of the agent-browser command reference because it doesn't trust the model to run `agent-browser skills get core` at runtime. The trust bet is wrong — the agent can and will run the command; the inlined content rots on first CLI release.

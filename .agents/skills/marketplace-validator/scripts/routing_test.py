@@ -20,16 +20,28 @@ import re
 import sys
 from pathlib import Path
 
+# Reuse the marketplace-validator's YAML parser — it handles folded (`>`),
+# literal (`|`), single-quoted (`'…'`), and double-quoted (`"…"`) scalars
+# correctly (including escape sequences). Earlier this script had a custom
+# regex that only matched `description: >\n…` and silently skipped any
+# single-line description, so after commit 904e11e converted the marketplace
+# descriptions to `description: "…"`, the test loaded only ~5 of 31+ skills.
+sys.path.insert(0, str(Path(__file__).parent))
+from validate import parse_frontmatter_safe  # noqa: E402
+
 
 def load_skills(root: Path) -> dict[str, str]:
     """Load all SKILL.md frontmatter descriptions."""
     skills: dict[str, str] = {}
     for p in root.rglob("SKILL.md"):
         text = p.read_text()
-        m = re.search(r"^description:\s*>\s*\n((?:  .*\n)+)", text, re.MULTILINE)
-        if not m:
+        fm, _ = parse_frontmatter_safe(text)
+        desc = fm.get("description", "").strip()
+        if not desc:
             continue
-        desc = re.sub(r"^  ", "", m.group(1), flags=re.MULTILINE).strip()
+        # Use the parent directory name as the skill identifier — matches the
+        # `name:` field by convention but tolerates mismatches (the validator
+        # flags those separately).
         skills[p.parent.name] = desc
     return skills
 

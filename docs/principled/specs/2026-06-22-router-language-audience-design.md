@@ -2,7 +2,7 @@
 
 **Date:** 2026-06-22
 **Status:** Design — awaiting review
-**Scope:** `claude-cli/SKILL.md` (router table) + `crafting-skills/SKILL.md` (meta-rule) + a new `references/prompts/` convention for subagent prompt contracts.
+**Scope:** `claude-cli/SKILL.md` (router table) + `crafting-skills/references/best-practices-compendium.md` (the actual 14-rule Best-Practices Compendium and supporting reference — `crafting-skills/SKILL.md` itself is unchanged) + a new `references/prompts/` convention for subagent prompt contracts.
 
 ## Problem
 
@@ -56,11 +56,11 @@ Verb contrast encodes audience: **"You MUST read … BEFORE"** = contract; **"de
 
 ## Section 3 — Meta-rule in `crafting-skills`
 
-Three edits to `crafting-skills/SKILL.md`:
+Three edits to the compendium file `references/best-practices-compendium.md` (which is the file that holds the 14 rules and the supporting reference sections — `crafting-skills/SKILL.md` itself is a router that points to it and is **not** changed by this design):
 
-### 3.1 — Best-Practices Compendium, replace rule 7
+### 3.1 — Best-Practices Compendium (in `references/best-practices-compendium.md`), replace rule 7
 
-Current:
+Current (line 30 of the compendium):
 > 7. **MUST, not should.** Use imperative constraint language. "MUST filter test accounts" not "always filter test accounts."
 
 New:
@@ -69,9 +69,9 @@ New:
 > - **EXTERNAL framing** (workflows, anti-patterns, handoffs, capability descriptions) → descriptive. "See `references/workflows.md` for end-to-end patterns."
 > - The distinction: INTERNAL is a contract the agent must honor for the operation to succeed. EXTERNAL is context the agent can use or ignore. Applying MUST uniformly reads as "too violent" and dilutes the imperative signal.
 
-### 3.2 — Skill Anatomy, extend rule 4
+### 3.2 — Skill Anatomy (in `references/best-practices-compendium.md`), extend rule 4
 
-Current:
+Current (line 67 of the compendium):
 > 4. **Imperative citations only:** "You MUST read `references/format.md` BEFORE writing any code." Never "You can read" or "See reference." Passive citations are ignored by LLMs.
 
 New:
@@ -80,7 +80,9 @@ New:
 > - For EXTERNAL framing references: "`references/X.md` describes / shows / covers [topic] — consult when [condition]."
 > - Never: "You can read", "Optionally consult", "Feel free to look at". Passive citations are ignored by LLMs in both directions.
 
-### 3.3 — Common Pitfalls, add new row
+### 3.3 — Common Pitfalls (in `references/best-practices-compendium.md`), add new row
+
+The Common Pitfalls table is at line 101–113 of the compendium.
 
 | Pitfall | Fix |
 |---|---|
@@ -110,7 +112,9 @@ Every prompt file starts with `# Contract: <subagent-name>` so the receiving sub
 
 If the calling agent paraphrases the prompt instead of passing it verbatim, the subagent loses the imperatives (MUST / NEVER). Verbatim fidelity is part of the host-level contract. The `# Contract:` first line gives the subagent a strong signal that the body is binding, not a draft.
 
-### 4.5 — Add to `crafting-skills` Skill Anatomy (new rule 5)
+### 4.5 — Add to `references/best-practices-compendium.md` Skill Anatomy (new rule 6 — the existing rule 5 is "Opt-out for teaching examples", at line 68)
+
+The Skill Anatomy "File reference conventions" numbered list is at lines 64–68. The new rule 6 goes immediately after rule 5.
 
 > 5. **Subagent prompt contracts (when applicable).**
 > - If the skill includes prompts passed verbatim to subagents, place them in `references/prompts/<name>.md`.
@@ -129,15 +133,15 @@ If the calling agent paraphrases the prompt instead of passing it verbatim, the 
 | File | Change |
 |---|---|
 | `skills/claude-cli/SKILL.md` | Replace the router table in §3 with the two-tone table from Section 2. |
-| `skills/crafting-skills/SKILL.md` | Edit rule 7, rule 4 (Anatomy), and add Common Pitfalls row per Section 3. Add new rule 5 per Section 4.5. |
+| `skills/crafting-skills/references/best-practices-compendium.md` | Edit rule 7 (audience-aware), rule 4 in Skill Anatomy (audience-aware file citations), add new rule 6 in Skill Anatomy (subagent prompt contracts), and add a new Common Pitfalls row. **Note: `crafting-skills/SKILL.md` itself is not changed — it already points to the compendium at line 199 ("You MUST read `references/best-practices-compendium.md`…").** |
 | `skills/claude-cli/references/prompts/` | Create the directory (empty, awaiting first contract). |
 
 ## Section 7 — Verification
 
-1. `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/claude-cli/ skills/crafting-skills/` → 0 failures, only expected `when_to_use` and description-length warnings.
-2. Body line count: `claude-cli/SKILL.md` must stay under 200 lines (currently 128, +1 row in router table ≈ +0 lines net).
-3. `crafting-skills/SKILL.md` net addition: ~20 lines (3 edited rules + 1 new rule + 1 new pitfall row).
-4. `references/prompts/` exists as an empty directory in `claude-cli/references/prompts/`.
+1. `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/claude-cli/ skills/crafting-skills/` → 0 failures, only expected `when_to_use` and description-length warnings. The compendium file in `references/` is not directly validated (the validator only inspects SKILL.md frontmatter), so its 0-failure check is structural — the Edit operations must produce valid markdown tables and numbered lists.
+2. Body line count: `skills/claude-cli/SKILL.md` must stay under 200 lines (currently 128, the table is the same row count).
+3. `skills/crafting-skills/references/best-practices-compendium.md` net addition: ~20 lines (rule 7 expansion +2 lines, rule 4 Anatomy expansion +3 lines, new rule 6 +5 lines, new Common Pitfalls row +1 line, blank-line adjustments ~+9 lines; total ~+20).
+4. `references/prompts/` exists as an empty directory in `skills/claude-cli/references/prompts/` (with `.gitkeep`).
 
 ## Open questions
 

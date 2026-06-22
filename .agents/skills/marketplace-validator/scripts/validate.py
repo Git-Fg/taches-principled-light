@@ -260,7 +260,14 @@ def check_skill(skill_path: Path) -> list[dict]:
     if len(body_lines) > MAX_BODY_LINES:
         findings.append({
             "level": "warn", "code": "body_too_long",
-            "message": f"body has {len(body_lines)} lines (target ≤{MAX_BODY_LINES}); consider splitting into references/",
+            "message": (
+                f"body has {len(body_lines)} lines (target ≤{MAX_BODY_LINES}). "
+                "This is not an exact science: certain skills — particularly meta-skills and skills "
+                "whose content is universally applied on every load — may legitimately exceed 500 lines. "
+                "Consider splitting into references/ ONLY if the content is mode-specific (not loaded on every use). "
+                "For universally-applicable content (e.g., a routing compendium used by every mode), prefer keeping it inline. "
+                "See crafting-skills inline Compendium Rule 12."
+            ),
             "line": None,
         })
 

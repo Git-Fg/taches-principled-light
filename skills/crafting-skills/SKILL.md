@@ -196,6 +196,25 @@ Run the same benchmark from Step 1. If metrics didn't improve, revert and try a 
 Small word changes in descriptions can have outsized impact on routing — including spillover effects on other skills.
 
 
+## REVIEW Mode
+
+*Critique an existing skill against the 16-rule Best-Practices Compendium and propose fixes.*
+
+**Step 1 — Read the skill.** Read `SKILL.md` + `references/` (one file at a time, on demand) + `scripts/` + `assets/`. If the skill exceeds 1000 lines total, read `SKILL.md` first, then references one at a time.
+
+**Step 2 — Spawn a critic subagent.** Apply the `general-critic` contract (HIGH/MEDIUM/LOW) with the compendium as the lens. The critic MUST NOT modify files — return findings only, with file:line, severity, and proposed fix. The critic prompt MUST include: "Your lens is the 16-rule Best-Practices Compendium (inline in `crafting-skills/SKILL.md`). Read it BEFORE reviewing. Score each rule PASS / FAIL / N/A. For each FAIL, emit HIGH/MEDIUM/LOW and a concrete fix."
+
+**Step 3 — Aggregate findings.** Per-rule pass/fail matrix. Severity counts: HIGH = breaks a contract (Rule 12 violation, broken file reference, triggers on wrong intent), MEDIUM = degrades quality (passive citation, missing gotcha, vague description), LOW = cosmetic (line count, naming style).
+
+**Step 4 — Loop until no HIGH remain, capped at 3 iterations.** Apply HIGH fixes with user confirmation. Re-spawn critic. Loop. Stop when 0 HIGH OR 3 iterations reached. If 3 iterations reached with HIGH still present, surface the full report to the user and let them decide whether to continue, defer, or downgrade to MEDIUM. Report MEDIUM and LOW for the user to decide.
+
+**Step 5 — Report.** Inline if small. Otherwise write `references/review-<date>.md` (note: this lives in `crafting-skills/references/`, not in the reviewed skill's directory, to avoid polluting the reviewed skill).
+
+**Contrast (do not confuse with):**
+- `evaluating-skills` RUN mode — *behavioral* comparison (with-skill vs baseline, with transcripts). REVIEW is *static* (just reads the skill).
+- `general-critic` directly — generic artifact critique. REVIEW is skill-specific and uses the compendium as lens.
+
+
 ## POST-CREATE Mode
 
 *Observe what happened during the user's immediate use of a freshly-created skill and propose 3-5 targeted edits.*
@@ -223,26 +242,7 @@ Small word changes in descriptions can have outsized impact on routing — inclu
 **Contrast (do not confuse with):**
 - `evaluating-skills` RUN mode — heavyweight behavioral loop with separate transcripts, multiple iterations, statistical aggregation. POST-CREATE is *lightweight and immediate* — same session, no separate harness, 3-5 edits.
 - `evaluating-skills` ITERATE (Stage 7) — same goal (rewrite skill from observed behavior) but driven by formal evals. POST-CREATE is driven by what just happened in the current session.
-- REVIEW mode — looks at the skill statically. POST-CREATE looks at what the agent *did* with the skill.
-
-
-## REVIEW Mode
-
-*Critique an existing skill against the 16-rule Best-Practices Compendium and propose fixes.*
-
-**Step 1 — Read the skill.** Read `SKILL.md` + `references/` (one file at a time, on demand) + `scripts/` + `assets/`. If the skill exceeds 1000 lines total, read `SKILL.md` first, then references one at a time.
-
-**Step 2 — Spawn a critic subagent.** Apply the `general-critic` contract (HIGH/MEDIUM/LOW) with the compendium as the lens. The critic MUST NOT modify files — return findings only, with file:line, severity, and proposed fix. The critic prompt MUST include: "Your lens is the 16-rule Best-Practices Compendium (inline in `crafting-skills/SKILL.md`). Read it BEFORE reviewing. Score each rule PASS / FAIL / N/A. For each FAIL, emit HIGH/MEDIUM/LOW and a concrete fix."
-
-**Step 3 — Aggregate findings.** Per-rule pass/fail matrix. Severity counts: HIGH = breaks a contract (Rule 12 violation, broken file reference, triggers on wrong intent), MEDIUM = degrades quality (passive citation, missing gotcha, vague description), LOW = cosmetic (line count, naming style).
-
-**Step 4 — Loop until no HIGH remain, capped at 3 iterations.** Apply HIGH fixes with user confirmation. Re-spawn critic. Loop. Stop when 0 HIGH OR 3 iterations reached. If 3 iterations reached with HIGH still present, surface the full report to the user and let them decide whether to continue, defer, or downgrade to MEDIUM. Report MEDIUM and LOW for the user to decide.
-
-**Step 5 — Report.** Inline if small. Otherwise write `references/review-<date>.md` (note: this lives in `crafting-skills/references/`, not in the reviewed skill's directory, to avoid polluting the reviewed skill).
-
-**Contrast (do not confuse with):**
-- `evaluating-skills` RUN mode — *behavioral* comparison (with-skill vs baseline, with transcripts). REVIEW is *static* (just reads the skill).
-- `general-critic` directly — generic artifact critique. REVIEW is skill-specific and uses the compendium as lens.
+- REVIEW mode (defined just above) — looks at the skill statically. POST-CREATE looks at what the agent *did* with the skill.
 
 
 ## Best-Practices Compendium

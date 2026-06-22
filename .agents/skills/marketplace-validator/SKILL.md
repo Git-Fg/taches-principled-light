@@ -1,13 +1,11 @@
 ---
 name: marketplace-validator
 description: >
-  Load when validating skills in this marketplace — checking frontmatter
-  schema, name format, description length, body size, stale platform refs,
-  and hardcoded tool names. Use when the user says 'is this skill valid',
-  'lint the marketplace', 'check frontmatter', 'validate before commit',
-  or 'run the spec checks'. Do NOT use for one-skill authoring (use
-  crafting-skills CREATE) or for the broader pre-release health sweep (use
-  marketplace-health).
+  Load when linting SKILL.md frontmatter and body — schema, name format,
+  description length, body size, stale platform refs, hardcoded tool names.
+  Use when the user says 'lint the marketplace', 'validate before commit',
+  or 'check frontmatter'. Do NOT use for authoring (use crafting-skills)
+  or pre-release sweeps (use marketplace-health).
 when_to_use: |
   Use before any commit that touches skills/, before any release cut, and on
   request when sanity-checking a single skill. The script is the spine of

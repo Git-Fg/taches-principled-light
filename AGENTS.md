@@ -61,3 +61,16 @@ Use for: implementation, review, judgment, auditing, fixes.
 1. Create `skills/<name>/SKILL.md` with frontmatter + body.
 2. Follow `crafting-skills` CREATE mode for authoring new skills; use OPTIMIZE mode for routing improvements.
 3. No other files to touch.
+
+## Marketplace Maintenance (.agents/skills/)
+
+Four local meta-marketplace skills live in `.agents/skills/` for maintaining the marketplace itself. They are not shipped to users — they are internal tooling for maintainers.
+
+| Skill | Purpose | Command |
+|-------|---------|---------|
+| `marketplace-validator` | Lint SKILL.md frontmatter + body against the convention spec | `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/` |
+| `marketplace-health` | Pre-release sweep: validator + manifest + license + cross-refs + docs | `python3 .agents/skills/marketplace-health/scripts/health.py` |
+| `ingesting-skills` | 9-step porting workflow for adding external skills | `python3 .agents/skills/ingesting-skills/scripts/inventory_source.py <source>` |
+| `releasing-marketplace` | 7-step approval-gated release orchestrator | (workflow, no script) |
+
+Run `marketplace-health` before any release cut. It catches cross-reference bugs, license gaps, and stale doc claims that the per-skill validator misses.

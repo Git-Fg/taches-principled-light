@@ -1,12 +1,11 @@
 ---
 name: releasing-marketplace
 description: >
-  Load when cutting a new version of this marketplace — bumping version across
-  all 4 plugin manifests, drafting the CHANGELOG entry, syncing README and
-  AGENTS, and committing. Use when the user says 'cut a release', 'bump
-  version', 'release 2.x', or 'tag and push'. Do NOT use for one-skill edits
-  (use crafting-skills OPTIMIZE) or for the pre-release health check alone
-  (use marketplace-health).
+  Load when cutting a marketplace version — bumping version across all 4
+  manifests, drafting the CHANGELOG, syncing README and AGENTS. Use when
+  the user says 'cut a release', 'bump version', or 'tag and push'. Do
+  NOT use for one-skill edits (use crafting-skills OPTIMIZE) or health
+  checks (use marketplace-health).
 when_to_use: |
   Use whenever a coherent batch of changes is ready to ship. The skill
   enforces a fixed sequence: pre-release gate, version proposal, manifest

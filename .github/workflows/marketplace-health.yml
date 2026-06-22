@@ -1,0 +1,43 @@
+name: marketplace-health
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/**'
+      - '.agents/skills/**'
+      - '.github/workflows/marketplace-health.yml'
+  pull_request:
+    paths:
+      - 'skills/**'
+      - '.agents/skills/**'
+
+permissions:
+  contents: read
+
+jobs:
+  health-sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run marketplace-validator
+        # Fails on hard failures only; warnings (local frontmatter extensions,
+        # description word count over 50) are advisory and allowed.
+        run: python3 .agents/skills/marketplace-validator/scripts/validate.py skills/
+
+      - name: Run marketplace-health sweep
+        # Without --no-fail: hard failures (broken cross-refs, manifest
+        # divergence, missing licenses, doc-state mismatch) fail the build.
+        run: python3 .agents/skills/marketplace-health/scripts/health.py
+
+      - name: Upload health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report
+          path: docs/principled/marketplace-health/*.md

@@ -1,13 +1,11 @@
 ---
 name: marketplace-health
 description: >
-  Load when auditing the marketplace as a whole — convention compliance,
-  manifest consistency, license coverage, cross-reference integrity, and
-  docs-reflect-state checks across all skills and the 4 plugin manifests.
-  Use when the user says 'is the marketplace healthy', 'audit the marketplace',
-  'pre-release health check', 'check for drift', or 'sweep before cutting
-  a version'. Do NOT use for single-skill lint (use marketplace-validator) or
-  for release cutting itself (use releasing-marketplace).
+  Load when running the pre-release health sweep — convention compliance,
+  manifest consistency, license, cross-references, doc-state. Use when
+  the user says 'audit the marketplace', 'pre-release health check', or
+  'check for drift'. Do NOT use for single-skill lint (use
+  marketplace-validator) or release cutting (use releasing-marketplace).
 when_to_use: |
   Use before any release cut, on request as a periodic sweep, and after
   ingesting a new skill. The output is a single Markdown report at

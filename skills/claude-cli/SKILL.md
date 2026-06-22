@@ -72,16 +72,16 @@ The marketplace historically exposed the `claude` CLI as six MCP tools. The wrap
 
 This skill is a hub. The six operations, plus two cross-cutting topics, live in per-operation references. You MUST read the matching reference BEFORE writing the corresponding CLI invocation. Do not inline flag knowledge from the hub — the references are authoritative.
 
-| If you are… | You MUST read this reference BEFORE proceeding |
+| If you are… | Reference guidance |
 |---|---|
-| Running a headless prompt with flags | `references/execute.md` |
-| Resuming or managing a session lifecycle | `references/session.md` |
-| Telling Claude about directories or worktrees | `references/context.md` |
-| Running a cloud-hosted code review | `references/review.md` |
-| Spawning or managing background agents | `references/agent.md` |
-| Tuning model, effort, permission mode, settings | `references/config.md` |
-| Parsing CLI output (text/json/stream-json/exit codes) | `references/output-contract.md` |
-| Composing an end-to-end workflow | `references/workflows.md` |
+| Running a headless prompt with flags | You MUST read `references/execute.md` BEFORE writing the invocation |
+| Resuming or managing a session lifecycle | You MUST read `references/session.md` BEFORE touching session state |
+| Telling Claude about directories or worktrees | You MUST read `references/context.md` BEFORE setting `--add-dir` or `--worktree` |
+| Running a cloud-hosted code review | You MUST read `references/review.md` BEFORE invoking `ultrareview` |
+| Spawning or managing background agents | You MUST read `references/agent.md` BEFORE using `--agent` or `claude agents` |
+| Tuning model, effort, permission mode, settings | You MUST read `references/config.md` BEFORE picking `--effort` or `--permission-mode` |
+| Parsing CLI output | `references/output-contract.md` describes the text/json/stream-json shapes — consult when you need to parse |
+| Composing an end-to-end workflow | `references/workflows.md` shows six end-to-end patterns — consult for composition ideas |
 
 Each reference is self-contained for its operation. References MUST NOT cross-cite each other — return to this hub for routing.
 

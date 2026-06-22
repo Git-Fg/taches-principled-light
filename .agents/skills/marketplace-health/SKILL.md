@@ -14,6 +14,7 @@ when_to_use: |
   docs/principled/marketplace-health/<date>.md.
 argument-hint: "[--date YYYY-MM-DD] [--no-fail]"
 allowed-tools: Read, Bash, Glob, Grep
+license: MIT
 ---
 
 # Marketplace Health

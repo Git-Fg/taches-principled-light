@@ -1,0 +1,27 @@
+Loaded 35 skills
+
+Exp                       Utterance                                                  Top match                 Score  2nd Result
+----------------------------------------------------------------------------------------------------------------------------------
+marketplace-validator     lint the marketplace and check the frontmatter             marketplace-validator         6    4 ✓
+marketplace-validator     is this skill valid before I commit                        marketplace-validator         3    3 TIE
+marketplace-health        audit the marketplace and run the pre-release health check marketplace-health            7    6 ✓
+marketplace-health        is the marketplace healthy, check for drift                marketplace-health            5    4 ✓
+ingesting-skills          port this skill from a github url into our collection      ingesting-skills              7    3 ✓
+ingesting-skills          add this skill to our marketplace, import it               ingesting-skills              4    2 ✓
+releasing-marketplace     cut a release and bump the version to 0.0.2                releasing-marketplace         6    2 ✓
+releasing-marketplace     tag and push the new version                               releasing-marketplace         5    2 ✓
+general-critic            review this PR and find the worst issues                   security                      4    4 ✗
+deep-research             do deep research on agent skill evaluation methodology     orchestrating-subagents       2    2 ✗
+crafting-skills           create a new agent skill for my project                    crafting-skills               4    3 ✓
+crafting-skills           review this skill's description and frontmatter            crafting-skills               6    4 ✓
+evaluating-skills         write evals for this skill and grade the outputs           evaluating-skills             6    5 ✓
+plan-lifecycle            plan this multi-phase project with critic checkpoints      plan-lifecycle                8    6 ✓
+task-lifecycle            add this small feature with verification and docs          task-lifecycle                8    4 ✓
+web-search                find documentation on the open web for Rust async traits   web-search                    5    4 ✓
+security                  audit code for OWASP top 10 vulnerabilities and secrets    security                      7    3 ✓
+rust                      configuring clippy and cargo-deny for my Rust project      rust                          7    3 ✓
+
+=== Routing test summary ===
+  Clear wins: 15/18
+  Ties:       1/18
+  Losses:     2/18

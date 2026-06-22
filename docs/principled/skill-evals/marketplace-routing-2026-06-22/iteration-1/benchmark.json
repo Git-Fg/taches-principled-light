@@ -1,0 +1,24 @@
+{
+  "iteration": 1,
+  "scope": "pilot (1 of 18 evals)",
+  "runtime": "claude-code CLI",
+  "results": [
+    {
+      "eval_id": "craft-create",
+      "expected_skill": "crafting-skills",
+      "with_skill_score": 3,
+      "without_skill_score": 0,
+      "delta": 3,
+      "unit": "marketplace_skill_md_reads",
+      "verdict": "material_difference_observed",
+      "details": "docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-1/eval-craft-create/behavioral_comparison.json"
+    }
+  ],
+  "summary": {
+    "total_evals": 1,
+    "with_skill_total_signals": 3,
+    "without_skill_total_signals": 0,
+    "pass_rate_delta": "+3 signals per eval on average (N=1)"
+  },
+  "notes": "Pilot only. Full benchmark requires iteration-2+ covering all 18 evals from ../evals/evals.json with sufficient timeout budget (180-300s per run). See benchmark.md for stage status and limitations."
+}

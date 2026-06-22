@@ -1,0 +1,39 @@
+{
+  "eval_id": "craft-create",
+  "utterance": "create a new agent skill for parsing PDFs",
+  "expected_skill": "crafting-skills",
+  "with_skill": {
+    "total_events": 94,
+    "skill_tool_invocations": [
+      "superpowers:writing-skills",
+      "superpowers:brainstorming"
+    ],
+    "skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/crafting-skills/SKILL.md",
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/design-hub/pdf-design-guide/SKILL.md",
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/deep-research/SKILL.md"
+    ],
+    "marketplace_skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/crafting-skills/SKILL.md",
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/design-hub/pdf-design-guide/SKILL.md",
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/deep-research/SKILL.md"
+    ],
+    "final_text_chars": 758
+  },
+  "without_skill": {
+    "total_events": 62,
+    "skill_tool_invocations": [
+      "superpowers:writing-skills",
+      "superpowers:brainstorming"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": [],
+    "final_text_chars": 1278
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 3,
+    "skill_tool_invocations_added": []
+  },
+  "material_difference": true,
+  "notes": "with-skill run read 3 marketplace SKILL.md files (crafting-skills + pdf-design-guide + deep-research) to inform its approach; without-skill run read 0 marketplace SKILL.md files. Both runs invoked the superpowers writing-skills meta-skill first (system-level routing). Material difference: marketplace skills became part of the agent reasoning context."
+}

@@ -14,6 +14,7 @@ when_to_use: |
   - "Run a cloud-hosted code review"
   - "Change the model, effort, or permission mode for a Claude invocation"
   - "Drive Claude Code programmatically from a Bash command"
+license: MIT
 ---
 
 # claude-cli

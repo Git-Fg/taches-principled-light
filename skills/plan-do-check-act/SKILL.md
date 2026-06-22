@@ -8,6 +8,7 @@ description: >
   plan-lifecycle) or debugging (use superpowers' systematic-debugging).
 when_to_use: "Use for proof-of-concepts, A/B tests, and validating improvements before standardization. Do NOT use for debugging (use superpowers' `systematic-debugging`) or code style (use reviewing-and-polishing)."
 argument-hint: "[improvement goal or problem to address] [--cycle N]"
+license: MIT
 ---
 
 ## Runtime persistence

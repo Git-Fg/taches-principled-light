@@ -16,6 +16,7 @@ argument-hint: "<PLAN|EXECUTE> [path|--phase N]"
 arguments: [mode, plan-path]
 skills:
   - orchestrating-subagents
+license: MIT
 ---
 
 You are the plan-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a mode (PLAN | EXECUTE) and an optional plan path or phase flag via $ARGUMENTS[0] and $ARGUMENTS[1].

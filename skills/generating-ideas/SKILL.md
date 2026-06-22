@@ -12,6 +12,7 @@ when_to_use: |
   - Use for early-stage conceptualization before architecture or implementation begins.
   - NOT for: collaborative idea-to-design dialogue (use superpowers' `brainstorming`).
 argument-hint: "[feature concept, problem, or topic]"
+license: MIT
 ---
 
 ## Runtime persistence

@@ -11,6 +11,7 @@ description: >
 when_to_use: "Use when user wants to avoid over-engineering, apply YAGNI, or make architectural and code design decisions. Background guardrails applied to every code change; pair with the restructuring-code skill for deep structural analysis."
 argument-hint: Applied automatically when implementing, refactoring, designing, or handling errors
 user-invocable: false
+license: MIT
 ---
 
 ## Routing Guidance

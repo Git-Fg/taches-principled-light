@@ -8,6 +8,7 @@ description: >
   simple parallel fan-out (use superpowers' dispatching-parallel-agents), or
   single-skill orchestration (the skill itself is the orchestrator).
 when_to_use: "Use when user asks to spawn subagents, run reviews in parallel, define custom agents, or manage background workers."
+license: MIT
 ---
 
 ## Routing Guidance

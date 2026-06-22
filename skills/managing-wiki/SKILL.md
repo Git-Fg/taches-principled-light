@@ -15,6 +15,7 @@ when_to_use: |
   - "Build the wiki from a URL / file / notes"
   - NOT for: general web search (use web-search), code search, reading project documentation outside the wiki, real-time meeting notes
 argument-hint: "[query|ingest|lint] [args...]"
+license: MIT
 ---
 
 # Wiki Hub — Routing and Operations

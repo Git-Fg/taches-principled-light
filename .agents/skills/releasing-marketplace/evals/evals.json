@@ -1,0 +1,27 @@
+{
+  "skill_name": "releasing-marketplace",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I just added 4 new skills and fixed a few bugs. Cut a release. The current version is 2.1.0.",
+      "expected_output": "An approval-gated workflow that: (a) inspects the git diff to determine scope (breaking/non-breaking), (b) proposes a new version (probably 2.2.0 — new features, non-breaking), (c) drafts the CHANGELOG entry from the diff (Added/Changed/Fixed sections), (d) shows the proposed manifest changes (.claude-plugin/, .codex-plugin/, .cursor-plugin/, .kimi-plugin/ — version bump + description refresh if needed), (e) flags any README/AGENTS updates needed, (f) presents the full proposal as a single diff, (g) waits for user approval, (h) commits with a structured message, (i) tags the release (e.g. v2.2.0) IF the user wants tags. The skill should call marketplace-health as a pre-release gate and refuse to cut if there are hard failures.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "The marketplace-health sweep passed but I noticed a single skill has a license missing. Cut a release anyway and just add the license to the affected skill as part of the release prep.",
+      "expected_output": "The skill should: (a) acknowledge the license gap as part of the prep work, (b) propose a pre-release edit step (use ingesting-skills step 5 to add the missing license), (c) re-run marketplace-validator to confirm, (d) then proceed with the release. Releases should not ship with known gaps; this is a stop-and-fix, not a skip-and-ship.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "Cut a 2.1.1 patch release that only changes CHANGELOG.md and bumps the version across the 4 manifests. No new skills. No description changes.",
+      "expected_output": "A minimal release: (a) all 4 manifests bumped from 2.1.0 to 2.1.1, (b) CHANGELOG.md has a [2.1.1] entry noting the manifest version sync, (c) no README update (the description table didn't change), (d) no AGENTS update, (e) single commit, (f) user approves before commit. The workflow recognizes this as a patch and adjusts the CHANGELOG tone accordingly.",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "These evals test the orchestrator role: the skill calls marketplace-health, ingesting-skills, and uses native git + manifest editing. It is mostly workflow, with the bump-knob logic per the crafting-skills compendium. The with/without delta is whether the maintainer does the release manually (the 2.1.0 took ~30 minutes) or with this skill (~2 minutes with approval gates)."
+}

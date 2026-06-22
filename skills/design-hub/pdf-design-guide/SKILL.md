@@ -11,6 +11,7 @@ when_to_use: |
   design-system-palettes for the actual palette and token scale.
 allowed-tools: Read
 argument-hint: "[content-or-mood] [format]"
+license: MIT
 ---
 
 # Design Guide — Mood-based Palette Picker

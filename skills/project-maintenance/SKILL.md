@@ -10,6 +10,7 @@ description: >
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 when_to_use: "Use when wrapping up plans, deduplicating files, or running memory cleanup. CONTRAST: reviewing-and-polishing MEMORIZE (general insights); managing-rules SYNC (codify rules); managing-rules AUDIT (audit rules)."
 argument-hint: "[plan-archive|memory-audit|memory-dedup|memory-archive|memory-clean] [path] [--abandoned] [--days 30]"
+license: MIT
 ---
 
 ## Routing Guidance

@@ -13,6 +13,7 @@ when_to_use: |
   and the user's stated criteria.
 argument-hint: "[artifact-path] [evaluation-criteria]"
 allowed-tools: Read
+license: MIT
 ---
 
 # General Critic

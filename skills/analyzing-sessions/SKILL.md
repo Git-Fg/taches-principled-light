@@ -11,6 +11,7 @@ description: >
 allowed-tools: Read, Glob, Grep, Bash, Agent
 when_to_use: "Use for session metrics, anti-pattern review, or creating issues from findings. Examples: \"parse debug log\", \"analyze hooks\". CONTRAST: No code analysis (use reviewing-and-polishing); no general project bugs (use meta-issue)."
 argument-hint: "<inspect|review|issue> [session-id|--dry-run] [--filter errors|tools|cost|skills] [--full|--summary]"
+license: MIT
 ---
 
 ## Routing Guidance

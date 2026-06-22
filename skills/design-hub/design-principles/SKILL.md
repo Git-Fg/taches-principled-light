@@ -11,6 +11,7 @@ when_to_use: |
   concrete specs and design-good-bad-examples for before/after examples.
 allowed-tools: Read
 argument-hint: "[design-question] [context]"
+license: MIT
 ---
 
 # Design Principles

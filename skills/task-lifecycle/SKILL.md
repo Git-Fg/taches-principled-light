@@ -17,6 +17,7 @@ when_to_use: |
   - User wants to update documentation to reflect completed work.
 argument-hint: "[CAPTURE|REFINE|IMPLEMENT|DOCUMENT] [task-title-or-path]"
 arguments: [subcommand, task-ref]
+license: MIT
 ---
 
 You are the task-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a subcommand (CAPTURE | REFINE | IMPLEMENT | DOCUMENT) and a task title or path via $ARGUMENTS[0] and $ARGUMENTS[1].

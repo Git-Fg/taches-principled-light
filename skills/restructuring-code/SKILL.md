@@ -8,6 +8,7 @@ description: >
   (use reviewing-and-polishing) or runtime bugs (use superpowers'
   systematic-debugging).
 when_to_use: "Use when tangled files, wrong-layer logic, messy API contracts, or deeply nested code appear. Trigger symptoms: 'this file is a mess', 'logic is in the wrong place', 'API contract is unclear', 'too much nesting', 'function does too much', 'business logic in controllers'."
+license: MIT
 ---
 
 ## What This Skill Changes

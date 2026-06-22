@@ -13,6 +13,7 @@ when_to_use: |
   `docs/principled/research/<slug>/`. NOT for one-line lookups, code reading, or repo work.
 argument-hint: "[research question]"
 allowed-tools: Read, Write, Bash, WebSearch
+license: MIT
 ---
 
 # Deep Research

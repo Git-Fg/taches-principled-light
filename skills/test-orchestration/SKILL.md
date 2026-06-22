@@ -11,6 +11,7 @@ description: >
   reviewing-and-polishing).
 when_to_use: "Use for planning test suites, mocking, or fixing broken tests. Triggers: coverage strategy, add coverage, fix broken tests, mock strategy, fixture design. NOT for: red-green-refactor TDD cycles (use superpowers' `test-driven-development`)."
 argument-hint: "[mode] [target]"
+license: MIT
 ---
 
 ## Routing Guidance

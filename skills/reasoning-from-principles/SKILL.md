@@ -13,6 +13,7 @@ when_to_use: "Use when user wants to analyze a problem from first principles, ev
 user-invocable: false
 argument-hint: "[problem-statement] [PROPOSE|MAINTAIN|QUERY]"
 arguments: [problem-statement, mode]
+license: MIT
 ---
 
 You are the First Principles Framework (FPF) orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a problem statement and a mode (PROPOSE | MAINTAIN | QUERY) via $ARGUMENTS[0] and $ARGUMENTS[1].

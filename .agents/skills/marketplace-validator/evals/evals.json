@@ -1,0 +1,27 @@
+{
+  "skill_name": "marketplace-validator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Before I commit, can you run the validator over skills/crafting-skills and tell me if it's shippable? I just edited the body to trim the description from 75 to 44 words and added a license field plus an argument-hint. The description now starts with 'Load when creating a new agent skill from scratch'.",
+      "expected_output": "A per-skill pass/fail report listing exactly which checks failed and where. For crafting-skills specifically: name matches dir ✅, description ≤1024 chars and third person ✅, license present ✅, argument-hint present ✅, body <500 lines ✅. The report should be machine-readable (exit code reflects verdict) and human-readable (named skill + which check failed + file:line if applicable).",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm about to onboard a skill from ~/.agents/skills/skill-refiner. Run the validator over that path and tell me what needs to change before it conforms to our marketplace. The original has frontmatter: name, description, type, whenToUse, arguments, trigger_keywords, allowed_tools — and a 350-line body. The body has a one-line reference to 'kimi-code edition' in the preamble and uses the variable name '$ARGUMENTS' twice.",
+      "expected_output": "A delta report listing: (a) unsupported frontmatter keys (type, whenToUse, arguments, trigger_keywords, allowed_tools — only name/description/license/allowed-tools/metadata/compatibility are spec-allowed), (b) the 'kimi-code edition' stale reference, (c) the '$ARGUMENTS' usage. Each item names the file, the line range if possible, and the fix. A skill-conformance verdict is implicit: 'not yet shippable; here is the patch list.'",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "Our marketplace has 26 top-level skills + 1 hub (design-hub) with 5 sub-skills. CI broke because someone added a 27th top-level skill that the marketplace.json doesn't know about. Run the validator to find the orphan. Also: are all 4 plugin manifests (.claude-plugin/, .codex-plugin/, .cursor-plugin/, .kimi-plugin/) at the same version?",
+      "expected_output": "(a) The orphan skill name. (b) The four manifests' versions, side by side, with a consistency verdict (all equal, or which are stale). (c) Optionally: how to fix each. Should be deterministic — same input always produces the same output.",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "These evals test the linter contract: it must be deterministic, machine-readable (exit code), human-readable (named findings), and cover the canonical spec rules (frontmatter schema, name format, description length) AND the local convention rules (gerund names, ≥1 negative trigger, body <500 lines, no stale platform refs). The with/without delta: running the validator is what catches the issues the user would otherwise miss in manual review (as we saw in 2.1.0 production-readiness)."
+}

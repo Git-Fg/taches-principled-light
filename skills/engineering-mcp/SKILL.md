@@ -14,6 +14,7 @@ when_to_use: |
   - IMPLEMENT: "implement an MCP server in Rust", "rmcp + schemars", "stdio vs Streamable HTTP", "MCP server lifecycle", "error mapping", "build an MCP tool"
   - CLIENT: "call an MCP server from an agent", "agent as MCP consumer", "consume MCP tools", "MCP client patterns"
   - QUALITY: "evaluate an MCP server", "MCP quality judge", "audit MCP quality", "score MCP server"
+license: MIT
 ---
 
 # engineering-mcp

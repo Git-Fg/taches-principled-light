@@ -11,6 +11,7 @@ description: >
 allowed-tools: Read, Edit, Write, Bash, Grep
 when_to_use: "Use when the user wants to update AGENTS.md, codify conventions, or extract rules from conversation. Covers CLAUDE.md only when it already exists or is explicitly requested."
 argument-hint: "[ANALYZE|ADD|RESTRUCTURE|REVIEW|SYNC|AUDIT] [target]"
+license: MIT
 ---
 
 ## File Target Resolution

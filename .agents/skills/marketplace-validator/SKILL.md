@@ -1,0 +1,94 @@
+---
+name: marketplace-validator
+description: >
+  Load when validating skills in this marketplace — checking frontmatter
+  schema, name format, description length, body size, stale platform refs,
+  and hardcoded tool names. Use when the user says 'is this skill valid',
+  'lint the marketplace', 'check frontmatter', 'validate before commit',
+  or 'run the spec checks'. Do NOT use for one-skill authoring (use
+  crafting-skills CREATE) or for the broader pre-release health sweep (use
+  marketplace-health).
+when_to_use: |
+  Use before any commit that touches skills/, before any release cut, and on
+  request when sanity-checking a single skill. The script is the spine of
+  marketplace maintenance.
+argument-hint: "[skill-path] [--json] [--strict]"
+allowed-tools: Read, Bash
+license: MIT
+---
+
+# Marketplace Validator
+
+Lint the marketplace for spec compliance and local-convention drift. Built on a Python stdlib script (no dependencies) that runs in <1s on the full 31-skill catalog.
+
+## Decision Router
+
+IF the user wants to check a single skill → pass the path: `python scripts/validate.py skills/<name>`
+IF the user wants to check the whole marketplace → no path: `python scripts/validate.py skills/`
+IF the user wants machine-readable output (CI, pre-commit) → add `--json`
+IF the user wants warnings to fail the build → add `--strict`
+IF unclear → run on the whole marketplace, default settings
+
+## What it checks
+
+### Canonical spec (from `agentskills.io` and Anthropic's `skill-creator/scripts/quick_validate.py`)
+
+- **Frontmatter schema.** Only `{name, description, license, allowed-tools, metadata, compatibility}` are spec-allowed. **The local convention is intentionally a superset** — `when_to_use`, `argument-hint`, `context`, `agent`, etc. are local extensions; the validator flags them as *warnings* (not failures) so a maintainer can confirm intent, not a typo.
+- **Required fields.** `name` and `description` must be present.
+- **Name format.** kebab-case, ≤64 chars, no leading/trailing/double hyphens, no XML, no reserved words (`anthropic-`, `claude-`).
+- **Name matches directory.** `name: foo` must live in `foo/SKILL.md`.
+- **Description length.** ≤1024 chars, no `<` or `>` characters.
+- **Compatibility length.** ≤500 chars if present.
+- **Body length.** ≤500 lines (warning, not failure — soft cap per Anthropic best-practices).
+
+### Local convention (from `crafting-skills/references/best-practices-compendium.md`)
+
+- **Description starts with "Load when…"** (compendium rule 1).
+- **Description ≤50 words** (compendium rule 3; soft target).
+- **Description has "Do NOT use for"** negative trigger clause (compendium rule 2; only checked for descriptions ≥15 words).
+- **No stale platform references anywhere in the skill files**: `kimi-code edition`, `disableModelInvocation` (CamelCase form), `$ARGUMENTS`, `type: prompt`, `whenToUse:` (CamelCase form).
+- **No hardcoded tool names** (`the Agent tool`, `the Write tool`, etc.) — must use platform-agnostic phrasing per AGENTS.md.
+
+### Known false positives
+
+- `references/best-practices-compendium.md` (in `crafting-skills`) contains the literal strings `the Agent tool`, `the Write tool`, `the Bash tool` inside a translation table that *teaches* the bad pattern. The validator flags them as warnings; they are teaching examples, not actual hardcoded tool names. Manual review: ignore.
+- This SKILL.md itself documents the patterns inside backticks (`` ` ``) so the linter's code-block stripper ignores them. **Convention:** when documenting patterns the linter flags, use backticks. Plain double-quoted strings still trigger the check.
+
+## Usage
+
+```bash
+# Lint the whole marketplace
+python .agents/skills/marketplace-validator/scripts/validate.py skills/
+
+# Lint one skill
+python .agents/skills/marketplace-validator/scripts/validate.py skills/evaluating-skills
+
+# CI / pre-commit
+python .agents/skills/marketplace-validator/scripts/validate.py skills/ --strict
+
+# Machine-readable
+python .agents/skills/marketplace-validator/scripts/validate.py skills/ --json
+```
+
+**Exit codes:**
+- `0` — no failures
+- `1` — at least one failure (or warning, if `--strict`)
+
+## Reuse
+
+- **`crafting-skills` OPTIMIZE mode** — for any routing-fix recommendations the validator surfaces. The validator *detects*; `crafting-skills` *fixes*.
+- **`marketplace-health` skill** — for the broader pre-release audit (manifest consistency, license coverage, cross-reference integrity). The validator is one component of the health sweep.
+
+## Contrast
+
+- `marketplace-validator` — spec + local-convention checks, per-skill output, machine-readable. Foundation tool.
+- `marketplace-health` — broader pre-release audit; aggregates validator output plus manifest checks, license coverage, stale-ref scans. Read-only report.
+- `crafting-skills` OPTIMIZE — fixes the routing issues the validator surfaces.
+- `releasing-marketplace` — orchestrates the release including a validator run in the pre-release gate.
+
+## When NOT to load
+
+- The user wants to write or edit a skill → `crafting-skills` CREATE/OPTIMIZE.
+- The user wants to evaluate a skill's behavioral quality → `evaluating-skills` (this marketplace ships 8-stage skill evaluation with behavioral JSONL review).
+- The user wants the *broader* marketplace audit (manifests, license, cross-refs) → `marketplace-health`.
+- The user wants a release cut → `releasing-marketplace` (which calls this validator internally).

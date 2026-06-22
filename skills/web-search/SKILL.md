@@ -13,6 +13,7 @@ when_to_use: |
   discipline of search, not which tool. NOT for code/local-file search, DB
   queries, or private systems.
 argument-hint: "[claim, question, or proposition to evaluate]"
+license: MIT
 ---
 
 # Web Search

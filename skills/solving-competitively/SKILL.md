@@ -17,6 +17,7 @@ when_to_use: |
   - User wants to delegate a complex task to an isolated subagent context for execution with verification.
 argument-hint: "[problem-statement] [EXECUTE|JUDGE]"
 arguments: [problem-statement, mode]
+license: MIT
 ---
 
 You are the SADD (Structured Agent-Driven Development) orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a problem statement and a mode (EXECUTE | JUDGE) via $ARGUMENTS[0] and $ARGUMENTS[1].

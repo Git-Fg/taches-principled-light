@@ -10,6 +10,7 @@ when_to_use: |
   checking whether the issues appear in a live app.
 allowed-tools: Read
 argument-hint: "[artifact-or-design-review] [criteria]"
+license: MIT
 ---
 
 # Good vs Bad Design Examples

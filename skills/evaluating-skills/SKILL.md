@@ -12,6 +12,7 @@ when_to_use: |
   kimi-code, and Reasonix. Trigger detection is behavioral, not load-event.
 argument-hint: "[mode] [skill-path] [--runs N]"
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+license: MIT
 ---
 
 # Evaluating Skills
@@ -145,7 +146,7 @@ If the runtime can't be driven as a subprocess or can't capture transcripts, **s
 ## Reuse, don't duplicate
 
 - **`crafting-skills`** owns CREATE/OPTIMIZE routing and the 14-rule compendium. This skill adopts Anthropic's `evals.json` schema and defers intent-capture + pre-commit validation there.
-- **`crafting-skills/references/skill-self-testing.md`** owns the YAML/threshold/trigger-grep pre-commit checks. Run them before declaring a skill shipped.
+- **`crafting-skills` reference: `skill-self-testing.md`** owns the YAML/threshold/trigger-grep pre-commit checks. Run them before declaring a skill shipped. (The reference lives in the sibling skill's `references/` directory; reference by name, not by path, per the marketplace convention.)
 - **`general-critic`** owns the HIGH/MEDIUM/LOW critic contract and the "loop until PASS" loop. Use it as the inline grader/reviewer.
 
 ## Contrast with nearby skills

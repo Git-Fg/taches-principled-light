@@ -10,6 +10,7 @@ when_to_use: |
   for mood-based palette selection and typography-guide for font pairing.
 allowed-tools: Read
 argument-hint: "[palette-or-token-question] [context]"
+license: MIT
 ---
 
 # Design System — Palettes & Token Scale

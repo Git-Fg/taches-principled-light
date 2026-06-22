@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 2.1.0 · 26 skills (4 new since 2.0.0)
+**Version:** 2.1.0 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 

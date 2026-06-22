@@ -10,6 +10,7 @@ description: >
 allowed-tools: Read, Edit, Write
 when_to_use: "Use for PR reviews, simplifying complex logic, or capturing project learnings. Do NOT use for bug diagnosis (use superpowers' `systematic-debugging`) or creating new features (use task-lifecycle)."
 argument-hint: "[mode] [focus-area] [--min-impact critical|high|medium|medium-low|low]"
+license: MIT
 ---
 
 ## Runtime persistence
@@ -46,7 +47,7 @@ IF user says "capture this learning", "remember this", or wants learnings persis
 IF user says "make this clearer", "write more concisely", "clean up text", "improve the writing", or "fix the prose" → **POLISH** mode
 IF ambiguous → ask: "Would you like to simplify code, critique the approach, memorize learnings, or polish the prose?"
 
-**Subagent contracts:** When SIMPLIFY or REVIEW mode modifies spawn instructions, you MUST read `orchestrating-subagents/references/subagent-contract-design.md` BEFORE the change. That file teaches the 6 design principles (P1-P6) — the P6 ground-truth principle in particular requires that any subagent making factual claims has Read access. Do not skip this citation.
+**Subagent contracts:** When SIMPLIFY or REVIEW mode modifies spawn instructions, you MUST read the `subagent-contract-design` reference in `orchestrating-subagents` (see that skill's `references/` directory) BEFORE the change. That file teaches the 6 design principles (P1-P6) — the P6 ground-truth principle in particular requires that any subagent making factual claims has Read access. Do not skip this citation.
 
 # Refine
 

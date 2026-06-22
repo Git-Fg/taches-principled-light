@@ -13,6 +13,7 @@ when_to_use: |
   automation for screenshot-based dogfood loops.
 argument-hint: "[palette|typography|tokens|principles|examples|full-design-system]"
 allowed-tools: Read
+license: MIT
 ---
 
 # Design Hub

@@ -15,6 +15,7 @@ when_to_use: |
   - User needs to post line-specific comments on a pull request.
   - User wants to load GitHub issues or create technical specs from them.
   - User needs to manage git worktrees or notes.
+license: MIT
 ---
 
 ## Decision Router

@@ -1,0 +1,27 @@
+{
+  "skill_name": "ingesting-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to add the `skill-refiner` skill from ~/.agents/skills into our marketplace. Walk me through the porting workflow: what conventions do I need to apply, what files get created, and what stays as-is? The source has a SKILL.md with frontmatter (name, description, type, whenToUse, arguments, trigger_keywords, allowed_tools) and a body that references '$ARGUMENTS' and 'disableModelInvocation'.",
+      "expected_output": "A step-by-step porting plan: (1) read the source SKILL.md and inventory its frontmatter fields, (2) call marketplace-validator on the source to identify what won't conform, (3) decide which fields are local extensions to preserve vs which to drop (probably drop type/whenToUse/arguments/trigger_keywords/allowed_tools since they conflict with the local canonical convention), (4) rewrite the description to start with 'Load when…' and add a 'Do NOT use for…' negative trigger, (5) rename if needed (gerund form), (6) replace $ARGUMENTS with argument-hint, replace CamelCase whenToUse with when_to_use, (7) scaffold evals/evals.json with 3 realistic prompts (call evaluating-skills COMPARE mode), (8) run marketplace-validator on the new skill, (9) update CHANGELOG and the 4 manifests. The output should reference both crafting-skills and marketplace-validator and evaluating-skills by name as the canonical tools for steps 6/8/7.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "Add the `pdf` skill from anthropics/skills on GitHub to our marketplace. The source URL is github.com/anthropics/skills/tree/main/skills/pdf. I want the full ingest including any scripts/ and references/ it bundles. What's the workflow?",
+      "expected_output": "A workflow that: (1) fetches the skill from the GitHub URL via git clone or web fetch (not npm install — that path doesn't apply here), (2) inventories the bundle (SKILL.md + scripts/ + references/), (3) for each file, checks for platform-specific code or hardcoded tool names that need rewriting, (4) decides per-file: keep (if portable), port (if hardcoded but transformable), drop (if runtime-specific and not transformable), (5) scaffolds the local evals, (6) runs marketplace-validator, (7) updates docs. The answer should distinguish this from a local-path ingestion: this is a *cross-repository* ingest where the source may evolve.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "I added a new skill called `tracking-tasks` to the marketplace last week and forgot to add evals. Run the post-ingest check on it and tell me what's missing.",
+      "expected_output": "A checklist of what's missing for a properly-ingested skill: frontmatter fields (name matches dir, description <1024 chars, third-person, starts with 'Load when', has 'Do NOT use for' clause), body <500 lines, evals/evals.json exists with 3 realistic prompts, license field present, manifests list it (or don't — depends on whether the new skill needs marketplace.json registration), CHANGELOG entry exists. Should be a single deterministic run with structured output.",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "These evals test the porting workflow as an orchestration: the skill teaches the *order of operations* and *which existing skills/tools to call*, not the porting logic itself (which is judgment-based). The with/without delta is whether the maintainer does the porting systematically (convention compliance, evals scaffold, validator run, manifest/CHANGELOG update) or skips steps. Reference: crafting-skills (CREATE mode), marketplace-validator (convention check), evaluating-skills (evals scaffold), AGENTS.md (platform-agnostic phrasing rule)."
+}

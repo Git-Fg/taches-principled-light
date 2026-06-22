@@ -15,6 +15,7 @@ when_to_use: |
   - User wants to harden supply-chain (cargo-deny, cargo-vet, Dependabot)
   - User asks about edition 2024, MSRV, workspace inheritance, or feature flag design
   - User wants a holistic review, audit, or health check of an *existing* Rust project or workspace
+license: MIT
 ---
 
 # rust

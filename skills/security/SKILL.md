@@ -15,6 +15,7 @@ when_to_use: |
   - User needs to find exposed API keys, tokens, or credentials.
   - User requires a compliance check against standards like GDPR, SOC2, or PCI-DSS.
 argument-hint: "[mode] [target] [--severity critical|high|medium|low]"
+license: MIT
 ---
 
 ## Routing Guidance

@@ -1,0 +1,27 @@
+{
+  "skill_name": "marketplace-health",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run the marketplace-health sweep on the taches-principled-light workspace. Output a single report covering: (a) validator findings aggregated across all 26 top-level + 5 hub sub-skills, (b) manifest consistency check (4 manifests at the same version + consistent descriptions), (c) license coverage (which skills lack `license:`), (d) cross-reference integrity (every `references/X.md` and `scripts/X.py` citation resolves), (e) any orphan skills not listed in the plugin manifests.",
+      "expected_output": "A single Markdown report (saved to `docs/principled/marketplace-health/<date>.md`) with sections per check, each with: pass/fail summary, the affected files, and concrete fix recommendations. Deterministic — same input produces same output. The validator's `--json` output is the data source for (a); the manifest/license/cross-ref checks are new. The full sweep takes <5s.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "Before I cut 2.2.0, run the pre-release health sweep and tell me if anything is blocking.",
+      "expected_output": "A pass/fail summary table at the top: each check has ✓/✗. Anything ✗ blocks the release. The user expects: (a) all 4 manifests at the proposed version (or flagged as out of sync), (b) no validator failures across any skill, (c) no broken cross-references, (d) CHANGELOG.md has an entry for the new version, (e) README.md reflects the current skill count. Each ✗ has a one-line fix.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "I added a new skill `tracking-tasks` to skills/ two weeks ago and never ran any maintenance sweep. Tell me what's drifted.",
+      "expected_output": "A diff against the baseline. Should include: (a) does the skill conform to spec? (run validator), (b) does the skill appear in any of the 4 plugin manifests? (if not, that's fine — but document), (c) is the skill listed in CHANGELOG? (d) does the skill have evals/evals.json? (e) are there any broken refs from other skills pointing at it (e.g., 'Do NOT use for: tracking-tasks' in another skill's description, or a `references/tracking-tasks.md` citation somewhere)?",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "These evals test the *health sweep* lens — broader than marketplace-validator (which is per-skill lint). marketplace-health aggregates validator output AND adds manifest/license/cross-ref/orphan checks. It's the pre-release gate. The with/without delta is: a manual sweep misses things (we found 8 issues in 2.1.0 prep); an automated sweep catches them deterministically. The script lives at scripts/health.py (or runs the validator internally + adds the other checks)."
+}

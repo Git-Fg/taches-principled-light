@@ -12,6 +12,7 @@ when_to_use: |
   reasoning behind readability choices.
 allowed-tools: Read
 argument-hint: "[typography-question] [format]"
+license: MIT
 ---
 
 # Typography Guide

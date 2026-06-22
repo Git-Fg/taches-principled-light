@@ -65,6 +65,7 @@ skill-name/
 2. **No parent traversal:** MUST NOT use `../`. Skills are self-contained. Cross-skill references are semantic (by name), not path-based.
 3. **Centralized routing:** Only SKILL.md cites supporting files. Reference files must never cross-cite each other.
 4. **Imperative citations only:** "You MUST read `references/format.md` BEFORE writing any code." Never "You can read" or "See reference." Passive citations are ignored by LLMs.
+5. **Opt-out for teaching examples:** A file that *quotes* reference paths as teaching examples (WRONG/RIGHT citation patterns) can opt out of citation linting with an HTML comment at the top: `<!-- check-citations-skip: reason -->`. Use sparingly — the linter (marketplace-validator + marketplace-health) honors this marker and skips the file. Lines with inline backticks and lines inside fenced code blocks are skipped by default; the opt-out is for prose that quotes paths without backticks.
 
 ---
 

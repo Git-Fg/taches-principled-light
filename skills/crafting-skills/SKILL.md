@@ -196,6 +196,36 @@ Run the same benchmark from Step 1. If metrics didn't improve, revert and try a 
 Small word changes in descriptions can have outsized impact on routing — including spillover effects on other skills.
 
 
+## POST-CREATE Mode
+
+*Observe what happened during the user's immediate use of a freshly-created skill and propose 3-5 targeted edits.*
+
+**Trigger.** A skill was just created (CREATE mode completed) AND the user is about to use it or has just used it in the same session. The trigger is *behavioral*, not by a fixed timer: the agent watches for the signal "the user is now running the skill we just wrote" and proposes POST-CREATE once.
+
+**Step 1 — Confirm scope.** Ask: "Do you want me to (a) read transcripts of the just-completed use if any exist, or (b) accept your verbal summary of friction points?" If transcripts are available (Claude Code JSONL, kimi-code session, etc.), prefer them.
+
+**Step 2 — Read the skill and the use.** Read the `SKILL.md` + the transcript or summary. For each tool call the agent made, ask: "Did the skill predict this? If yes, PASS. If no, classify (Step 3)."
+
+**Step 3 — Diff against the skill.** For each unpredicted behavior, classify:
+
+| Class | Symptom | Proposed edit |
+|---|---|---|
+| **Missed gotcha** | Agent failed in a way the skill should have warned against | Add one-line gotcha to the skill's `## Gotchas` section |
+| **Trigger miss** | Skill loaded when it shouldn't have, or didn't load when it should | Tighten description: add `Use when`, add `Do NOT use for` |
+| **Inlined content** (Rule 12 violation) | Agent recreated content that lives in a CLI/library/other-skill | Replace paragraph with imperative citation |
+| **Stale instruction** | Skill said X but the underlying tool/library has changed | Update to current behavior |
+| **Friction** | Agent struggled but recovered — procedure worked, UX didn't | Add a hint or example to the relevant step |
+
+**Step 4 — Propose 3-5 targeted edits.** For each finding, write the proposed edit with file:line and exact text. Do NOT apply without user confirmation. Group by class. Order by impact (HIGH first).
+
+**Step 5 — Apply and validate.** User confirms which of the 3-5 proposed edits to apply (any subset, including all-or-none). Write only the confirmed edits → run `python3 .agents/skills/marketplace-validator/scripts/validate.py <skill_dir>/` → if 0 failures, commit each applied edit with `docs(<skill-name>): post-create <class> from <date>` message (one commit per edit, or grouped if multiple edits of the same class). If validator finds warnings, surface them and ask whether to fix. Do NOT commit if any edit was rejected — rejected findings are kept in the report for future POST-CREATE invocations.
+
+**Contrast (do not confuse with):**
+- `evaluating-skills` RUN mode — heavyweight behavioral loop with separate transcripts, multiple iterations, statistical aggregation. POST-CREATE is *lightweight and immediate* — same session, no separate harness, 3-5 edits.
+- `evaluating-skills` ITERATE (Stage 7) — same goal (rewrite skill from observed behavior) but driven by formal evals. POST-CREATE is driven by what just happened in the current session.
+- REVIEW mode — looks at the skill statically. POST-CREATE looks at what the agent *did* with the skill.
+
+
 ## Best-Practices Compendium
 
 You are reading the Compendium inline — it is part of this skill's body, not a separate reference. The Compendium applies to all modes (CREATE, OPTIMIZE, REVIEW, POST-CREATE) because every mode touches skill content in some form.

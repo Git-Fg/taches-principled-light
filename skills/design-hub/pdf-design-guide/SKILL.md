@@ -1,6 +1,6 @@
 ---
 name: pdf-design-guide
-description: "Pick a base color palette by mood — 10 named moods (Authoritative, Confident, Expressive, etc.). Includes 1-accent rule, 4.5:1 WCAG AA contrast check, anti-patterns. Use when the user asks what color something should be or when the design looks generic."
+description: "Pick a palette by mood — 10 named moods with WCAG check + anti-patterns. Use when the user asks what color to use or when the design looks generic. Do NOT use for token scales (use design-system-palettes), typography (use typography-guide), or visual examples (use design-good-bad-examples)."
 when_to_use: |
   Load first when the user asks for a color system or palette. Pair with
   design-system-palettes for the actual palette and token scale.

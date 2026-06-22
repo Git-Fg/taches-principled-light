@@ -1,6 +1,6 @@
 ---
 name: design-good-bad-examples
-description: "Show concrete BAD-vs-GOOD before/after examples for document and UI design — font size disasters, weak hierarchy, poor spacing, bad table design, broken color contrast, and poor alignment. Use when reviewing a UI, teaching design taste, or answering \"what's wrong with this layout?\"."
+description: "Show BAD-vs-GOOD before/after examples for document and UI design. Use when reviewing a UI, teaching design taste, or answering \"what's wrong with this layout?\". Do NOT use for general design critique (use general-critic), palette selection (use design-system-palettes), or typography (use typography-guide)."
 when_to_use: |
   Load for design review or taste coaching. Pair with browser automation when
   checking whether the issues appear in a live app.

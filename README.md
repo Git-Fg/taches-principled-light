@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 2.0.0 · 22 skills
+**Version:** 2.1.0 · 26 skills (4 new since 2.0.0)
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
@@ -65,13 +65,26 @@ https://github.com/Git-Fg/taches-principled-light
 
 | Domain | Skills |
 |--------|--------|
-| **Lifecycle** | `plan-lifecycle`, `task-lifecycle`, `ideation`, `plan-do-check-act` |
-| **Quality** | `refine`, `ddd`, `kaizen`, `test-orchestration` |
-| **Reasoning** | `fpf`, `sadd`, `web-search` |
-| **Domain** | `rust`, `mcp-expertise`, `security`, `git`, `wiki`, `claude-cli` |
-| **Meta** | `session-analytics`, `skill-authoring`, `subagent-orchestration`, `rules-orchestration`, `project-maintenance` |
+| **Lifecycle** | `plan-lifecycle`, `task-lifecycle`, `plan-do-check-act` |
+| **Quality** | `reviewing-and-polishing`, `general-critic`, `applying-guardrails`, `restructuring-code`, `test-orchestration` |
+| **Reasoning** | `reasoning-from-principles`, `solving-competitively`, `web-search`, `deep-research` |
+| **Domain** | `engineering-mcp`, `rust`, `security`, `git`, `managing-wiki`, `managing-rules`, `claude-cli` |
+| **Meta** | `crafting-skills`, `evaluating-skills`, `orchestrating-subagents`, `analyzing-sessions`, `project-maintenance` |
+| **Design** | `design-hub` (hub) with 5 sub-skills: `pdf-design-guide`, `design-system-palettes`, `typography-guide`, `design-principles`, `design-good-bad-examples` |
+| **Idea** | `generating-ideas` |
 
-All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `subagent-orchestration` skill for the canonical reference.
+All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `orchestrating-subagents` skill for the canonical reference.
+
+## What's New in 2.1.0
+
+Four skills added since 2.0.0, plus research methodology and a portable benchmark aggregator:
+
+- **`design-hub`** — router for design system work: palette picker, typography guide, design principles, BAD-vs-GOOD examples, pdf-design-guide. Five sub-skills under one hub.
+- **`evaluating-skills`** — 8-stage skill evaluation methodology (capability probe → evals → run → grade → aggregate → review → iterate → optimize). Behavioral review via raw JSONL transcripts — works across Claude Code, `claude -p`, Codex, kimi-code, and Reasonix. Ships a portable `scripts/aggregate_benchmark.py` (pure Python stdlib, no subprocess) that emits Anthropic-schema-compatible `benchmark.json` + human-readable `benchmark.md`.
+- **`deep-research`** — 5-stage research pipeline (background → judgment → analysis → deep-research → final). Output goes to `docs/principled/research/<slug>/` with six artifacts per run. Example output at `docs/principled/research/agent-skills-evaluation/` is the methodology source for `evaluating-skills`.
+- **`general-critic`** — reusable severity-rated critic subagent with HIGH/MEDIUM/LOW and "loop until PASS" contract. Used as the inline grader in `evaluating-skills` stage 4. Includes a decision router and contrast with nearby skills.
+
+The session also dogfooded the new methodology by writing `evals/evals.json` for `general-critic` and `deep-research` — three realistic eval prompts per skill with documented with-vs-without behavioral deltas.
 
 ## Manual Install
 

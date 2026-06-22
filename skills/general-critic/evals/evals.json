@@ -1,0 +1,27 @@
+{
+  "skill_name": "general-critic",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ok before i merge this can someone review my design doc for the new payment-flow service? its at docs/payments/design.md and im specifically worried about (a) whether the idempotency key design is correct (ive seen two retries produce different order IDs in staging) and (b) whether we are missing any edge cases around partial refunds when the original charge straddled a currency conversion. dont just rubber stamp it, push back if something looks wrong.",
+      "expected_output": "A severity-rated critique report (HIGH/MEDIUM/LOW findings) with file:line citations, evidence quotes, and a clear verdict (PASS / FAIL). Should include at least one concrete finding on the idempotency key problem and at least one on partial refunds — these are the user's stated concerns and a generic 'looks good' is the failure mode.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "I just rewrote our internal CLI from bash to rust (src/cli/*.rs). Take a look and tell me if the error handling is consistent across subcommands — some of them print to stderr and exit 1, others use anyhow::Result with no logging, and one uses a custom Error enum that bubbles up. We need to ship this for the team tomorrow.",
+      "expected_output": "Findings should compare actual error-handling patterns across files in src/cli/, identify inconsistencies with file paths and line numbers, classify by severity (inconsistencies are MEDIUM unless they cause user-facing problems, which would be HIGH), and end with a PASS/FAIL verdict and concrete fix recommendations.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "hey can you take a look at the API proposal i drafted for our partner integration? https://docs.google.com/document/d/abc123 its pretty rough still but want to make sure the auth flow makes sense before i share it with their eng team",
+      "expected_output": "A critique that engages with the substance of the auth flow — naming specific concerns (token lifetime, refresh strategy, scope claims, error semantics) — rather than generic 'looks good' or surface-level stylistic comments. Severity-rated, with a verdict. Should explicitly call out anything missing for a partner-facing API spec.",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "These evals test the FAILURE MODE of the skill: producing a generic/vague critique on a substantive artifact. A passing run should produce severity-rated findings with file:line evidence on the user's stated concerns (eval 1), compare patterns across files with line numbers (eval 2), and engage with domain specifics rather than generic prose (eval 3). The skill's own anti-pattern says: 'Do not flag style preferences as HIGH unless they violate explicit rules. Do not invent criteria that are not in the user's context. Do not skip reading the full artifact.' — so the with_skill-vs-without_skill delta is exactly whether these anti-patterns are honored."
+}

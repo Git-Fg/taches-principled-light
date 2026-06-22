@@ -5,7 +5,7 @@ You have both **superpowers** and **taches-principled-light** installed. They ar
 ## How They Fit Together
 
 - **superpowers** is your foundation — brainstorming, TDD, systematic debugging, code review, git worktrees, verification, plan execution, skill writing.
-- **taches-principled-light** adds specialist skills — code restructuring, first-principles reasoning, competitive solving, guardrails, MCP engineering, security, wiki management, session analysis.
+- **taches-principled-light** adds specialist skills — code restructuring, first-principles reasoning, competitive solving, guardrails, MCP engineering, security, wiki management, session analysis, design systems (via `design-hub`), and skill evaluation methodology (via `evaluating-skills` and `general-critic`).
 
 ## When Both Cover a Topic
 
@@ -16,6 +16,8 @@ Each taches skill has a CONTRAST section. When a topic overlaps with superpowers
 - Want root-cause debugging? → superpowers' `systematic-debugging`
 - Want per-task subagent execution? → superpowers' `subagent-driven-development` (taches' `solving-competitively` does competitive generation)
 - Want collaborative skill creation? → superpowers' `writing-skills` (taches' `crafting-skills` creates and optimizes agent skills)
+- Want to evaluate whether a skill actually improves behavior? → taches' `evaluating-skills` (8-stage loop with behavioral JSONL review; works across Claude Code, `claude -p`, Codex, kimi-code, Reasonix)
+- Want to run a multi-stage research pipeline? → taches' `deep-research` (5 stages writing to `docs/principled/research/<slug>/`)
 
 **The pattern: superpowers for fundamentals, taches-principled-light for depth.**
 

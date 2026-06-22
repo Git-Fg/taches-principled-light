@@ -1,0 +1,27 @@
+{
+  "skill_name": "deep-research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to choose between PostgreSQL and SQLite for a new offline-first mobile app that syncs when the device reconnects. The sync model has to handle conflict resolution at the row level, partial offline periods of weeks, and ~10k rows per device. What does the current state of practice look like in 2026 — has anyone shipped this at scale, and what are the gotchas with each choice?",
+      "expected_output": "A final.md report at docs/principled/research/<slug>/final.md following the 5-step pipeline. Must include: (a) a TL;DR with 3+ bullets each backed by a citation, (b) a body comparing the two options with sources, (c) a 'What this does NOT settle' section listing open questions, (d) a References section with ordered, deduped URLs. Should NOT be a single-paragraph answer or a list of un-cited bullet points.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "Research question for a client deliverable: what's the actual regulatory status of AI agents acting on behalf of users under the EU AI Act as of mid-2026? Specifically I want to know whether a customer-service agent that books calendar appointments needs to be classified as high-risk, and whether the obligations differ between a SaaS deployer and an integrator.",
+      "expected_output": "A final.md report following the 5-step pipeline. The hypothesis-validation or scope-exclusion must be explicit (the research skill demands it). Should distinguish between primary sources (the EU AI Act text itself, EU Commission guidance) and secondary commentary (law firm writeups, news articles). 'What this does NOT settle' should explicitly flag any section that depends on guidance that hasn't been published yet.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "Can you research the current state of WebGPU adoption across the major browsers as of mid-2026? I need to decide whether to build a new product on WebGPU or stick with WebGL for a 3D visualization tool that has to run on corporate Windows machines that may be 2-3 years behind on updates.",
+      "expected_output": "A final.md report following the 5-step pipeline. Should distinguish 'WebGPU shipped in Chrome 113+' (factual, primary source) from 'X% of enterprise Windows machines have a recent enough Chrome' (estimation, secondary source). The corporate-Windows constraint should be addressed explicitly — this is the user's actual decision driver.",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "These evals test whether the skill actually enforces its 5-step pipeline and quality bar (TL;DR with 3+ cited bullets, 'What this does NOT settle' non-empty, refs ordered by first mention, ≤6-line paragraphs, no filler). The with_skill-vs-without_skill delta is whether a research run produces all six artifacts (background.md, judgment.md, analysis.md, research_plan.md, document.md, final.md) and whether final.md meets the self-check quality bar. eval 2 specifically tests whether the skill enforces explicit scope-exclusion (it's a regulatory question where guidance may not yet exist)."
+}

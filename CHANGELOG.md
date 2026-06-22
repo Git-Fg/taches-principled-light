@@ -2,6 +2,30 @@
 
 All notable changes are documented here.
 
+## [2.1.0] — 2026-06-22
+
+### Added
+
+- **`design-hub` skill** (with 5 sub-skills). Router for design system work: palette selection, typography guide, design principles, BAD-vs-GOOD examples, pdf-design-guide. Each sub-skill conforms to the local convention (decision router, ≤50-word description, argument-hint, allowed-tools, ≤500-line body).
+- **`evaluating-skills` skill** — the 8-stage evaluation methodology derived from Anthropic's `skill-creator`, with one decisive improvement: **behavioral review on raw JSONL transcripts** instead of load-event detection. Universal across Claude Code, `claude -p`, Codex CLI, kimi-code, and Reasonix. Capability probe at the top, three entry modes (RUN / COMPARE / OPTIMIZE), runtime adapter table, vendored Anthropic schemas in `references/`, behavioral-reviewer subagent contract with adaptive rubric (workflow / reference / content-generation / methodology dimensions), and a portable `scripts/aggregate_benchmark.py` (pure Python stdlib, no subprocess) that emits Anthropic-schema-compatible `benchmark.json` + human-readable `benchmark.md`.
+- **`deep-research` skill** — 5-stage research pipeline (background → judgment → analysis → deep-research → final). Output to `docs/principled/research/<slug>/` with six artifacts per run: `background.md`, `judgment.md`, `analysis.md`, `research_plan.md`, `document.md`, `final.md`. Quality bar is built into the pipeline (TL;DR with cited bullets, non-empty "What this does NOT settle" section, no filler).
+- **`general-critic` skill** — reusable severity-rated critic subagent with HIGH/MEDIUM/LOW findings and explicit "loop until PASS" protocol. Includes decision router and contrast with nearby skills (`reviewing-and-polishing`, `restructuring-code`, `security`). Used as the inline grader in `evaluating-skills` stage 4.
+- **`docs/principled/research/agent-skills-evaluation/`** — the 6 research artifacts (background, judgment, analysis, plan, document, final) that document the methodology source for `evaluating-skills`. ~50 KB total; included in the repo as the canonical methodology reference.
+- **`evals/evals.json` for `general-critic` and `deep-research`** — 3 realistic eval prompts per skill, ~60 words each, with `_notes` documenting the expected with-vs-without behavioral delta. First dogfood of the new evaluation methodology.
+
+### Changed
+
+- **Version bump 2.0.0 → 2.1.0** across all four plugin manifests (`.claude-plugin/`, `.codex-plugin/`, `.cursor-plugin/`, `.kimi-plugin/`). Plugin descriptions updated to mention `design-hub` and `evaluating-skills`.
+- **`crafting-skills` body split** — the 14-rule Best-Practices Compendium moved from inline (§4, 46 lines) into `references/best-practices-compendium.md` (129 lines, includes anatomy + native tool referencing + split-vs-combine + common pitfalls + contrast). Body went 323 → 199 lines. Added `## Overview` callout, top-of-body TOC, `license: MIT`, and `argument-hint` to `crafting-skills/SKILL.md`. Description trimmed 75 → 44 words.
+- **README.md** updated: skill count 22 → 26, category table reflects actual skill names (replaced stale names like `skill-authoring`, `fpf`, `sadd`, `ddd`, `kaizen`, `ideation`, `refine`, `subagent-orchestration`, `session-analytics`, `rules-orchestration` with the current names), new "What's New in 2.1.0" section.
+
+### Verified
+
+- All 5 plugin manifests parse as JSON at version 2.1.0.
+- All 26 top-level skills + 5 design-hub sub-skills = 31 SKILL.md files pass frontmatter validation (name matches dir, third-person description, ≤1024-char description, ≤500-line body).
+- `aggregate_benchmark.py` tested end-to-end against synthetic fixtures; emits correct `benchmark.json` schema and human-readable `benchmark.md`.
+- `evaluating-skills` methodology verified against all 5 target runtimes (kimi-code, Codex, Reasonix, Claude Code, `claude -p`) — all confirmed to emit raw streaming transcripts usable for behavioral review.
+
 ## [2.0.0] — 2026-06-19
 
 ### Changed (BREAKING)

@@ -1,0 +1,27 @@
+{
+  "skill_name": "example-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Replace this with a realistic prompt a real user would type — include a file path, some context, maybe a typo. E.g. 'ok so ive got ./data/q4-sales.csv and i need a column showing margin % where revenue is col C and costs are col D'",
+      "expected_output": "Describe what a correct result looks like — the shape, the key fields, the edge cases handled.",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 2,
+      "prompt": "",
+      "expected_output": "",
+      "files": [],
+      "expectations": []
+    },
+    {
+      "id": 3,
+      "prompt": "",
+      "expected_output": "",
+      "files": [],
+      "expectations": []
+    }
+  ],
+  "_notes": "Start with 2-3 realistic prompts; leave expectations[] empty and fill them during stage-4 grading while runs are in flight. Add evals, don't trim, as you iterate. See references/schemas.md for the full field reference and references/behavioral-review.md for how expectations get populated from transcript annotations."
+}

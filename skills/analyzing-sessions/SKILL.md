@@ -1,6 +1,6 @@
 ---
 name: analyzing-sessions
-description: "Load when analyzing agent session transcripts — extracting metrics, diagnosing behavioral anti-patterns, filing GitHub issues from findings, or cross-analyzing session artifacts. Use when the user says 'parse session log', 'session metrics', 'review session for anti-patterns', or 'create a meta-issue'. Do NOT use for bug diagnosis in source code (use superpowers' systematic-debugging), improving an artifact (use reviewing-and-polishing), or managing rules (use managing-rules)."
+description: "Load when analyzing agent session transcripts — extracting metrics, diagnosing anti-patterns, or filing issues. Use for 'parse session log', 'session metrics', or 'review anti-patterns'. Do NOT use for bug diagnosis in code (use superpowers' systematic-debugging), improving an artifact (use reviewing-and-polishing), or managing rules (use managing-rules)."
 allowed-tools: Read, Glob, Grep, Bash, Agent
 when_to_use: "Use for session metrics, anti-pattern review, or creating issues from findings. Examples: \"parse debug log\", \"analyze hooks\". CONTRAST: No code analysis (use reviewing-and-polishing); no general project bugs (use meta-issue)."
 argument-hint: "<inspect|review|issue> [session-id|--dry-run] [--filter errors|tools|cost|skills] [--full|--summary]"

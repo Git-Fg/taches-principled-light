@@ -1,6 +1,6 @@
 ---
 name: managing-rules
-description: "Load when managing AGENTS.md — the primary, platform-agnostic agent guidance file — extracting conventions from sessions, adding new rules, restructuring existing rules, or auditing rule quality. Use when the user says 'add a rule', 'extract this convention', 'restructure my rules', 'audit my AGENTS.md', or 'codify this pattern'. Covers CLAUDE.md and .claude/rules/ only when they already exist in the workspace or the user explicitly asks for them. Do NOT use for archiving plans or cleaning auto-memory (use project-maintenance)."
+description: "Load when managing AGENTS.md — extracting, adding, restructuring, or auditing rules. Use when the user says 'add a rule' or 'audit my AGENTS.md'. Covers CLAUDE.md and .claude/rules/ only when they exist. Do NOT use for archiving plans or cleaning auto-memory (use project-maintenance)."
 allowed-tools: Read, Edit, Write, Bash, Grep
 when_to_use: "Use when the user wants to update AGENTS.md, codify conventions, or extract rules from conversation. Covers CLAUDE.md only when it already exists or is explicitly requested."
 argument-hint: "[ANALYZE|ADD|RESTRUCTURE|REVIEW|SYNC|AUDIT] [target]"

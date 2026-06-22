@@ -1,6 +1,6 @@
 ---
 name: plan-lifecycle
-description: "Load when planning or executing a multi-phase project — breaking work into phases, writing ROADMAP.md + per-phase PLAN.md files with critic checkpoints, or running a plan with deviation tracking. Use when the user says 'plan this project', 'start a new project', 'break down work into phases', or 'run a plan'. Do NOT use for single-plan documents with bite-sized tasks (use superpowers' writing-plans), adding a single small feature (use task-lifecycle), or brainstorming options (use generating-ideas)."
+description: "Load when planning or executing multi-phase projects — PLAN.md files with critic checkpoints and deviation tracking. Use when the user says 'plan this project' or 'run a plan'. Do NOT use for single-task plans (use superpowers' writing-plans), small features (use task-lifecycle), or brainstorming (use generating-ideas)."
 context: fork
 agent: general-purpose
 allowed-tools: Read, Write, Bash, Grep

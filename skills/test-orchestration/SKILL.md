@@ -1,6 +1,6 @@
 ---
 name: test-orchestration
-description: "Load when planning test strategy or fixing and adding tests — coverage planning, mock strategy, fixture design, property-based testing, post-hoc coverage addition, and test repair. Use when the user says 'plan tests', 'add coverage', 'fix failing tests', 'mock strategy', or 'design a test suite'. Do NOT use for new-feature red-green-refactor TDD (use superpowers' test-driven-development), diagnosing why production code broke (use superpowers' systematic-debugging), or PR code review (use reviewing-and-polishing)."
+description: "Load when planning test strategy or fixing tests — coverage, mocks, fixtures, property-based testing. Use for 'plan tests' or 'fix failing tests'. Do NOT use for red-green-refactor TDD (use superpowers' test-driven-development), diagnosing broken production (use superpowers' systematic-debugging), or PR code review (use reviewing-and-polishing)."
 when_to_use: "Use for planning test suites, mocking, or fixing broken tests. Triggers: coverage strategy, add coverage, fix broken tests, mock strategy, fixture design. NOT for: red-green-refactor TDD cycles (use superpowers' `test-driven-development`)."
 argument-hint: "[mode] [target]"
 license: MIT

@@ -1,6 +1,6 @@
 ---
 name: managing-wiki
-description: "Load when searching, querying, ingesting, or verifying a personal wiki, knowledge base, or notes system. Use when the user mentions 'wiki', 'KB', 'knowledge base', 'look up in my notes', 'lint wiki', 'add to wiki', or 'build wiki'. Do NOT use for looking up information on the public web (use web-search) or researching an unfamiliar library/API (use a subagent explorer)."
+description: "Load when searching, querying, or ingesting into a personal wiki or notes. Use when the user mentions 'wiki', 'knowledge base', or 'look up in my notes'. Do NOT use for looking up info on the public web (use web-search) or researching an unfamiliar library/API (use a subagent explorer)."
 when_to_use: |
   - "Find something in my wiki / KB / notes"
   - "Search the wiki for X"

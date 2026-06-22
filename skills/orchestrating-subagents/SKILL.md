@@ -1,6 +1,6 @@
 ---
 name: orchestrating-subagents
-description: "Load when designing multi-agent architectures or authoring agent definitions. Use when the user asks 'design a multi-agent system', 'define a custom agent', 'what coordinator pattern fits', or 'supervisor vs swarm vs hierarchical'. Do NOT use for running parallel code reviews (use reviewing-and-polishing), simple parallel fan-out (use superpowers' dispatching-parallel-agents), or single-skill orchestration (the skill itself is the orchestrator)."
+description: "Load when designing multi-agent architectures or authoring agent definitions. Use for 'design a multi-agent system' or 'supervisor vs swarm vs hierarchical'. Do NOT use for running parallel code reviews (use reviewing-and-polishing), simple parallel fan-out (use superpowers' dispatching-parallel-agents), or single-skill orchestration."
 when_to_use: "Use when user asks to spawn subagents, run reviews in parallel, define custom agents, or manage background workers."
 license: MIT
 ---

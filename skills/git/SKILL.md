@@ -1,6 +1,6 @@
 ---
 name: git
-description: "Load when performing version control tasks — committing with conventional messages, publishing pull requests, reviewing PRs with line-specific comments, managing issues and branches, or advanced git operations. Use when the user says 'commit this', 'open a PR', 'review this PR', 'create a branch', or 'create an issue'. Do NOT use for pre-flight validation checks (use superpowers' verification-before-completion), managing git worktrees (use superpowers' using-git-worktrees), or general code review of PR contents (use reviewing-and-polishing)."
+description: "Load when doing git operations — committing, publishing PRs, reviewing, or managing issues and branches. Use for 'commit this' or 'open a PR'. Do NOT use for pre-flight validation (use superpowers' verification-before-completion), managing git worktrees (use superpowers' using-git-worktrees), or PR code review (use reviewing-and-polishing)."
 allowed-tools: Bash(git *), Bash(gh *)
 when_to_use: |
   - User wants to commit code with conventional messages or publish a PR.

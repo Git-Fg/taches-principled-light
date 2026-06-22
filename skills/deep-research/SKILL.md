@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: "Load when a research question needs a sourced long-form answer — substantive queries, evidence-backed investigations, or multi-source reports. Use when the user asks for \"deep research\", \"research report\", \"evidence-backed investigation\", \"sourced answer\", \"调研报告\", \"深度研究\", or any long-form Q&A with citations. Do NOT use for one-line factual lookups (use web-search), code reading (use the Read tool), or project work in the current repo."
+description: "Load when a research question needs a sourced long-form answer with citations. Use when the user asks for 'deep research', 'research report', or 'sourced answer'. Do NOT use for one-line lookups (use web-search), code reading, or project work in the current repo."
 when_to_use: |
   Run the five-step pipeline for any research question that needs primary
   sources, independent verification, and cited output written to

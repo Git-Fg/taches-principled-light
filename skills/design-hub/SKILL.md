@@ -1,6 +1,6 @@
 ---
 name: design-hub
-description: "Load when the user needs a color palette, font pairing, design tokens, spacing rules, or visual hierarchy guidance. Use when the user says 'pick palette', 'design system', 'color tokens', 'font pair', 'type scale', 'visual hierarchy', 'design review', 'mood palette', 'WCAG contrast', or 'design principles'. Covers the full design pipeline from mood to implementation. Do NOT use for accessibility-only audits (use security SAST) or browser automation."
+description: "Load when the user needs design guidance — palette, typography, tokens, spacing, or visual hierarchy. Use when the user says 'pick palette', 'design system', or 'font pair'. Covers the full design pipeline from mood to implementation. Do NOT use for accessibility-only audits (use security SAST) or browser automation."
 when_to_use: |
   Route to the matching sub-skill based on the user's intent. Use browser
   automation for screenshot-based dogfood loops.

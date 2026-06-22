@@ -416,4 +416,6 @@ Exception: MCP fully-qualified names (`BigQuery:bigquery_schema`) must stay exac
 - NOT for authoring agent definitions — use `orchestrating-subagents`
 - NOT for polishing an existing skill's prose — use `reviewing-and-polishing`
 - NOT for authoring a Claude Code command or hook — see official Claude Code docs
+- NOT for behavioral comparison of skill effectiveness — use `evaluating-skills` RUN mode (POST-CREATE and REVIEW do not replace it; they complement it for lightweight, immediate cases).
+- NOT for generic artifact critique (non-skill) — use `general-critic` directly.
 

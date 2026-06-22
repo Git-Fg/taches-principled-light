@@ -152,11 +152,30 @@ def parse_frontmatter_safe(text: str) -> tuple[dict, int]:
             continue
         key = key.strip()
         val = val.strip()
-        # Handle YAML double-quoted scalar on a single line: strip the outer
-        # quotes so downstream checks see the actual string content. This
-        # mirrors what a conformant YAML parser does.
-        if len(val) >= 2 and val.startswith('"') and val.endswith('"'):
-            val = val[1:-1]
+        # Handle YAML single-quoted scalar on a single line: strip outer
+        # quotes and resolve the YAML '' doubling convention for a literal
+        # single quote inside the value.
+        if len(val) >= 2 and val.startswith("'") and val.endswith("'") and not val.startswith("''"):
+            val = val[1:-1].replace("''", "'")
+        # Handle YAML double-quoted scalar on a single line: strip outer
+        # quotes and resolve the standard escape sequences so downstream
+        # checks see the actual string content (mirrors a conformant YAML
+        # parser). YAML 1.2 double-quoted escape subset:
+        #   \" → "   \\ → \   \n → newline   \t → tab
+        #   \r → CR   \/ → /
+        # Order matters: resolve \\ (placeholder) before other escapes so
+        # \" inside the value isn't double-resolved.
+        elif len(val) >= 2 and val.startswith('"') and val.endswith('"'):
+            inner = val[1:-1]
+            inner = inner.replace("\\\\", "\x00")
+            inner = (
+                inner.replace("\\\"", '"')
+                .replace("\\n", "\n")
+                .replace("\\t", "\t")
+                .replace("\\r", "\r")
+                .replace("\\/", "/")
+            )
+            val = inner.replace("\x00", "\\")
         if val in (">", "|", ">-", "|-", ">+", "|+"):
             # Block scalar — accumulate continuation lines until a non-indented
             # line (relative to the key) or the end of the frontmatter.

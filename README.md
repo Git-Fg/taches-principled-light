@@ -77,7 +77,7 @@ All skills use platform-agnostic subagent spawns — "spawn a subagent explorer"
 
 ## What's New in 0.0.2
 
-First post-alpha iteration. Routing precision improved from a vacuous `7W / 0T / 3L` (5-skill pool, broken regex) to a real `15W / 1T / 2L` (35-skill pool, fixed parser). Skill descriptions refactored to single-line YAML for max compatibility; 27 tightened to ≤50 words; 4 design-hub sub-skills gained negative triggers. Parser hardened for single-quoted scalars and YAML 1.2 escape sequences. Behavioral eval harness validated with a pilot run — see CHANGELOG for the long-form breakdown.
+First post-alpha iteration. Routing precision improved from a vacuous `7W / 0T / 3L` (5-skill pool, broken regex) to a real `15W / 1T / 2L` (35-skill pool, fixed parser). Skill descriptions in `skills/*/SKILL.md` refactored to single-line YAML for max compatibility; 27 tightened to ≤50 words; 4 of 5 design-hub sub-skills gained negative triggers (design-principles pending). Parser hardened for single-quoted scalars and YAML 1.2 escape sequences. Behavioral eval harness validated with a pilot run — see CHANGELOG for the long-form breakdown.
 
 ## What's New in 0.0.1-alpha
 

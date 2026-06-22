@@ -9,7 +9,7 @@ First post-alpha iteration. Description-format refactor + routing-precision impr
 ### Changed
 
 - **Skill descriptions:** all 31 `skills/*/SKILL.md` descriptions refactored from multi-line YAML `>` folded scalar to single-line YAML `"…"` quoted scalar (commit `904e11e`). Maximum compatibility with all consumer agents and all YAML 1.2 parsers. The 4 meta-marketplace SKILL.md under `.agents/skills/` (marketplace-validator, marketplace-health, ingesting-skills, releasing-marketplace) remain in the old `>` format — out of scope for the consumer-facing refactor.
-- **Description length:** 27 descriptions tightened to ≤50 words per Compendium Rule 3 (commit `32f7142`). Two exceptions in `skills/` retained signal qualifiers (test-orchestration 52, crafting-skills 53) per the Rule 3 "target" framing. Separately, `marketplace-validator` (`.agents/skills/`) ended this release at 50 words after the routing-collision fix in `7617c0a` — incidental, not a deliberate exception.
+- **Description length:** 27 descriptions tightened to ≤50 words per Compendium Rule 3 (commit `32f7142`). Two skills in `skills/` retained signal qualifiers and ended slightly above the ≤50 target (test-orchestration 52, crafting-skills 53 by the project's `\b\w+\b` word-count methodology). Separately, `marketplace-validator` (`.agents/skills/`) ended this release at 52 words after the routing-collision fix in `7617c0a` — incidental, not a deliberate exception.
 - **4 of 5 design-hub sub-skills** (`design-good-bad-examples`, `typography-guide`, `design-system-palettes`, `pdf-design-guide`) gained `Do NOT use for X (use Y)` negative triggers per Compendium Rule 2 (commit `8dc1306`). `design-principles` is still pending a negative trigger and is tracked separately.
 
 ### Fixed

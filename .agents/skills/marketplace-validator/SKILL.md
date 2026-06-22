@@ -47,6 +47,16 @@ IF unclear → run on the whole marketplace, default settings
 - **No stale platform references anywhere in the skill files**: `kimi-code edition`, `disableModelInvocation` (CamelCase form), `$ARGUMENTS`, `type: prompt`, `whenToUse:` (CamelCase form).
 - **No hardcoded tool names** (`the Agent tool`, `the Write tool`, etc.) — must use platform-agnostic phrasing per AGENTS.md.
 
+### Routing signal quality
+
+The validator's structural checks catch most defects, but they can't measure *routing quality* — whether an LLM actually picks the right skill from a natural-language prompt. For that, use the routing test:
+
+```bash
+python .agents/skills/marketplace-validator/scripts/routing_test.py
+```
+
+The test scores every SKILL.md's description against 10 utterances (covering the 4 local meta-skills + 6 adjacent marketplace skills) using content-word overlap. Target: **≥7/10 clear wins** (top match strictly greater than runner-up). Ties and losses indicate description overlap with adjacent skills — add a distinguishing trigger phrase or sharpen the negative trigger. See `references/evaluating-local-skills.md` for the full self-eval protocol.
+
 ### Known false positives
 
 - `references/best-practices-compendium.md` (in `crafting-skills`) contains the literal strings `the Agent tool`, `the Write tool`, `the Bash tool` inside a translation table that *teaches* the bad pattern. The validator flags them as warnings; they are teaching examples, not actual hardcoded tool names. Manual review: ignore.

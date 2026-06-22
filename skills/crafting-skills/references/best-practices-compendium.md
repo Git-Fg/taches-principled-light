@@ -122,6 +122,7 @@ Exception: MCP fully-qualified names (`BigQuery:bigquery_schema`) must stay exac
 | Skill triggers at wrong time | Add negative triggers; narrow the action verb |
 | Too long (>500 lines) | Split heavy content into references/ |
 | Self-generated content | Don't ask the model to write a skill for itself — inject human judgment |
+| Uniform-imperative skill | Apply MUST to INTERNAL contracts only; relax to descriptive for EXTERNAL framing. Reading 8 rows of "You MUST…" is fatiguing and dilutes the imperative signal. |
 
 ### When Your Skill Isn't Working
 

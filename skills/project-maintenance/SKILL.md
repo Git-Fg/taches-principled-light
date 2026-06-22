@@ -1,12 +1,6 @@
 ---
 name: project-maintenance
-description: >
-  Load when wrapping up a project — archiving completed plans, deduplicating
-  stale memory, and cleaning auto-memory. Use when the user says 'wrap up this
-  plan', 'archive the project', 'clean up files', 'deduplicate memory', or 'this
-  project is done'. Do NOT use for managing CLAUDE.md or rules (use
-  managing-rules) or capturing individual session insights (use the learn
-  command).
+description: "Load when wrapping up a project — archiving completed plans, deduplicating stale memory, and cleaning auto-memory. Use when the user says 'wrap up this plan', 'archive the project', 'clean up files', 'deduplicate memory', or 'this project is done'. Do NOT use for managing CLAUDE.md or rules (use managing-rules) or capturing individual session insights (use the learn command)."
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 when_to_use: "Use when wrapping up plans, deduplicating files, or running memory cleanup. CONTRAST: reviewing-and-polishing MEMORIZE (general insights); managing-rules SYNC (codify rules); managing-rules AUDIT (audit rules)."
 argument-hint: "[plan-archive|memory-audit|memory-dedup|memory-archive|memory-clean] [path] [--abandoned] [--days 30]"

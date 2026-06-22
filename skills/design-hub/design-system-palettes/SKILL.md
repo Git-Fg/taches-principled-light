@@ -1,10 +1,6 @@
 ---
 name: design-system-palettes
-description: >
-  Apply a battle-tested color palette and design-token scale to a UI. Use when
-  picking a design system for a new app, choosing a base palette by content
-  mood, mapping a brand color to a 25-1000 step scale, or unifying arbitrary
-  hex values to a token vocabulary.
+description: "Apply a battle-tested color palette and design-token scale to a UI. Use when picking a design system for a new app, choosing a base palette by content mood, mapping a brand color to a 25-1000 step scale, or unifying arbitrary hex values to a token vocabulary."
 when_to_use: |
   Load for any palette or token-system question. Pair with pdf-design-guide
   for mood-based palette selection and typography-guide for font pairing.

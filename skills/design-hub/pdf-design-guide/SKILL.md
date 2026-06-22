@@ -1,11 +1,6 @@
 ---
 name: pdf-design-guide
-description: >
-  Pick a base color palette by reading the content's mood: Authoritative,
-  Confident, Expressive, Scholarly, Calm, Magazine, Darkroom, Terminal,
-  Poster, or Neutral. Includes a 1-accent rule, 4.5:1 WCAG AA contrast check,
-  and anti-patterns. Use when the user asks what color something should be,
-  when building a new report or app, or when the design looks generic.
+description: "Pick a base color palette by reading the content's mood: Authoritative, Confident, Expressive, Scholarly, Calm, Magazine, Darkroom, Terminal, Poster, or Neutral. Includes a 1-accent rule, 4.5:1 WCAG AA contrast check, and anti-patterns. Use when the user asks what color something should be, when building a new report or app, or when the design looks generic."
 when_to_use: |
   Load first when the user asks for a color system or palette. Pair with
   design-system-palettes for the actual palette and token scale.

@@ -1,10 +1,6 @@
 ---
 name: crafting-skills
-description: >
-  Load when creating, optimizing, reviewing, or post-iterating an agent skill.
-  Use when the user says 'create a skill', 'review this skill', 'self-review',
-  'I just used it — propose updates', or 'validate frontmatter'. Do NOT use for
-  collaborative skill creation dialogue (use superpowers' writing-skills).
+description: "Load when creating, optimizing, reviewing, or post-iterating an agent skill. Use when the user says 'create a skill', 'review this skill', 'self-review', 'I just used it — propose updates', or 'validate frontmatter'. Do NOT use for collaborative skill creation dialogue (use superpowers' writing-skills)."
 allowed-tools: Read, Edit, Write, Grep, Glob, Agent
 when_to_use: "Use when creating a new skill or optimizing an existing skill's routing."
 argument-hint: "[create|optimize|review|post-create] [target-skill-path]"

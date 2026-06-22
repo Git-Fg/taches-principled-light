@@ -1,11 +1,6 @@
 ---
 name: design-principles
-description: >
-  Apply the perceptual and psychological reasons behind professional design to
-  judgment calls when exact specs are not provided. Covers white space,
-  contrast and scale, proximity, alignment, repetition, and visual hierarchy.
-  Use when the user asks why a design looks good or bad, when making a layout
-  decision with no spec, or when coaching a team on design taste.
+description: "Apply the perceptual and psychological reasons behind professional design to judgment calls when exact specs are not provided. Covers white space, contrast and scale, proximity, alignment, repetition, and visual hierarchy. Use when the user asks why a design looks good or bad, when making a layout decision with no spec, or when coaching a team on design taste."
 when_to_use: |
   Load for any design-taste or "why" question. Pair with typography-guide for
   concrete specs and design-good-bad-examples for before/after examples.

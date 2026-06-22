@@ -152,6 +152,11 @@ def parse_frontmatter_safe(text: str) -> tuple[dict, int]:
             continue
         key = key.strip()
         val = val.strip()
+        # Handle YAML double-quoted scalar on a single line: strip the outer
+        # quotes so downstream checks see the actual string content. This
+        # mirrors what a conformant YAML parser does.
+        if len(val) >= 2 and val.startswith('"') and val.endswith('"'):
+            val = val[1:-1]
         if val in (">", "|", ">-", "|-", ">+", "|+"):
             # Block scalar — accumulate continuation lines until a non-indented
             # line (relative to the key) or the end of the frontmatter.

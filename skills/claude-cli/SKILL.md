@@ -1,12 +1,6 @@
 ---
 name: claude-cli
-description: >
-  Load when driving Claude Code CLI programmatically — headless sessions,
-  structured JSON output, model/permission control, cloud code reviews, or
-  session continuation. Use when the user says 'spawn a headless Claude
-  session', 'run a cloud code review', 'continue a Claude session', or 'change
-  the model or permission mode'. Do NOT use for interactive Claude use or
-  non-CLI Claude features.
+description: "Load when driving Claude Code CLI programmatically — headless sessions, structured JSON output, model/permission control, cloud code reviews, or session continuation. Use when the user says 'spawn a headless Claude session', 'run a cloud code review', 'continue a Claude session', or 'change the model or permission mode'. Do NOT use for interactive Claude use or non-CLI Claude features."
 when_to_use: |
   - "Spawn a headless Claude session to run a task"
   - "Continue or resume a previous Claude Code session"

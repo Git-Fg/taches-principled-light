@@ -1,12 +1,6 @@
 ---
 name: reviewing-and-polishing
-description: >
-  Load when reviewing a pull request, simplifying complex code, polishing
-  prose, or capturing a project learning. Use when the user says 'review this
-  PR', 'simplify this code', 'polish this doc', 'is this good enough', or
-  'capture this learning'. Do NOT use for bug diagnosis (use superpowers'
-  systematic-debugging), creating new features (use task-lifecycle), or
-  restructuring tangled code (use restructuring-code).
+description: "Load when reviewing a pull request, simplifying complex code, polishing prose, or capturing a project learning. Use when the user says 'review this PR', 'simplify this code', 'polish this doc', 'is this good enough', or 'capture this learning'. Do NOT use for bug diagnosis (use superpowers' systematic-debugging), creating new features (use task-lifecycle), or restructuring tangled code (use restructuring-code)."
 allowed-tools: Read, Edit, Write
 when_to_use: "Use for PR reviews, simplifying complex logic, or capturing project learnings. Do NOT use for bug diagnosis (use superpowers' `systematic-debugging`) or creating new features (use task-lifecycle)."
 argument-hint: "[mode] [focus-area] [--min-impact critical|high|medium|medium-low|low]"

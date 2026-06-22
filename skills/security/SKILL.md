@@ -1,12 +1,6 @@
 ---
 name: security
-description: >
-  Load when auditing for security vulnerabilities before production deployment
-  — SAST scanning, dependency auditing, secrets detection, or compliance checks
-  against OWASP, GDPR, SOC2, or PCI-DSS. Use when the user says 'security
-  audit', 'find secrets', 'check for vulnerabilities', or 'is this safe to
-  ship'. Do NOT use for general code review (use reviewing-and-polishing) or
-  Rust-specific dependency policy (use rust).
+description: "Load when auditing for security vulnerabilities before production deployment — SAST scanning, dependency auditing, secrets detection, or compliance checks against OWASP, GDPR, SOC2, or PCI-DSS. Use when the user says 'security audit', 'find secrets', 'check for vulnerabilities', or 'is this safe to ship'. Do NOT use for general code review (use reviewing-and-polishing) or Rust-specific dependency policy (use rust)."
 allowed-tools: Read, Grep, Glob, Bash, Edit
 when_to_use: |
   - User is preparing for production deployment or major release.

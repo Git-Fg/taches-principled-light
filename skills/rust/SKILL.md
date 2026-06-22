@@ -1,13 +1,6 @@
 ---
 name: rust
-description: >
-  Load when managing the full Rust project lifecycle — scaffolding a new crate
-  or workspace, configuring CI/clippy/nextest, auditing dependencies with
-  cargo-deny, publishing to crates.io, or hardening the supply chain. Use when
-  the user says 'Rust', 'Cargo', 'new crate', 'cargo publish', 'cargo-deny',
-  'clippy', or 'edition 2024'. Do NOT use for design reasoning across competing
-  options (use reasoning-from-principles) or investigating a runtime bug (use
-  superpowers' systematic-debugging).
+description: "Load when managing the full Rust project lifecycle — scaffolding a new crate or workspace, configuring CI/clippy/nextest, auditing dependencies with cargo-deny, publishing to crates.io, or hardening the supply chain. Use when the user says 'Rust', 'Cargo', 'new crate', 'cargo publish', 'cargo-deny', 'clippy', or 'edition 2024'. Do NOT use for design reasoning across competing options (use reasoning-from-principles) or investigating a runtime bug (use superpowers' systematic-debugging)."
 when_to_use: |
   - User wants to scaffold a new Rust crate or workspace
   - User wants to set up CI, clippy, nextest, coverage, or cargo-deny

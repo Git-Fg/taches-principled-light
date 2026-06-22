@@ -1,14 +1,6 @@
 ---
 name: solving-competitively
-description: >
-  Load when a problem warrants competitive solution generation — multiple
-  independent candidates built and judged in isolated contexts, with
-  verification and winner selection. Use when the user says 'compare these
-  options', 'pick the best approach', 'which solution is right', or 'evaluate
-  these alternatives'. Do NOT use for sequential plan execution (use
-  superpowers' subagent-driven-development), single-shot implementation (do
-  inline), pure brainstorming (use generating-ideas), or fact-checking (use
-  web-search).
+description: "Load when a problem warrants competitive solution generation — multiple independent candidates built and judged in isolated contexts, with verification and winner selection. Use when the user says 'compare these options', 'pick the best approach', 'which solution is right', or 'evaluate these alternatives'. Do NOT use for sequential plan execution (use superpowers' subagent-driven-development), single-shot implementation (do inline), pure brainstorming (use generating-ideas), or fact-checking (use web-search)."
 context: fork
 agent: general-purpose
 when_to_use: |

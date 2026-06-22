@@ -1,11 +1,6 @@
 ---
 name: typography-guide
-description: >
-  Apply professional typography — font pairing, type scale, line spacing,
-  paragraph spacing, table design, and visual hierarchy — to a UI or
-  document. Use when the app needs a defensible type system, when picking a
-  heading and body pair, when calibrating line-height for readability, or
-  when designing tables and forms.
+description: "Apply professional typography — font pairing, type scale, line spacing, paragraph spacing, table design, and visual hierarchy — to a UI or document. Use when the app needs a defensible type system, when picking a heading and body pair, when calibrating line-height for readability, or when designing tables and forms."
 when_to_use: |
   Load for any typography, font, scale, or spacing question. Pair with
   design-system-palettes for color tokens and design-principles for the

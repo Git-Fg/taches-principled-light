@@ -27,7 +27,10 @@ These 14 rules encode findings from SkillsBench (7,308 trajectories, 7 model-har
 
 ### Body
 
-7. **MUST, not should.** Use imperative constraint language. "MUST filter test accounts" not "always filter test accounts."
+7. **Audience-aware imperative — apply MUST to contracts, descriptive to framing.**
+   - **INTERNAL contracts** (file references, subagent prompt contracts, command citations, skill loading chains) → MUST imperative. "You MUST read `references/format.md` BEFORE writing any code."
+   - **EXTERNAL framing** (workflows, anti-patterns, handoffs, capability descriptions) → descriptive. "See `references/workflows.md` for end-to-end patterns."
+   - The distinction: INTERNAL is a contract the agent must honor for the operation to succeed. EXTERNAL is context the agent can use or ignore. Applying MUST uniformly reads as "too violent" and dilutes the imperative signal.
 
 8. **Gotchas are the highest-signal content.** Every time the agent fails, add a one-line gotcha. This section accrues the most value over time. Append, don't restructure.
 

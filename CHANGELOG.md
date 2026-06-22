@@ -2,6 +2,30 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [0.0.2] — 2026-06-22
+
+First post-alpha iteration. Description-format refactor + routing-precision improvements + parser hardening + behavior eval pilot. No new skills; no breaking changes.
+
+### Changed
+
+- **Skill descriptions:** all 31 SKILL.md descriptions refactored from multi-line YAML `>` folded scalar to single-line YAML `"…"` quoted scalar (commit `904e11e`). Maximum compatibility with all consumer agents and all YAML 1.2 parsers.
+- **Description length:** 27 descriptions tightened to ≤50 words per Compendium Rule 3 (commit `32f7142`). Three exceptions retained signal qualifiers (test-orchestration 52, marketplace-validator 52, crafting-skills 53) per the Rule 3 "target" framing.
+- **4 design-hub sub-skills** (`design-good-bad-examples`, `typography-guide`, `design-system-palettes`, `pdf-design-guide`) gained `Do NOT use for X (use Y)` negative triggers per Compendium Rule 2 (commit `8dc1306`).
+
+### Fixed
+
+- **`parse_frontmatter_safe`** (validator): added single-quoted scalar support (`'…'` with `''` doubling convention) and YAML 1.2 double-quoted escape sequence support (`\"`, `\\`, `\n`, `\t`, `\r`, `\/`) (commit `559f086`). Real-world fix: `skills/design-hub/design-good-bad-examples/SKILL.md` description containing `\"` now resolves correctly.
+- **`routing_test.py`:** was loading only 5 of 35 skills due to a regex that matched only the old `description: >` multi-line format (commit `004e5e1`). Switched to reuse `parse_frontmatter_safe` directly. Pool is now 35; the prior `7W / 0T / 3L` baseline was vacuous (measured against a 5-skill pool). Restored two signal qualifiers that were casualties of the pre-fix regex.
+- **2 of 4 routing collisions** broken via targeted description edits (commit `7617c0a`): marketplace-validator ↔ marketplace-health and crafting-skills ↔ marketplace-validator. The remaining 2 collisions (general-critic ↔ security, deep-research ↔ orchestrating-subagents) are inherent word-overlap scoring limitations and accepted as ties.
+
+### Verified
+
+- `marketplace-health`: **HEALTH: pass** (validator 0/82 warnings, manifest consistency at 0.0.2, license coverage OK, cross-references OK, docs reflect state).
+- `routing_test.py`: **15W / 1T / 2L** over 18 utterances × 35 skills (was 7W over 5 skills — vacuous baseline). The 2 ties are documented above; the 2 losses were the general-critic/security and deep-research/orchestrating-subagents ambiguities not broken in this release.
+- **Behavioral eval pilot** (commit `2fae0b1`, `docs/principled/skill-evals/marketplace-routing-2026-06-22/`): single-eval pilot (`craft-create`) demonstrating the `evaluating-skills` 8-stage harness works end-to-end on Claude Code CLI. Material difference observed: with-skill run consulted 3 marketplace SKILL.md files (crafting-skills + pdf-design-guide + deep-research), without-skill run consulted 0. Iteration-2 (full N=18 with 180-300s timeout) queued for a future session.
+
+---
+
 ## [0.0.1-alpha] — 2026-06-22
 
 First alpha cut. All four plugin manifests (Claude Code, Codex, Cursor, Kimi Code) are centralized at version 0.0.1. The marketplace ships 26 top-level skills (31 SKILL.md total including 5 design-hub sub-skills) plus 4 local meta-marketplace skills in `.agents/skills/`.

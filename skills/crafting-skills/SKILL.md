@@ -1,13 +1,13 @@
 ---
 name: crafting-skills
 description: >
-  Load when creating a new agent skill from scratch or optimizing an existing
-  skill's routing. Use when the user says 'create a skill', 'optimize this
-  skill's routing', or 'validate frontmatter'. Do NOT use for collaborative
-  skill creation dialogue (use superpowers' writing-skills).
-allowed-tools: Read, Edit, Write, Grep, Glob
+  Load when creating, optimizing, reviewing, or post-iterating an agent skill.
+  Use when the user says 'create a skill', 'review this skill', 'self-review',
+  'I just used it — propose updates', or 'validate frontmatter'. Do NOT use for
+  collaborative skill creation dialogue (use superpowers' writing-skills).
+allowed-tools: Read, Edit, Write, Grep, Glob, Agent
 when_to_use: "Use when creating a new skill or optimizing an existing skill's routing."
-argument-hint: "[create|optimize] [target-skill-path]"
+argument-hint: "[create|optimize|review|post-create] [target-skill-path]"
 license: MIT
 ---
 # Crafting Skills
@@ -27,7 +27,9 @@ Four modes (CREATE, OPTIMIZE, REVIEW, POST-CREATE). Start here — the router te
 
 IF the user wants to **create a new skill from scratch** → use **CREATE** mode below.
 IF the user wants to **optimize an existing skill's routing** → use **OPTIMIZE** mode below.
-IF unclear → ask: "Are you creating a new skill or improving an existing one?"
+IF the user wants to **statically critique an existing skill** (per compendium rules) → use **REVIEW** mode below.
+IF the user wants to **observe what happened during immediate post-creation use and propose edits** → use **POST-CREATE** mode below.
+IF unclear → ask: "Are you creating, optimizing, reviewing, or post-creating a skill?"
 
 ---
 

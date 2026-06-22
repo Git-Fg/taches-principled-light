@@ -26,8 +26,9 @@ WORKSPACE = REPO / "docs/principled/skill-evals/marketplace-routing-2026-06-22"
 ITER_DIR = WORKSPACE / "iteration-2"
 EVALS_FILE = WORKSPACE / "evals/evals.json"
 CLAUDE = "/Users/felix/.local/bin/claude"
-TIMEOUT_S = 180
+TIMEOUT_S = 300
 EMPTY_PROJECT = Path("/tmp/empty-claude-project")
+REQUIRED_EVAL_KEYS = ("id", "category", "expected", "utterance")
 
 
 def parse_events(text: str) -> list[dict]:
@@ -131,7 +132,16 @@ def run_one(utterance: str, with_skill: bool, eval_dir: Path) -> dict:
 
 def main() -> int:
     ITER_DIR.mkdir(parents=True, exist_ok=True)
-    evals = json.loads(EVALS_FILE.read_text())["evals"]
+    evals_data = json.loads(EVALS_FILE.read_text())
+    if "evals" not in evals_data or not isinstance(evals_data["evals"], list):
+        print(f"[iter-2] FATAL: {EVALS_FILE} must contain an 'evals' list", file=sys.stderr)
+        return 2
+    evals = evals_data["evals"]
+    for i, ev in enumerate(evals):
+        missing = [k for k in REQUIRED_EVAL_KEYS if k not in ev]
+        if missing:
+            print(f"[iter-2] FATAL: eval index {i} missing keys: {missing}", file=sys.stderr)
+            return 2
     print(f"[iter-2] running {len(evals)} evals x 2 configs = {len(evals) * 2} runs")
     print(f"[iter-2] timeout per run: {TIMEOUT_S}s, total wall budget ~{len(evals) * 2 * TIMEOUT_S // 60} min")
     print(f"[iter-2] workspace: {ITER_DIR}")

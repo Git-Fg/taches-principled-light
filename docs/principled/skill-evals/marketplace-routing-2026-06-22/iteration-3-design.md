@@ -4,7 +4,7 @@
 
 Iteration 1 and iteration 2 use **read-counting** as the behavioral signal: how many marketplace SKILL.md files did the agent consult? This is a *necessary but not sufficient* signal. An agent can read the right skill and still fail to apply it. Conversely, a strong model can produce a correct answer without reading any skill.
 
-The Tessl framework ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1), June 2026) and Anthropic's `skill-creator` (4 modes: Create / Eval / Improve / Benchmark, March 2026) both grade on **task completion** via custom rubrics, not on consultation. The Tessl paper showed that "models vary widely in how closely they adhere to the instructions encoded in skills" — a 25-30 point spread between frontier and mid-tier models on instruction-following, with the gap being even wider on goal-completion.
+The Tessl framework ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1), June 2026) and Anthropic's `skill-creator` (4 modes: Create / Eval / Improve / Benchmark, March 2026) both grade on **task completion** via custom rubrics, not on consultation. The Tessl paper showed that **instruction-following** is the discriminating metric: "Kimi K2.6, MiniMax 2.7, Qwen3-Coder-Next, and Gemini 3.1 Flash Lite all cluster around 57–60 — roughly 25–30 points below the frontier." By contrast, **goal-completion** "close to saturation, frequently exceeding 90%" for almost all models except the Nemotron family — so the wide spread is on instruction-following, not goal-completion.
 
 This document specifies the iteration-3 design that adopts the assertion-based pattern.
 
@@ -72,6 +72,10 @@ Aggregates across all evals. Computes:
 - **Failure pattern clustering** (which assertions fail most often?)
 - **Recommended description edits** (for any eval where delta < 0)
 
+## See also
+
+- `methodology-note-routing-vs-validator.md` — the same instruction-following vs goal-completion distinction in the context of the validator's `\b\w+\b` count vs the routing test's content-word filter.
+
 ## Required infrastructure changes
 
 Iteration-3 needs:
@@ -111,4 +115,4 @@ Not now. Iteration-2 (this batch) proves the harness scales and gives a coarse b
 
 ## Open question
 
-The Tessl paper scored with **two** metrics (instruction-following + goal-completion) and showed they diverge. Should iteration-3 do the same? My take: yes — instruction-following (did the agent follow the Compendium's prescribed structure?) is the right primary metric for crafting-skills and similar authoring skills, but goal-completion (did the user actually get a working skill?) is the right primary metric for the task-lifecycle / plan-lifecycle skills. Different skills, different metrics. Defer to a per-skill decision when iteration-3 actually runs.
+The Tessl paper measured both instruction-following and goal-completion but found that goal-completion saturates for almost all models. So in practice, **instruction-following is the only metric that varies across model tiers on this kind of task.** Should iteration-3 therefore weight instruction-following rubrics (e.g., "the agent followed the Compendium's prescribed frontmatter structure") heavily, and treat goal-completion rubrics as a sanity check (i.e., they should saturate to 100% — anything less is a real bug)? My take: yes for skills whose value is in workflow encoding (crafting-skills, plan-lifecycle, security), where the discriminator is whether the agent followed the right process. For skills whose value is in knowledge encoding (web-search, rust, engineering-mcp), the goal-completion rubric is the better primary metric. Different skills, different metrics, but within any single skill, pick one and stick to it. Defer to a per-skill decision when iteration-3 actually runs.

@@ -20,7 +20,7 @@ arguments: [subcommand, task-ref]
 license: MIT
 ---
 
-You are the task-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a subcommand (CAPTURE | REFINE | IMPLEMENT | DOCUMENT) and a task title or path via $ARGUMENTS[0] and $ARGUMENTS[1].
+You are the task-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a `subcommand` (CAPTURE | REFINE | IMPLEMENT | DOCUMENT) and a `task-ref` (title or path), as declared in the frontmatter `arguments:` field.
 
 Produce:
 - **CAPTURE**: Draft task file at `docs/principled/tasks/drafts/{task-title}.md` with the user's description verbatim + initial context
@@ -30,10 +30,10 @@ Produce:
 
 ## I/O Example
 
-INPUT: `$ARGUMENTS = "REFINE docs/principled/tasks/drafts/add-oauth2-support.md"`
+INPUT: `subcommand = "REFINE"`, `task-ref = "docs/principled/tasks/drafts/add-oauth2-support.md"`
 OUTPUT: `docs/principled/tasks/specs/add-oauth2-support.md` with sections: context, requirements, API surface, acceptance criteria, implementation phases, verification commands, and rollout plan.
 
-INPUT: `$ARGUMENTS = "IMPLEMENT add-oauth2-support"`
+INPUT: `subcommand = "IMPLEMENT"`, `task-ref = "add-oauth2-support"`
 OUTPUT: code changes + `docs/principled/tasks/implemented/add-oauth2-support/verification.md` with pass/fail status per acceptance criterion.
 
 ## Runtime persistence

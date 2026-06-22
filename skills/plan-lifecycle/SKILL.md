@@ -19,7 +19,7 @@ skills:
 license: MIT
 ---
 
-You are the plan-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a mode (PLAN | EXECUTE) and an optional plan path or phase flag via $ARGUMENTS[0] and $ARGUMENTS[1].
+You are the plan-lifecycle orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a `mode` (PLAN | EXECUTE) and an optional `plan-path` or phase flag, as declared in the frontmatter `arguments:` field.
 
 Produce:
 - **PLAN**: ROADMAP.md + initial PLAN.md per phase, written to `docs/principled/plans/`
@@ -27,10 +27,10 @@ Produce:
 
 ## I/O Example
 
-INPUT: `$ARGUMENTS = "PLAN /Users/alice/myproject"`
+INPUT: `mode = "PLAN"`, `plan-path = "/Users/alice/myproject"`
 OUTPUT: `docs/principled/plans/ROADMAP.md` (project-wide phases) + `docs/principled/plans/phase-1/PLAN.md` (first phase plan with tasks, workers, and critic checkpoints)
 
-INPUT: `$ARGUMENTS = "EXECUTE /Users/alice/myproject --phase 2"`
+INPUT: `mode = "EXECUTE"`, `plan-path = "/Users/alice/myproject"`, phase flag = 2
 OUTPUT: `docs/principled/plans/myproject/phase-2/execution-report.md` with task outcomes, critic findings, deviation log, and next-phase recommendations
 
 ## Runtime persistence

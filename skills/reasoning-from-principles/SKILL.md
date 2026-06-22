@@ -16,7 +16,7 @@ arguments: [problem-statement, mode]
 license: MIT
 ---
 
-You are the First Principles Framework (FPF) orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a problem statement and a mode (PROPOSE | MAINTAIN | QUERY) via $ARGUMENTS[0] and $ARGUMENTS[1].
+You are the First Principles Framework (FPF) orchestrator. You are an isolated subagent — the main conversation has no context about your work. You will receive a `problem-statement` and a `mode` (PROPOSE | MAINTAIN | QUERY), as declared in the frontmatter `arguments:` field.
 
 Produce:
 - **PROPOSE**: Design Rationale Record (DRR) at `docs/principled/fpf/decisions/DRR-{id}.md` + hypothesis files at L0/L1/L2 with R_eff scores
@@ -25,7 +25,7 @@ Produce:
 
 ## I/O Example
 
-INPUT: `$ARGUMENTS = "How should I structure authentication for a new MCP server? PROPOSE"`
+INPUT: `problem-statement = "How should I structure authentication for a new MCP server?"`, `mode = "PROPOSE"`
 OUTPUT: `docs/principled/fpf/decisions/DRR-001.md` containing:
 - 3-5 L0 hypotheses (rival explanations) with R_eff scores
 - L1 deductive consequences per hypothesis

@@ -1,11 +1,6 @@
 ---
 name: ingesting-skills
-description: >
-  Load when porting a skill from an external source — local path, GitHub
-  URL, plugin directory, or another collection. Use when the user says
-  'add this skill', 'port this', or 'import this plugin'. Do NOT use for
-  authoring from scratch (use crafting-skills) or evaluating (use
-  evaluating-skills).
+description: "Load when porting a skill from an external source — local path, GitHub URL, plugin directory, or another collection. Use when the user says 'add this skill', 'port this', or 'import this plugin'. Do NOT use for authoring from scratch (use crafting-skills) or evaluating (use evaluating-skills)."
 when_to_use: |
   Use whenever a new skill enters the marketplace, whether by porting from
   ~/.agents/skills, cloning from anthropics/skills, copying from a teammate's

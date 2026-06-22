@@ -1,6 +1,6 @@
 ---
 name: design-principles
-description: "Load when explaining the perceptual and psychological reasons behind design choices — white space, contrast, proximity, alignment, repetition, and visual hierarchy. Use when the user asks why a design looks good or bad or when making a layout decision with no spec."
+description: "Load when explaining why a design choice works — white space, contrast, proximity, alignment, repetition, and visual hierarchy. Use when the user asks why a design looks good or bad. Do NOT use for typography specs (use typography-guide), palettes (use design-system-palettes), or visual examples (use design-good-bad-examples)."
 when_to_use: |
   Load for any design-taste or "why" question. Pair with typography-guide for
   concrete specs and design-good-bad-examples for before/after examples.

@@ -6,12 +6,12 @@ overlap with the description. Report top match per utterance and whether
 there's a clear winner (top score > runner-up).
 
 Usage:
-    python3 routing_test.py                    # default 10 utterances
+    python3 routing_test.py                    # default 18 utterances
     python3 routing_test.py --strict           # exit 1 on ties/losses
     python3 routing_test.py --expected NAME    # use custom expected skill
 
-The 10 default utterances cover the 4 local meta-skills plus a few
-adjacent marketplace skills to detect routing collisions.
+The 18 default utterances cover the 4 local meta-skills plus 13 marketplace
+skills, designed to detect routing collisions across the full catalog.
 """
 from __future__ import annotations
 
@@ -50,9 +50,14 @@ def tokens(s: str) -> set[str]:
     return {t for t in re.split(r"\W+", s.lower()) if len(t) > 2}
 
 
-# Default utterance set: covers the 4 local meta-skills + 6 marketplace
-# skills to detect routing collisions. Add more as new local skills ship.
+# Default utterance set: covers the 4 local meta-skills + 13 marketplace
+# skills to detect routing collisions across the full catalog. The first
+# 10 cover the local meta-skills. The next 8 cover marketplace skills with
+# distinctive trigger phrases across diverse domains (skill authoring,
+# evaluation, planning, features, web search, security, Rust). Add more as
+# new skills ship or new routing collisions are discovered.
 DEFAULT_UTTERANCES: list[tuple[str, str]] = [
+    # --- Local meta-skills ---
     ("marketplace-validator", "lint the marketplace and check the frontmatter"),
     ("marketplace-validator", "is this skill valid before I commit"),
     ("marketplace-health", "audit the marketplace and run the pre-release health check"),
@@ -63,6 +68,15 @@ DEFAULT_UTTERANCES: list[tuple[str, str]] = [
     ("releasing-marketplace", "tag and push the new version"),
     ("general-critic", "review this PR and find the worst issues"),
     ("deep-research", "do deep research on agent skill evaluation methodology"),
+    # --- Marketplace skills ---
+    ("crafting-skills", "create a new agent skill for my project"),
+    ("crafting-skills", "review this skill's description and frontmatter"),
+    ("evaluating-skills", "write evals for this skill and grade the outputs"),
+    ("plan-lifecycle", "plan this multi-phase project with critic checkpoints"),
+    ("task-lifecycle", "add this small feature with verification and docs"),
+    ("web-search", "find documentation on the open web for Rust async traits"),
+    ("security", "audit code for OWASP top 10 vulnerabilities and secrets"),
+    ("rust", "configuring clippy and cargo-deny for my Rust project"),
 ]
 
 

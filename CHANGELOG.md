@@ -144,7 +144,7 @@ disambiguate the three lifts.
   - `filesystem_access_lift` (plugin_only → plugin_with_add_dir) = **+13.75pp** (deterministic across all 4 evals)
   - `total_lift` (baseline → plugin_with_add_dir) = **+21.88pp** (deterministic; 4/4 lifts, 0 hurts)
 - **Canonical headline:** +21.88pp total_lift with 4/4 evals lifting and 0 hurts. This supersedes iter-4's +4.94pp.
-- See [`iteration-7/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md).
+- See [`ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) §2.4 (canonical narrative; the per-iteration `iteration-7/REPORT.md` is preserved in the closure archive).
 
 ### iter-6 (vendor-disjoint judge) — COMPLETE, proxy architecture finding
 
@@ -153,13 +153,13 @@ disambiguate the three lifts.
 - **Outcome:** the external judge vendor returned 503 `rate-limited` for all 12 grading cells. Every model-based assertion (`followed_8_stage_loop`, `ran_secrets_scan`, `named_specific_findings`, `created_annotated_tag`, `no_force_push_used`, `selected_appropriate_modes`) graded as `unknown=true, points_awarded=0` with `evidence="judge parse error: KeyError('choices')"`. Code-based assertions (consultation, structure-with-compare_args) still graded correctly.
 - **Discovery — proxy architecture:** while debugging the iter-6 failure, we probed the proxy at `<private inference gateway>` and found it is structurally a single-family gateway. The `<tier-A>`/`<tier-B>`/`<tier-C>` tier labels all serve from the same configured backend. Every "vendor" alias in the catalog (20 vendor aliases) silently returns the same configured backend in the `model:` field. The only genuinely vendor-disjoint option is the external judge vendor alias, and it is rate-limited. Same-family bias is therefore structurally unmitigable on this proxy right now.
 - **Re-purposed as code-only lift decomposition:** the +7.5pp mean across 4 evals (eval-skill +15, sec-audit +15, lint-1 0, release-2 0) is the lift that the marketplace plugin produces on consultation + structure-with-compare_args signals only, with all LLM-judgment slots forced to 0 by the external judge vendor outage. The +14.4pp gap to iter-7's +21.9pp is the LLM-judgment contribution. The +7.5pp is a **conservative lower bound** on the true total lift under a working vendor-disjoint judge.
-- See [`iteration-6/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-6/REPORT.md) (preserved in closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-6/`).
+- See [`ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) §2.3 (canonical narrative; the per-iteration `iteration-6/REPORT.md` is preserved in the closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-6/`).
 
 ### iter-5 (N=11 reliability study) — DEFERRED
 
 - **Goal:** Measure the noise floor of single-trial evaluation. Yagubyan 2026 (arxiv:2606.13685) shows N=3 is underpowered (flip rate 31%); N=11 needed for 95% majority-vote recovery.
 - **Status:** designed, deferred. iter-7 already lifts 4/4 with 0 hurts, and the proxy is structurally single-family (no vendor-disjoint judge available), so iter-5 would be a same-family intra-rater noise study, not a vendor-disjoint test. The current grader noise (sec-audit +17.5pp on identical transcript) suggests stddev is in the 5-15pp range; the iter-7 +21.88pp headline is well above that floor and robust to it. Re-evaluate after proxy is fixed or after we get access to a vendor-disjoint judge.
-- See [`iteration-5-6-7-PLAN.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-5-6-7-PLAN.md) § iter-5 (preserved in closure archive).
+- See [`ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) §2.2 (canonical narrative; the per-iteration `iteration-5-6-7-PLAN.md` is preserved in the closure archive).
 
 ### Campaign summary
 
@@ -189,7 +189,7 @@ iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headli
   — even same-family judging produces only moderate chance-corrected
   agreement (Claude Opus 4.6 κ=0.720 on JudgeBench)
 
-See [`iteration-4/RESEARCH-FINDINGS-iter5-design.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/RESEARCH-FINDINGS-iter5-design.md) for the full synthesis (preserved in closure archive).
+See [`ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) §2.1 (canonical narrative; the per-iteration `iteration-4/RESEARCH-FINDINGS-iter5-design.md` is preserved in the closure archive).
 
 ## [0.0.4] — iter-4 correction — 2026-06-23
 
@@ -282,7 +282,7 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
 
 - `marketplace-health`: **HEALTH: pass** (validator 0/87 warnings across 31 skills; manifest consistency at 0.0.3; license coverage OK; cross-references OK; docs reflect state — README says 31, CHANGELOG latest = 0.0.3, INDEX.md lists 4 iterations).
 - **Behavior eval (iter-3 corrected)**: 17 evals × {with, without}-skill = 34 runs on the configured solver (matches marketplace consumer base). Mean delta **+8.69pp** vs without-skill baseline; 6 lifts / 11 neutrals / **0 hurts**. Lifts: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp, `release-1` +15pp, `eval-skill` +15pp. Bucket A neutrals (8) split A1/A2/A3 per BUCKET-A-INSPECTION; A3 most likely caused by H1 plugin shadowing, to be confirmed by iter-3.1. **SUPERSEDED by iter-4** (cache contamination inflated the +8.69pp by ≈3.75pp; corrected headline is +4.94pp).
-- **Behavior eval (iter-4 — canonical)**: 18 evals × {with, without}-skill = 36 runs on the configured solver with fresh v0.0.3 cache. Mean delta **+4.94pp** vs without-skill baseline; 5 lifts / 13 neutrals / **0 hurts**. Lifts: `sec-audit` +17.5pp, `eval-skill` +15pp, `release-2` +15pp, `lint-1` +25pp, `audit-1` +16.5pp. **Lift mechanism split:** 2 consultation-driven (eval-skill, sec-audit — agent read/invoked SKILL.md), 3 file-access-driven (lint-1, audit-1, release-2 — agent ran the skill's colocated scripts via filesystem glob). Consultation-driven lower bound: +1.81pp. Upper bound if research/without_skill timeout had auto-zeroed: +6.75pp. See [`iteration-4/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/REPORT.md) (preserved in closure archive).
+- **Behavior eval (iter-4 — canonical)**: 18 evals × {with, without}-skill = 36 runs on the configured solver with fresh v0.0.3 cache. Mean delta **+4.94pp** vs without-skill baseline; 5 lifts / 13 neutrals / **0 hurts**. Lifts: `sec-audit` +17.5pp, `eval-skill` +15pp, `release-2` +15pp, `lint-1` +25pp, `audit-1` +16.5pp. **Lift mechanism split:** 2 consultation-driven (eval-skill, sec-audit — agent read/invoked SKILL.md), 3 file-access-driven (lint-1, audit-1, release-2 — agent ran the skill's colocated scripts via filesystem glob). Consultation-driven lower bound: +1.81pp. Upper bound if research/without_skill timeout had auto-zeroed: +6.75pp. See [`ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) §2.1 (canonical narrative; the per-iteration `iteration-4/REPORT.md` is preserved in the closure archive).
 - **Methodology note** (`docs/.../methodology-note-routing-vs-validator.md`): distinguishes this as a behavioral eval (measuring agent routing behavior against graded assertion sets) not a static validator run.
 
 ### Known follow-up work

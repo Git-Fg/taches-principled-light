@@ -10,7 +10,7 @@ already-shipped feature, 13 intermediate research work products) into
 15 MB → 2.4 MB (84% reduction). All 4 plugin manifests synchronized
 to **0.0.7**.
 
-Full changelog: [`CHANGELOG.md`](../../CHANGELOG.md) →
+Full changelog: [`CHANGELOG.md`](../CHANGELOG.md) →
 `## [0.0.7] — iteration phase closure marker (repo finalization) — 2026-06-23`
 
 ## What's in the box
@@ -31,16 +31,16 @@ Same as v0.0.6 — no changes to the public surface:
 ### Added
 
 - **Closure archive bundle** at
-  [`docs/principled/attic/2026-06-23-closure/`](../../docs/principled/attic/2026-06-23-closure/)
+  [`docs/principled/attic/2026-06-23-closure/`](../docs/principled/attic/2026-06-23-closure/)
   (~13 MB → 2.4 MB working tree). Contains:
-  - [`STATUS.md`](../../docs/principled/attic/2026-06-23-closure/STATUS.md)
+  - [`STATUS.md`](../docs/principled/attic/2026-06-23-closure/STATUS.md)
     **(39 lines)**: closure record per the AGENTS.md "Project Closure
     Convention" — documents the v0.0.7 release as the iteration phase
     closure marker, the adapted closure contract (no `SUMMARY.md` for
     a cleanup release; `STATUS.md` + `metadata.md` + CHANGELOG
     `[0.0.7]` + release tag is the durable record), and the
     cross-reference update list.
-  - [`metadata.md`](../../docs/principled/attic/2026-06-23-closure/metadata.md)
+  - [`metadata.md`](../docs/principled/attic/2026-06-23-closure/metadata.md)
     **(102 lines)**: file inventory, key decisions, and the 4
     cross-reference files updated in the active tree.
   - `plans/` (2 files): 2 executed plans without `SUMMARY.md` (Task 1
@@ -80,16 +80,16 @@ Same as v0.0.6 — no changes to the public surface:
   `SKILL-DISCOVERY-ARCHITECTURE.md`,
   `methodology-note-routing-vs-validator.md`, `.archive/`.
 - **Cross-reference updates** in 4 active files:
-  - [`docs/principled/skill-evals/INDEX.md`](../../docs/principled/skill-evals/INDEX.md)
+  - [`docs/principled/skill-evals/INDEX.md`](../docs/principled/skill-evals/INDEX.md)
     (rows 11-15, 16, 50-55, 66-70, 88-101) — iter-1/2/3/3.1/4
     entries now point to `attic/2026-06-23-closure/skill-evals/iteration-N/`.
-  - [`iteration-7/REPORT.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md)
+  - `iteration-7/REPORT.md`
     (line 151) — `iteration-4/REPORT.md` reference updated.
-  - [`iteration-7/GRADER-NOISE-INVESTIGATION.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/GRADER-NOISE-INVESTIGATION.md)
+  - `iteration-7/GRADER-NOISE-INVESTIGATION.md`
     (lines 19, 22, 68, 69) — `iteration-3/scripts/grader.py` and
     `iteration-4/eval-sec-audit/grading_without_skill.json` paths
     updated.
-  - [`SKILL-DISCOVERY-ARCHITECTURE.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/SKILL-DISCOVERY-ARCHITECTURE.md)
+  - `SKILL-DISCOVERY-ARCHITECTURE.md`
     (line 164) — v1.4 changelog entry updated.
 - **`.gitignore` broadened**: `__pycache__` coverage extended from
   `plugins/**/__pycache__/` to cover all paths
@@ -133,7 +133,7 @@ Same as v0.0.6 — no changes to the public surface:
 `marketplace-health` runs cleanly post-archive: **HEALTH: pass
 (validator 0/87 across 31 skills; manifest consistency at 0.0.7;
 license coverage OK; cross-references OK)**. Report at
-[`docs/principled/marketplace-health/2026-06-23.md`](../../docs/principled/marketplace-health/2026-06-23.md).
+[`docs/principled/marketplace-health/2026-06-23.md`](../docs/principled/marketplace-health/2026-06-23.md).
 
 The `release-gate` CI job is unaffected by the archive moves —
 `iter-7/grading_summary.json` is in the active tree, and the gate
@@ -181,16 +181,16 @@ to a tag:
 
 ## Links
 
-- Full v0.0.7 changelog: [`CHANGELOG.md`](../../CHANGELOG.md) →
+- Full v0.0.7 changelog: [`CHANGELOG.md`](../CHANGELOG.md) →
   `## [0.0.7]`
 - Closure archive: `docs/principled/attic/2026-06-23-closure/`
-  ([`STATUS.md`](../../docs/principled/attic/2026-06-23-closure/STATUS.md)
+  ([`STATUS.md`](../docs/principled/attic/2026-06-23-closure/STATUS.md)
   ·
-  [`metadata.md`](../../docs/principled/attic/2026-06-23-closure/metadata.md))
+  [`metadata.md`](../docs/principled/attic/2026-06-23-closure/metadata.md))
 - iter-7 canonical headline: see canonical retrospective:
-  [`ITERATION-PHASE-RETROSPECTIVE.md`](../../docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md)
+  [`ITERATION-PHASE-RETROSPECTIVE.md`](../docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md)
 - iter-8 forward-looking plan:
-  [`iteration-8-PLAN.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md)
+  [`iteration-8-PLAN.md`](../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md)
 - v0.0.6 release notes: [`.github/RELEASE-v0.0.6.md`](RELEASE-v0.0.6.md)
 - Marketplace-health sweep:
-  [`docs/principled/marketplace-health/2026-06-23.md`](../../docs/principled/marketplace-health/2026-06-23.md)
+  [`docs/principled/marketplace-health/2026-06-23.md`](../docs/principled/marketplace-health/2026-06-23.md)

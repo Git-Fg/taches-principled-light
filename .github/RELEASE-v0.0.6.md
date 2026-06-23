@@ -9,7 +9,7 @@ fabricated arXiv IDs + 1 fabricated number replaced with verified
 sources), and a **CI action bump** to current major versions
 (checkout v7, setup-python v6, upload-artifact v7).
 
-Full changelog: [`CHANGELOG.md`](../../CHANGELOG.md) →
+Full changelog: [`CHANGELOG.md`](../CHANGELOG.md) →
 `## [0.0.6] — post-v0.0.5 polish, iter-8 design, citation audit — 2026-06-22`
 
 ## What's in the box
@@ -30,7 +30,7 @@ Same as v0.0.5 — no changes to the public surface:
 ### Added
 
 - **iter-8 plan** at
-  [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md)
+  [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md`](../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md)
   **(295 lines)**: three sub-experiments to address the two open
   follow-ups from iter-7.
   - **8A vendor-disjoint grader mock** — local
@@ -48,7 +48,7 @@ Same as v0.0.5 — no changes to the public surface:
     grid 11 times to bound the noise floor and confirm the
     `+21.88pp` headline survives median-of-11.
 - **iter-8 design supplements** at
-  [`docs/principled/research/2026-06-23-iter8-design-supplements.md`](../../docs/principled/research/2026-06-23-iter8-design-supplements.md)
+  [`docs/principled/research/2026-06-23-iter8-design-supplements.md`](../docs/principled/research/2026-06-23-iter8-design-supplements.md)
   **(215 lines)**: three findings that refine the iter-8 plan after
   the initial draft.
   - **MCP mocking for `secret_detection`**: a two-layer architecture
@@ -235,7 +235,7 @@ Pin to a tag:
 
 ## Links
 
-- Full v0.0.6 changelog: [`CHANGELOG.md`](../../CHANGELOG.md) →
+- Full v0.0.6 changelog: [`CHANGELOG.md`](../CHANGELOG.md) →
   `## [0.0.6]`
 - iter-8 plan: `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md`
 - iter-8 design supplements: `docs/principled/research/2026-06-23-iter8-design-supplements.md`

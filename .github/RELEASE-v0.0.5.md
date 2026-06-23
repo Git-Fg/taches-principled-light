@@ -10,7 +10,7 @@ directional finding is robust (4/4 lift, 0 hurts) and the headline
 is dominated by deterministic `filesystem_access_lift` (+13.75pp
 mean).
 
-Full report: [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) (canonical narrative; the per-iteration `iteration-7/REPORT.md` is preserved in the closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-7/REPORT.md`).
+Full report: [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](../docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) (canonical narrative; the per-iteration `iteration-7/REPORT.md` is preserved in the closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-7/REPORT.md`).
 
 ## What's in the box
 

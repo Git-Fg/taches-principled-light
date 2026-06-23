@@ -21,12 +21,46 @@ address this.
 
 | Option | Stack | Maintenance | Pros | Cons | Verdict |
 |--------|-------|-------------|------|------|---------|
-| **Tyk mock MCP server** | Go, MCP 2025 spec | tyk.io, blog post (search hit) | Deterministic, self-contained, simple | Single-purpose; no schema-driven mock | A-grade for fixture-only tests |
-| **mcpland/mock-mcp** | TypeScript, OpenAPI → MCP | github.com/mcpland, 2026 | AI-driven mock data from OpenAPI schemas | Heavier setup; depends on schema quality | B-grade for schema-driven |
-| **AIMock MCPMock** (CopilotKit) | Part of AIMock superset | github.com/CopilotKit/aimock, Apr 2026 | Integrated with LLMock + A2AMock + VectorMock + drift detection; production-tested at AG-UI | Larger install footprint (the whole AIMock stack) | A-grade if you also need LLM mock |
+| **mcp-assert** (blackwell-systems) | Go single binary, stdio/SSE/HTTP, MIT | github.com/blackwell-systems/mcp-assert, last commit 2026-06-23, 18 stars, 0 open issues | Purpose-built for deterministic MCP testing; `snapshot` command captures golden files, `intercept` records live tool-call trajectories, `run` replays against captured fixtures; 18 assertion types in YAML; 14 lint rules; integrated with Vitest / Jest / Bun / PHPUnit / pytest / Go test; adopted by Wyre Technology (25 servers) and Ant Group | Only 18 stars, project is ~2 months old (created 2026-04-23); "no mocks" tagline means it tests real servers, not that it can't replay — fixture-driven via `snapshot --update` | **A-grade (recommended)** for snapshot/replay fixtures |
+| **Tyk mock MCP server** | Go, MCP 2025 spec | tyk.io, blog post (search hit) | Deterministic, self-contained, simple | Single-purpose; no schema-driven mock, no snapshot/replay workflow | B-grade (relegated) |
+| **mcpland/mock-mcp** | TypeScript, OpenAPI → MCP | github.com/mcpland, 2026 | AI-driven mock data from OpenAPI schemas | Heavier setup; depends on schema quality; no snapshot/replay | B-grade for schema-driven |
+| **AIMock MCPMock** (CopilotKit) | Part of AIMock superset | github.com/CopilotKit/aimock, Apr 2026 | Integrated with LLMock + A2AMock + VectorMock + drift detection; production-tested at AG-UI | Larger install footprint (the whole AIMock stack); overkill if we only need MCP replay | A-grade only if we adopt the rest of AIMock |
 | **Custom Python mock** | Python, minimal HTTP | local | Minimal dependencies; total control | No maintenance; must hand-write all responses | C-grade escape hatch |
 
-**Recommended for iter-8:** **AIMock MCPMock** if we adopt the rest of AIMock (LLMock etc.) — one mock for the entire eval stack. Otherwise **Tyk mock MCP server** as a focused, low-overhead option. Drop the 30-line Python fallback to a "C-grade escape hatch" if neither works.
+**Recommended for iter-8 (revised 2026-06-23):** **mcp-assert** for the
+MCP stdio half (purpose-built for snapshot/replay fixtures) +
+**zerob13/mock-openai-api** for the OpenAI HTTP half (already in the
+iter-8 plan). Both run in a single Docker container via Compose:
+zerob13 listens on :3000, mcp-assert is invoked per-test from the
+agent shell via the `--mcp-config` JSON file that points at the
+mcp-assert CLI as the MCP server. The previous recommendation of
+"Tyk mock MCP server" or "AIMock MCPMock" is superseded — neither
+offers snapshot/replay as a first-class workflow, which is the core
+determinism primitive iter-8 needs.
+
+### mcp-assert snapshot/replay workflow (new)
+
+```bash
+# 1. Run a one-time capture against the real secret_detection MCP server
+#    to record the exact JSON the agent will see
+mcp-assert snapshot --suite evals/secret-detection/ \
+  --server "npx @anthropic-ai/secret-detection-server" \
+  --update
+
+# 2. iter-8 runs: replay the captured snapshot deterministically
+mcp-assert run --suite evals/secret-detection/ \
+  --server "mcp-assert-replay-server --fixture evals/fixtures/secret-detection.json"
+
+# 3. CI: gate on snapshot diff
+mcp-assert ci --suite evals/secret-detection/ --threshold 95 --junit results.xml
+```
+
+The key insight from mcp-assert's design: it speaks the **real** MCP
+protocol (initialize handshake, tools/list, tools/call) against
+whichever server you point it at, then asserts YAML expectations
+against the responses. For iter-8, the "server" is replaced by a
+fixture-replay server that returns the captured golden responses
+byte-for-byte.
 
 ### Claude Code CLI integration
 
@@ -143,10 +177,10 @@ the marketplace evaluation methodology going forward.
 
 | Finding | Impact on iter-8 | v0.0.6+ impact |
 |---------|-------------------|------------------|
-| AIMock / Tyk mock MCP server + `--mcp-config` | Surgical disambiguation of the sec-audit +17.5pp grader swing (1-hour experiment) | Real MCP gateway via LiteLLM MCP support |
+| **mcp-assert** (snapshot/replay) for MCP stdio + **zerob13/mock-openai-api** for OpenAI HTTP | Surgical disambiguation of the sec-audit +17.5pp grader swing (1-hour experiment); full snapshot/replay determinism for both halves of the eval stack | Real MCP gateway via LiteLLM MCP support; `mcp-assert snapshot` mode becomes the CI regression gate |
 | Claude Code CLI flag inventory | iter-8B design needs `--mcp-config`; iter-8C design could use `--max-turns` for budget | iter-N+1 designs benefit from `--plugin-dir` for pinned reproducibility |
 | LiteLLM as multi-model gateway | Unblocks iter-6 vendor-disjoint validation | Replaces the single-model `100.80.231.128:3456` proxy |
 
 ---
 
-*Generated autonomously as iter-8 design supplements (2026-06-23). All three findings sourced from web research 2026-06-23 (SearXNG + GitHub API).*
+*Generated autonomously as iter-8 design supplements (2026-06-23). MCP-mocking section revised 2026-06-23 after mcp-assert was discovered; previous recommendation of Tyk mock / AIMock MCPMock is superseded. All three findings sourced from web research 2026-06-23 (SearXNG + GitHub API).*

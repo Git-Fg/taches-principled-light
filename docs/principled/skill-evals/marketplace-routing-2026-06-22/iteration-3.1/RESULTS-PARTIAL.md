@@ -44,8 +44,9 @@ but they also reveal:
 | lint-2 | with_full_marketplace | 0 | — | marketplace-validator | yes (no skill picked) |
 | craft-create | without_skill | 1 | `superpowers:writing-skills` | crafting-skills | **H1 confirmed** |
 | craft-review | without_skill | 1 | `taches-principled-light:skill-authoring` | crafting-skills | wrong marketplace skill |
+| craft-review | with_skill_only | 0 | — | crafting-skills | yes (no skill picked) |
 
-(6 more runs pending: ingest-2 with_full + with_skill_only, lint-2 with_skill_only, craft-create with_full + with_skill_only, craft-review with_full + with_skill_only.)
+(6 more runs pending: ingest-2 with_full + with_skill_only, lint-2 with_skill_only, craft-create with_full + with_skill_only, craft-review with_full.)
 
 ## Hypothesis verdict (preliminary)
 

@@ -11,7 +11,7 @@ on port 3456) using the `evaluating-skills` 8-stage harness.
 | 1 | 2026-06-22 | Pilot — single eval `craft-create` end-to-end on Claude Code CLI | superseded by iter-2 | passed |
 | 2 | 2026-06-22 | Full N=18 evals × {with, without}-skill = 36 runs | superseded by iter-3 | 17/18 completed; 1 proxy 503 |
 | 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **canonical** | mean delta **+8.69pp**, 6 lifts / 11 neutrals / **0 hurts** |
-| 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | in progress | — |
+| 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | in progress (9/15 runs) | H1 confirmed for `craft-create`; **critical correction**: `--add-dir` does NOT control skill listing — all installed plugins load globally; without_skill baseline is contaminated. See [`SKILL-DISCOVERY-ARCHITECTURE.md`](marketplace-routing-2026-06-22/SKILL-DISCOVERY-ARCHITECTURE.md) and [`iteration-3.1/RESULTS-PARTIAL.md`](marketplace-routing-2026-06-22/iteration-3.1/RESULTS-PARTIAL.md). |
 
 ## Canonical report
 
@@ -26,6 +26,7 @@ The intermediate `INTERIM-FINDINGS.md` is SUPERSEDED and archived at
 
 | Doc | Purpose |
 |-----|---------|
+| `SKILL-DISCOVERY-ARCHITECTURE.md` | **Foundational.** Documents how Claude Code actually loads skills. Critical finding: `--add-dir` controls cwd + file access only; installed plugins load their skills into `slash_commands` globally regardless of cwd. iter-3's `without_skill` baseline is contaminated; H1 (plugin shadowing) IS the dominant cause of Bucket A3. |
 | `iteration-3-design.md` | Synthesizes 6 reference frameworks (SkillsBench, Tessl, tau-bench, Lee et al. ICML 2026, Khullar 2026, Anthropic/Microsoft best practices) into the iter-3 design |
 | `iteration-3/DISCOVERY-INVESTIGATION.md` | Re-evaluates skill rewrites: they target the wrong root cause but remain useful improvements |
 | `iteration-3/BUCKET-A-INSPECTION.md` | Splits the 8 Bucket A neutrals into A1 (proxy errors) / A2 (partial discovery) / A3 (true discovery failures) |
@@ -34,6 +35,7 @@ The intermediate `INTERIM-FINDINGS.md` is SUPERSEDED and archived at
 | `iteration-2/API-OVERLOAD-INCIDENT.md` | Forensic record of iter-2 partial failure |
 | `iteration-2/METRIC-BUG-NOTE.md` | Forensic record of grader bug found by self-critic |
 | `iteration-2/OUTCOME.md` | iter-2 final outcome summary |
+| `iteration-3.1/RESULTS-PARTIAL.md` | 8 of 15 runs captured. H1 confirmed for `craft-create`; craft-review picked wrong marketplace skill; 6 of 8 runs invoked zero skills (routing-heuristic failure) |
 
 ## Archived experiments
 

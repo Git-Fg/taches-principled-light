@@ -78,9 +78,8 @@ Same as v0.0.5 — no changes to the public surface:
   iter benchmark JSON, asserts `summary.total_lift.mean_overall_delta >= +15pp`
   AND no per-eval `lifts.total_lift.overall_delta < 0pp`. The v0.0.6
   tag push ran the gate in 10s and **PASSED**.
-- **Vendor-disjoint grader mock research** at
-  [`docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`](../../docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md)
-  (205 lines): three implementations evaluated. **Removed in v0.0.8** — absorbed into the iter-8 design supplements note.
+- **Vendor-disjoint grader mock research**: three implementations
+  evaluated. **Removed in v0.0.8** — absorbed into the iter-8 design supplements note.
   - **A-grade**: WireMock + LiteLLM (most flexible, but ~120 lines
     of stub config).
   - **B-grade**: a popular OpenAI-compatible mock (single binary, 30-line

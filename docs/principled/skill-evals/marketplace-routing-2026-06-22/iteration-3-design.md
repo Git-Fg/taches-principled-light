@@ -86,7 +86,12 @@ Runs the with-skill and without-skill configurations identically to iteration-2 
 
 ### 2. Grader
 
-For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). **Our deployment target is Sonnet 4.5** (the latest model available on our inference-gateway proxy on port 3456; Sonnet 4.6 is not yet deployed on our chain). The judge-model choice is **separate from the solver-model choice** — the solver remains Haiku 4.5 per project convention; only the judge varies. We deliberately deviate from Tessl's Sonnet-only approach to a **two-tier strategy** driven by self-attribution bias research — see the Mitigation Strategy below for the full rationale. The short version: Haiku-as-judge of Haiku-as-solver is the worst case for self-attribution bias ([arxiv 2603.04582](https://arxiv.org/abs/2603.04582), ICML 2026), so Sonnet 4.5 is the first-choice judge, with Haiku 4.5 as a calibration-validated fallback.
+For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: The proxy on port 3456 exposes three aliases — `haiku`, `sonnet`, `opus` — that route to three underlying model families:
+- `haiku` → `nex-agi/nex-n2-pro:free` (small, fast, free tier)
+- `sonnet` → `MiniMax-M3` (mid-tier, the proxy's "frontier" model)
+- `opus` → `MiniMax-M3-1m` (same family as sonnet, 1M context)
+
+**These are not actual Anthropic models** — they are local model families exposed via the proxy. The user's project convention is to target the `haiku` chain for the solver; the **judge should target a different family** to mitigate same-family bias (Wataoka et al. 2024). Tessl uses Anthropic Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). Our deployment translates this to **`sonnet` (i.e. `MiniMax-M3`) as the first-choice judge**, with `haiku` as a calibration-validated fallback. The judge-model choice is **separate from the solver-model choice** — the solver remains on the `haiku` chain per project convention; only the judge varies. We deliberately deviate from Tessl's single-judge approach to a **two-tier strategy** driven by self-attribution bias research — see the Mitigation Strategy below for the full rationale. The short version: same-model-as-judge is the worst case for self-attribution bias ([arxiv 2603.04582](https://arxiv.org/abs/2603.04582), ICML 2026), so the first-choice judge is a *different model family* from the solver (`sonnet` alias judging `haiku`-chain outputs). Note: the underlying model families are also different (`nex-agi/nex-n2-pro` solver vs `MiniMax-M3` judge), so the bias mitigation is two-layered: different proxy tier AND different underlying model.
 
 - **Lower grading quality** vs Sonnet 4.6 (smaller model, less nuanced on `compliance`/`quality`).
 - **Self-attribution bias**: Haiku judging Haiku's own solver output. Per [Self-Attribution Bias: When AI Monitors Go Easy on Themselves](https://arxiv.org/abs/2603.04582) (Khullar et al., ICML 2026), this is a documented failure mode: in their code-review setting, self-attributed monitors were **5× more likely** to approve insecure code patches compared to off-policy baselines. The bias is **not mitigated by reasoning** (they tested reasoning models). The effect is strongest in *on-policy* self-monitoring (model judges its own output) and weakest in *off-policy* settings (judges fixed artifacts by other models/humans).
@@ -111,15 +116,15 @@ Grading output schema (per Anthropic's `references/schemas.md`):
 
 ```json
 {
-  "judge_model": "claude-sonnet-4-5",
+  "judge_model": "sonnet",
   "expectations": [
-    {"text": "...", "passed": true, "evidence": "...", "points_awarded": 30}
+    {"text": "...", "passed": true, "evidence": "...", "points_awarded": 30, "unknown": false}
   ],
   "summary": {
     "instruction_following_score": 75.0,
     "goal_completion_score": 90.0,
     "overall_score": 82.5,
-    "passed": 4, "failed": 1, "total": 5
+    "passed": 4, "failed": 1, "unknown": 0, "total": 5
   }
 }
 ```
@@ -212,8 +217,12 @@ class Assertion(BaseModel):
     type: Literal["consultation", "compliance", "structure", "quality"]
     category: Literal["instruction_following", "goal_completion"]
     points: int  # within category, sums to 100
-    grader: Literal["code", "model"]
+    grader: Literal["code", "model"] = Field(
+        default="model",
+        description="Defaults to model-based; consultation/structure assertions typically set this to 'code'."
+    )
     compare_args: Optional[list[str]] = None  # like tau-bench Action.compare_args
+    unknown: bool = False  # set by LLM judge when evidence is genuinely ambiguous
 
 class EvaluationCriteria(BaseModel):
     assertions: list[Assertion]
@@ -225,6 +234,8 @@ class EvaluationCriteria(BaseModel):
         "goal_completion": 1.0,
     }
 ```
+
+**Default weighting rationale**: 50/50 (1.0/1.0) is the iter-3 default because (a) it matches Tessl's headline metric and is the only weighting for which we have published comparison numbers (the +19.7 Haiku delta), (b) it preserves cross-eval comparability with the Tessl/SkillsBench literature, and (c) per-skill overrides are allowed but opt-in. The 50/50 default also matches the marketplace's own needs: most marketplace skills encode both a workflow (IF) and a domain knowledge (GC), and equal weighting reflects this duality. **Override mechanism**: a per-eval `weight` field on `EvaluationCriteria` lets the author bias toward IF (for workflow-encoding skills like `crafting-skills`, `plan-lifecycle`) or GC (for knowledge-encoding skills like `rust`, `engineering-mcp`). The override is documented in the eval's JSON metadata, not hidden in prose, so downstream tooling can report the weighting used per eval.
 
 ### Reward combination: weighted average across categories (Tessl-style)
 
@@ -250,7 +261,21 @@ With default `weight = {"instruction_following": 1.0, "goal_completion": 1.0}` a
 
 Tau-bench's `Action.compare_with_tool_call` only checks the args in `compare_args[]`, ignoring others. Iter-3 adopts this for `structure` assertions on tool calls: a skill that says "call `release_marketplace(version='0.0.2')`" can be checked with `compare_args=['version']` — the agent's exact tool name spelling or other args don't matter. This is the "grade the outcome, not the path" principle from Anthropic applied to specific-arg inspection.
 
-**How the grader uses `compare_args`**: the grader's structure-check code parses the agent's transcript for `Bash` tool calls (or `Skill` invocations), extracts the args the agent passed, and verifies only the keys listed in `compare_args` match the assertion's expected values. For example, if the assertion is `compare_args=['version']` and the agent calls `release_marketplace(version='0.0.2', dry_run=true)`, the check passes because `version` matches; `dry_run` is ignored. If `compare_args` is None, **all** args are checked (strict verbatim match — only use when the skill dictates exact arg shape).
+**How the grader uses `compare_args`**: the grader's structure-check code parses the agent's transcript for tool calls using a runtime-aware tool-name registry (currently `Bash` for Claude Code; `bash`/`shell` aliases can be added per runtime in iter-3.1). The grader extracts the args the agent passed and verifies only the keys listed in `compare_args` match the assertion's expected values. For example, if the assertion is `compare_args=['version']` and the agent calls `release_marketplace(version='0.0.2', dry_run=true)`, the check passes because `version` matches; `dry_run` is ignored. If `compare_args` is None, **all** args are checked (strict verbatim match — only use when the skill dictates exact arg shape).
+
+### Output file reading (transcript → disk)
+
+For `compliance` assertions on output artifacts (e.g., `produced_valid_skill` checks a SKILL.md frontmatter), the grader cannot rely solely on the transcript — the transcript shows the agent's `Write` tool_use event with `input.file_path`, but the file's actual on-disk content is what the assertion grades. Pattern:
+
+1. Parse transcript for `Write` tool_use events; collect `input.file_path` values.
+2. For each assertion requiring output content, read the corresponding file from disk (or the `last_assistant_message` if the assertion is about the assistant's response, not a file).
+3. Pass file content (truncated to 5000 chars if longer) + assertion text to the LLM judge.
+
+This pattern matches Anthropic's recommendation to grade outcomes, not paths: the grader checks what the agent *produced*, not which tools it used.
+
+### Tool name portability (scope decision)
+
+Iter-3 targets **Claude Code only** for the runtime (consistent with iter-2's `run_iteration_2.py`). Tool-name mapping for kimi-code (`bash`), Codex (`shell`), and other runtimes is deferred to iter-3.1 — extending now would require parallel grader implementations and per-runtime transcripts. The `grader.py` should expose a `--runtime` flag defaulting to `claude_code` so the tool-name registry is pluggable; iter-3 ships with only the Claude Code entry populated.
 
 ### LLM-as-judge prompt (synthesized from tau-bench + Anthropic)
 
@@ -405,7 +430,7 @@ Specific anti-patterns (SkillsBench rejects PRs that have these):
 |---|---|---|
 | Domain | Cross-domain (8 categories, 87 tasks) | Marketplace routing (1 category, 18 tasks) |
 | Verifier | Pure deterministic pytest (outcome only) | Hybrid: code + model-based (outcome + compliance + quality) |
-| Judge model | None (deterministic) | Sonnet 4.5 (first-choice) or Haiku 4.5 (calibration fallback) |
+| Judge model | None (deterministic) | `sonnet` (MiniMax-M3) first-choice, `haiku` (nex-agi/nex-n2-pro) fallback |
 | Trials per task | 3 | 1 |
 | Lift signal | Binary pass/fail | Per-assertion points summing to 100 |
 | Anti-cheat | No `/tests`/`/solution` access | N/A (single-agent, isolated) |
@@ -512,7 +537,9 @@ Iteration-3 needs **four new scripts** + content authoring + schema work:
    treated as FAIL for scoring but flagged for human review (the human-review
    queue lives in `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3/unknowns.md`,
    one row per UNKNOWN verdict with eval_id, assertion_id, evidence excerpt,
-   and review status). There is **no** NOT_APPLICABLE state in iter-3 —
+   and review status). The `Assertion` Pydantic model carries an `unknown: bool`
+   field; the grader sets it to `true` and emits `passed: false` for that
+   assertion. There is **no** NOT_APPLICABLE state in iter-3 —
    `consultation` assertions are binary by design (the skill was read or
    wasn't) and are graded code-based, so "not_applicable" cannot arise.
 

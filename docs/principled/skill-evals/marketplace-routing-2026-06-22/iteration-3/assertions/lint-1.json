@@ -1,0 +1,53 @@
+{
+  "eval_id": "lint-1",
+  "expected_skill": "marketplace-validator",
+  "utterance": "lint the marketplace and check the frontmatter",
+  "category_class": "local-meta",
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  },
+  "assertions": [
+    {
+      "id": "consulted_marketplace_validator",
+      "type": "consultation",
+      "category": "instruction_following",
+      "points": 40,
+      "grader": "code",
+      "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before running any lint command (the validator encodes the canonical frontmatter schema and lint rules the agent would otherwise have to guess)"
+    },
+    {
+      "id": "applied_validator_script",
+      "type": "compliance",
+      "category": "instruction_following",
+      "points": 30,
+      "grader": "model",
+      "text": "the agent should run the validator's documented script (python .agents/skills/marketplace-validator/scripts/validate_marketplace.py) rather than improvising a regex-based check; the SKILL.md explicitly says to use the script"
+    },
+    {
+      "id": "reported_per_skill_results",
+      "type": "structure",
+      "category": "instruction_following",
+      "points": 30,
+      "grader": "code",
+      "text": "the lint output should be structured per-skill (one row per marketplace skill with name, status, and any specific finding), not a single aggregate count"
+    },
+    {
+      "id": "found_no_unsuppressed_errors",
+      "type": "structure",
+      "category": "goal_completion",
+      "points": 50,
+      "grader": "code",
+      "text": "the lint output should report zero unsuppressed validation errors across all marketplace skills (the marketplace is healthy per iter-1 baseline 7W)"
+    },
+    {
+      "id": "named_specific_findings",
+      "type": "quality",
+      "category": "goal_completion",
+      "points": 50,
+      "grader": "model",
+      "text": "the response should name at least one specific finding (even if it's 'all skills pass'), referencing skill paths and line numbers when applicable, not a generic 'looks good' summary"
+    }
+  ],
+  "reference_solution": "A complete answer: agent reads marketplace-validator/SKILL.md, runs `python .agents/skills/marketplace-validator/scripts/validate_marketplace.py`, parses the JSON output, and reports a per-skill table. With no actual errors in the marketplace, the report should state the count of skills validated, the count passing, and any informational warnings (e.g. skill descriptions > 1024 chars). Reference solution for a clean run: 'Linted 35 skills; 35 passed; 0 errors; 2 warnings (description length).'"
+}

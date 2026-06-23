@@ -1,0 +1,54 @@
+{
+  "eval_id": "audit-1",
+  "expected_skill": "marketplace-health",
+  "utterance": "audit the marketplace and run the pre-release health check",
+  "category_class": "local-meta",
+  "weight": {
+    "instruction_following": 0.7,
+    "goal_completion": 1.0
+  },
+  "_weight_rationale": "marketplace-health is workflow-encoding (it dictates a multi-step audit procedure) but the user-facing question is mostly 'is it healthy?' — slightly biased toward GC (did you find anything bad?) over IF (did you follow the exact steps?)",
+  "assertions": [
+    {
+      "id": "consulted_marketplace_health",
+      "type": "consultation",
+      "category": "instruction_following",
+      "points": 30,
+      "grader": "code",
+      "text": "the agent should read .agents/skills/marketplace-health/SKILL.md before running any health check (the skill defines the audit dimensions)"
+    },
+    {
+      "id": "ran_full_audit_pipeline",
+      "type": "compliance",
+      "category": "instruction_following",
+      "points": 40,
+      "grader": "model",
+      "text": "the agent should run the full marketplace-health audit pipeline (manifest consistency + license coverage + cross-reference integrity + docs-reflect-state) rather than checking just one dimension"
+    },
+    {
+      "id": "produced_audit_report_at_canonical_path",
+      "type": "structure",
+      "category": "instruction_following",
+      "points": 30,
+      "grader": "code",
+      "text": "the audit report should be written to docs/principled/marketplace-health/<date>.md (the canonical path per marketplace-health/SKILL.md) and contain a findings table"
+    },
+    {
+      "id": "no_drift_detected",
+      "type": "structure",
+      "category": "goal_completion",
+      "points": 40,
+      "grader": "code",
+      "text": "the audit should report zero high-severity findings (manifest drift, license gaps, broken cross-references); marketplace is currently healthy per the latest run"
+    },
+    {
+      "id": "specific_actionable_findings",
+      "type": "quality",
+      "category": "goal_completion",
+      "points": 60,
+      "grader": "model",
+      "text": "the response should name specific medium/low findings (if any) with file paths and remediation steps, not just a binary 'healthy' verdict"
+    }
+  ],
+  "reference_solution": "A complete answer: agent reads marketplace-health/SKILL.md, executes all 4 audit dimensions, writes `docs/principled/marketplace-health/<today>.md` with a findings table. Healthy marketplace shows: 0 HIGH, 0 MEDIUM, ≤3 LOW findings (e.g. skill descriptions > 1024 chars, missing when_to_use clauses on legacy skills). The summary in chat should link to the report file."
+}

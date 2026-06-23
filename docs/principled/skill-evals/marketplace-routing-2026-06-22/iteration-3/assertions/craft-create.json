@@ -1,0 +1,53 @@
+{
+  "eval_id": "craft-create",
+  "expected_skill": "crafting-skills",
+  "utterance": "create a new agent skill for my project",
+  "category_class": "marketplace",
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  },
+  "assertions": [
+    {
+      "id": "consulted_crafting_skills",
+      "type": "consultation",
+      "category": "instruction_following",
+      "points": 30,
+      "grader": "code",
+      "text": "the agent should read skills/crafting-skills/SKILL.md OR invoke the Skill tool on crafting-skills before drafting the new skill's frontmatter"
+    },
+    {
+      "id": "applied_routing_pattern",
+      "type": "compliance",
+      "category": "instruction_following",
+      "points": 40,
+      "grader": "model",
+      "text": "the new skill's frontmatter description should follow the Compendium's 'Load when… / Use when… / Do NOT use for… (use Y)' structure with concrete trigger phrases, not a generic capability statement"
+    },
+    {
+      "id": "decision_router_top",
+      "type": "structure",
+      "category": "instruction_following",
+      "points": 30,
+      "grader": "code",
+      "text": "the new SKILL.md body should start with a Decision Router / Hub Contract section that enumerates sibling skills and routes to them by intent"
+    },
+    {
+      "id": "produced_valid_skill",
+      "type": "structure",
+      "category": "goal_completion",
+      "points": 60,
+      "grader": "code",
+      "text": "the output file parses as a valid SKILL.md with name + description + license frontmatter, and the body markdown has at least one actionable section"
+    },
+    {
+      "id": "no_recipe_overfit",
+      "type": "quality",
+      "category": "goal_completion",
+      "points": 40,
+      "grader": "model",
+      "text": "the new skill should not be a verbatim recipe copy of an existing skill (e.g. 'follow the PDF parsing tutorial'); it should encode project-specific guidance the base agent lacks"
+    }
+  ],
+  "reference_solution": "A complete answer that passes all assertions: the agent reads crafting-skills/SKILL.md, then drafts `skills/my-new-skill/SKILL.md` with: (a) frontmatter containing `name:`, `description:` following the Load/Use/Do NOT template with trigger phrases like 'create', 'build', 'design', (b) body starting with a Decision Router section pointing to sibling skills, (c) ≥1 actionable workflow section, (d) project-specific guidance not present in any existing marketplace skill."
+}

@@ -148,7 +148,7 @@ per-eval `lifts.total_lift.overall_delta < 0pp`) is unchanged.
   hurts) and the headline is dominated by deterministic
   `filesystem_access_lift` (+13.75pp mean).
 - **Vendor-disjoint validation is structurally blocked** on the
-  current `<private inference gateway>` proxy (single-family gateway; only
+  current `<private inference gateway>` proxy (single-model gateway; only
   the external judge vendor alias is vendor-disjoint and rate-limited). iter-8A unblocks
   this via a local mock; v0.0.6+ LiteLLM deployment unblocks it for
   the real proxy. iter-8-PLAN.md is preserved in the active tree

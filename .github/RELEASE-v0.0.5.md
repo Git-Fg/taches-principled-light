@@ -121,7 +121,7 @@ Full report: [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](..
   when the skill body is hidden vs exposed. Our `consultation_lift`
   measurement deliberately uses body-hidden to avoid this inflation.
 - **Proxy architecture finding**: the proxy at
-  `<private inference gateway>` is a single-family gateway — every alias in the
+  `<private inference gateway>` is a single-model gateway — every alias in the
   vendor catalog (20 vendor aliases) resolves to the same
   configured backend. The tier aliases are proxy tier
   labels, not different models. Only the external judge vendor alias is a genuine second

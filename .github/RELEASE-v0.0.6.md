@@ -68,7 +68,7 @@ Same as v0.0.5 — no changes to the public surface:
     `+17.5pp sec-audit` grader swing.
   - **LiteLLM** (51,259 stars, native MCP + A2A, drop-in OpenAI
     compat, 8ms P95 at 1k RPS) as the recommended self-hosted
-    replacement for the structurally-single-family
+    replacement for the structurally-single-model
     `<private inference gateway>` proxy; unblocks iter-6 vendor-disjoint
     validation in v0.0.6+ once deployed.
 - **CI release-gate job** (v0.0.7 release-gate): triggered on
@@ -200,7 +200,7 @@ cross-confirmations of the iter-7 +21.88pp headline:
   lift, 0 hurts) and the headline is dominated by deterministic
   `filesystem_access_lift` (+13.75pp mean).
 - **Vendor-disjoint validation is structurally blocked** on the
-  current `<private inference gateway>` proxy (single-family gateway; only
+  current `<private inference gateway>` proxy (single-model gateway; only
   the external judge vendor alias is vendor-disjoint and rate-limited). iter-8A
   unblocks this via a local mock; v0.0.6+ LiteLLM deployment
   unblocks it for the real proxy.

@@ -158,7 +158,7 @@ This is a cheap 1-hour experiment that surgically disambiguates the two suspecte
 
 ### Problem
 
-The current proxy at `<private inference gateway>` is structurally a single-family
+The current proxy at `<private inference gateway>` is structurally a single-model
 gateway (20 vendor aliases — all serve `the configured backend`; only
 `an external judge vendor` is vendor-disjoint and is rate-limited). This blocks iter-6's
 vendor-disjoint validation goal and is a real architectural constraint on
@@ -210,7 +210,7 @@ the marketplace evaluation methodology going forward.
 |---------|-------------------|------------------|
 | **mcp-assert** (snapshot/replay) for MCP stdio + **<mock grader>** for OpenAI HTTP | Surgical disambiguation of the sec-audit +17.5pp grader swing (1-hour experiment); full snapshot/replay determinism for both halves of the eval stack | Real MCP gateway via LiteLLM MCP support; `mcp-assert snapshot` mode becomes the CI regression gate |
 | Claude Code CLI flag inventory | iter-8B design needs `--mcp-config`; iter-8C design could use `--max-turns` for budget | iter-N+1 designs benefit from `--plugin-dir` for pinned reproducibility |
-| LiteLLM as multi-model gateway | Unblocks iter-6 vendor-disjoint validation | Replaces the single-family `<private inference gateway>` proxy |
+| LiteLLM as multi-model gateway | Unblocks iter-6 vendor-disjoint validation | Replaces the single-model `<private inference gateway>` proxy |
 
 ---
 

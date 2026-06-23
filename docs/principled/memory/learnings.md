@@ -28,7 +28,7 @@ Distilled from plan artifacts and session work. Each entry: category + confidenc
 **Insight:** BerriAI/litellm (51,259 stars as of 2026-06-23) is the only A-grade gateway that combines native MCP gateway + A2A protocol + drop-in OpenAI compat + single-Docker self-host. Bifrost is B-grade (partial MCP/A2A support).
 **Evidence:** GitHub API: 51,259 stars. `mcp__mcp-coderepo__github_search` confirmed `litellm/a2a_protocol/{client,handler,exception_mapping_utils}.py` and `litellm/proxy/a2a/agent_card.py` and `litellm/proxy/agent_endpoints/a2a_endpoints.py` and dashboard `a2a_send_message.tsx`. Bifrost has only partial MCP/A2A support per the supplements table.
 **Action:** Use LiteLLM as the canonical self-host option when
-`<private inference gateway>`'s structural single-family limitation
+`<private inference gateway>`'s structural single-model limitation
 needs to be removed. Bifrost is fallback only.
 
 ---
@@ -74,7 +74,7 @@ needs to be removed. Bifrost is fallback only.
 **Source:** iter-6 REPORT.md; iter-8 PLAN §8A
 **Insight:** iter-6 needed an external judge vendor (vendor-disjoint
 from the configured solver) for vendor-disjoint validation, but the
-inference proxy `<private inference gateway>` is a single-family
+inference proxy `<private inference gateway>` is a single-model
 gateway, so iter-6 returned 503 for all 12 grading cells. Without a
 multi-family proxy (LiteLLM), vendor-disjoint validation is
 structurally impossible.

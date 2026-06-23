@@ -26,7 +26,7 @@ The intermediate `INTERIM-FINDINGS.md` is SUPERSEDED and archived at
 
 | Doc | Purpose |
 |-----|---------|
-| `SKILL-DISCOVERY-ARCHITECTURE.md` | **Foundational.** Documents how Claude Code actually loads skills. Critical finding: `--add-dir` controls cwd + file access only; installed plugins load their skills into `slash_commands` globally regardless of cwd. iter-3's `without_skill` baseline is contaminated; H1 (plugin shadowing) IS the dominant cause of Bucket A3. |
+| `SKILL-DISCOVERY-ARCHITECTURE.md` | **Foundational.** Documents how Claude Code actually loads skills. Critical findings: `--add-dir` controls cwd + file access only; installed plugins load their skills into `slash_commands` globally regardless of cwd; the iter-3/iter-3.1 plugin cache is **stale (v2.0.0 from 2026-06-21)** and doesn't match the v0.0.3 working marketplace, invalidating parts of the iter-3 results. iter-3's `without_skill` baseline is contaminated; H1 (plugin shadowing) IS the dominant cause of Bucket A3. |
 | `iteration-3-design.md` | Synthesizes 6 reference frameworks (SkillsBench, Tessl, tau-bench, Lee et al. ICML 2026, Khullar 2026, Anthropic/Microsoft best practices) into the iter-3 design |
 | `iteration-3/DISCOVERY-INVESTIGATION.md` | Re-evaluates skill rewrites: they target the wrong root cause but remain useful improvements |
 | `iteration-3/BUCKET-A-INSPECTION.md` | Splits the 8 Bucket A neutrals into A1 (proxy errors) / A2 (partial discovery) / A3 (true discovery failures) |

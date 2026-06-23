@@ -130,11 +130,32 @@ The fix is not in the skill descriptions — it's in the agent's general routing
 - Plugin marketplaces: <https://code.claude.com/docs/en/plugin-marketplaces>
 - Model-Harness-Fit (Bustamante 2026): <https://www.nicolasbustamante.com/blog/model-harness-fit> — independent analysis of how harness conventions become part of the model's behavior
 
-## Doc version
+## Plugin cache is stale — additional v1.2 finding (2026-06-23)
 
-v1.1 — 2026-06-23. **Corrected** after iter-3.1 transcript inspection revealed that plugin skills ARE in scope globally (the `--add-dir` mechanism only controls cwd and file access, not skill listing). Original v1 (same date) incorrectly claimed H1 (plugin shadowing) was N/A in iter-3. The corrected analysis: H1 IS active and is the dominant cause of Bucket A3 failures.
+During iter-3.1 inspection, an additional issue was discovered:
+
+- `~/.claude/plugins/installed_plugins.json` records version `2.0.0` installed on `2026-06-21T13:57:59.772Z`, with gitCommitSha `e4cb9510de11d8c97fd1129418a97137440627cb`.
+- The cached plugin lives at `/Users/felix/.claude/plugins/cache/taches-principled-light/taches-principled-light/2.0.0/`.
+- That cache has 22 SKILL.md directories with **different names** than the current working directory:
+  - v2.0.0 cache has: `ddd`, `fpf`, `ideation`, `kaizen`, `mcp-expertise`, `refine`, `rules-orchestration`, `sadd`, `session-analytics`, `skill-authoring`, `subagent-orchestration`, `wiki`
+  - v0.0.3 work has: `crafting-skills`, `engineering-mcp`, `generating-ideas`, `managing-rules`, `managing-wiki`, `orchestrating-subagents`, `evaluating-skills`, `applying-guardrails`, `analyzing-sessions`, `deep-research`, `reasoning-from-principles`, `restructuring-code`, `reviewing-and-polishing`, `solving-competitively`, `general-critic`, `design-hub`
+- The agent's `slash_commands` listing reflects the **v2.0.0 cache**, not the v0.0.3 working directory.
+- v2.0.0 `skill-authoring` description explicitly says "NOT for: creating new skills from scratch (use superpowers' `writing-skills`)" — which is why iter-3.1's `craft-create` without_skill agent picked `superpowers:writing-skills`. The cached description told it to.
+
+### Implication
+
+**iter-3 and iter-3.1 results were evaluated against a stale plugin cache.** The mean +8.69pp lift and Bucket A3 failures reflect v2.0.0 marketplace behavior, not v0.0.3 behavior. To re-run iter-3 against the current marketplace:
+
+1. Refresh the plugin cache: `claude plugin update taches-principled-light` or `rm -rf ~/.claude/plugins/cache/taches-principled-light` and reinstall.
+2. Re-run the eval harness.
+3. Compare new vs old lift to measure the v0.0.3 skill changes' actual impact.
+
+### Fix
+
+The eval harness should add a cache-refresh step before each run, or install the marketplace plugin from the working directory (not from the cache). This is now a documented requirement for iter-4.
 
 ## Changelog
 
+- **v1.2 (2026-06-23)**: identified stale plugin cache (`v2.0.0` from 2026-06-21) as the source of mismatched slash_commands. iter-3 and iter-3.1 results reflect v2.0.0 marketplace behavior, not v0.0.3. Cache refresh required for iter-4.
 - **v1.1 (2026-06-23)**: corrected after iter-3.1 partial transcript inspection. H1 (plugin shadowing) IS active because all installed plugins load into slash_commands globally. Without_skill baseline is contaminated — it has the same slash_commands as with_skill. iter-3 measures marginal lift of Read-driven discovery given listing-driven discovery is already in scope.
 - **v1 (2026-06-23)**: initial draft. Incorrectly claimed H1 was N/A.

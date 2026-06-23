@@ -6,6 +6,12 @@
 **Judge**: `haiku` for all 17 evals (homogeneous; corrected from initial mixed run)
 **Method**: Assertion-based grading per Tessl framework ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1))
 
+## ⚠️ CAVEAT — stale plugin cache
+
+This report was generated against a **stale plugin cache** (`~/.claude/plugins/cache/taches-principled-light/taches-principled-light/2.0.0/`, installed 2026-06-21) that has 22 SKILL.md directories with **different names** than the v0.0.3 working marketplace. The agent's `slash_commands` listing reflected the v2.0.0 cache, not the working directory.
+
+The qualitative pattern (6 lifts / 11 neutrals / 0 hurts, mean +8.69pp) may still be informative, but **specific skill-name references in this report are stale**. See [`../SKILL-DISCOVERY-ARCHITECTURE.md`](../SKILL-DISCOVERY-ARCHITECTURE.md) v1.2 and [`../iteration-3.1/RESULTS.md`](../iteration-3.1/RESULTS.md) for the full analysis and recommended iter-4 fix (cache refresh + re-run).
+
 ## ⚠️ CORRECTION NOTICE
 
 This report **supersedes** the earlier `+4.21pp / 5 lifts / 9 neutrals / 3 hurts` version. A self-critic review (general-critic, 8 HIGH + 8 MEDIUM findings) surfaced a critical bug in the grader's consultation assertion: it accepted ANY `SKILL.md` read as a "consultation" pass, including reads of plugin skills like `superpowers:writing-skills`. This inflated without-skill scores and produced 3 spurious `skill_hurts` results.

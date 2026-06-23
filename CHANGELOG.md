@@ -21,7 +21,7 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
   - `DISCOVERY-INVESTIGATION.md` — re-evaluates the 2 skill rewrites: KEEP both (they improve routing clarity) but don't expect them to fix Bucket A neutrals — they target the wrong root cause.
   - `iteration-3-design.md` — synthesizes 6 reference frameworks (SkillsBench arXiv 2602.12670v4, Tessl arXiv 2606.17819v1, tau-bench, Lee et al. ICML 2026 bias-adjusted estimator, Khullar 2026 self-attribution, Anthropic/Microsoft skill best practices) into the iter-3 design.
   - `INDEX.md` (new) — top-level discovery surface for the eval set; 4 iterations summarized.
-- **Iter-3.1 per-skill `--add-dir` experiment** (`docs/.../iteration-3.1/`): tests whether Bucket A3 discovery failures are caused by (H1) plugin shadowing, (H2) description surfaces, or (H3) choice paralysis. 5 evals × 3 configs = 15 runs. In progress as of release; full write-up committed separately when complete.
+- **Iter-3.1 per-skill `--add-dir` experiment** (`docs/.../iteration-3.1/`): tests whether Bucket A3 discovery failures are caused by (H1) plugin shadowing, (H2) description surfaces, or (H3) choice paralysis. 5 evals × 3 configs = 15 runs. **9 of 15 completed** before the background script terminated; 6 timed out at 180s/run. Verdict: H1 confirmed for `craft-create` (agent picked `superpowers:writing-skills`); H2 confirmed for `craft-review` (agent picked wrong marketplace skill); H3 not dominant; **bonus H4** — in 6 of 9 runs the agent invoked zero skills (routing-heuristic failure upstream of marketplace configuration). **Critical caveat**: the iter-3 plugin cache is stale (v2.0.0 from 2026-06-21); iter-4 must refresh the cache before re-running.
 
 ### Fixed
 

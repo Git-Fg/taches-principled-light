@@ -26,6 +26,13 @@ WORKSPACE = REPO / "docs/principled/skill-evals/marketplace-routing-2026-06-22"
 ITER_DIR = WORKSPACE / "iteration-2"
 EVALS_FILE = WORKSPACE / "evals/evals.json"
 CLAUDE = "/Users/felix/.local/bin/claude"
+# Per project convention, iteration evals target the Haiku chain on the
+# inference-gateway proxy (VPS port 3456). The default model (Opus) was
+# hitting 529 Overloaded errors (see iteration-2/API-OVERLOAD-INCIDENT.md).
+# The proxy is configured via ~/.claude/settings.json (ANTHROPIC_BASE_URL +
+# ANTHROPIC_AUTH_TOKEN + CLAUDE_CODE_SUBAGENT_MODEL=haiku); we set --model
+# explicitly here so the choice is visible at the subprocess call site.
+CLAUDE_MODEL = "haiku"
 TIMEOUT_S = 300
 EMPTY_PROJECT = Path("/tmp/empty-claude-project")
 REQUIRED_EVAL_KEYS = ("id", "category", "expected", "utterance")
@@ -83,6 +90,32 @@ def extract_skill_tool_invocations(events: list[dict]) -> list[str]:
     return out
 
 
+def preflight() -> bool:
+    """Sanity-check that the inference gateway is reachable on Haiku before
+    launching the full 36-run sweep. Returns True if a one-shot echo responds
+    without an API error.
+    """
+    print(f"[iter-2] preflight: {CLAUDE} --model {CLAUDE_MODEL} 'echo ok'", flush=True)
+    cmd = [CLAUDE, "--print", "--output-format", "stream-json",
+           "--model", CLAUDE_MODEL, "--add-dir", str(REPO),
+           "--dangerously-skip-permissions", "echo ok"]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    except subprocess.TimeoutExpired:
+        print("[iter-2] preflight FAIL: 60s timeout (gateway unreachable?)", flush=True)
+        return False
+    api_err = any(
+        "529" in line or "Overloaded" in line
+        for line in result.stdout.splitlines()
+    )
+    if result.returncode != 0 or api_err:
+        print(f"[iter-2] preflight FAIL: rc={result.returncode} api_err={api_err}", flush=True)
+        print(result.stderr[:500], flush=True)
+        return False
+    print("[iter-2] preflight OK", flush=True)
+    return True
+
+
 def run_one(utterance: str, with_skill: bool, eval_dir: Path) -> dict:
     """Run one eval configuration. Returns parsed metrics."""
     cfg = "with" if with_skill else "without"
@@ -93,6 +126,7 @@ def run_one(utterance: str, with_skill: bool, eval_dir: Path) -> dict:
     cmd = [
         CLAUDE, "--print",
         "--output-format", "stream-json",
+        "--model", CLAUDE_MODEL,
         "--add-dir", add_dir,
         "--dangerously-skip-permissions",
         utterance,
@@ -143,8 +177,13 @@ def main() -> int:
             print(f"[iter-2] FATAL: eval index {i} missing keys: {missing}", file=sys.stderr)
             return 2
     print(f"[iter-2] running {len(evals)} evals x 2 configs = {len(evals) * 2} runs")
+    print(f"[iter-2] target model: {CLAUDE_MODEL} via inference-gateway proxy (port 3456)")
     print(f"[iter-2] timeout per run: {TIMEOUT_S}s, total wall budget ~{len(evals) * 2 * TIMEOUT_S // 60} min")
     print(f"[iter-2] workspace: {ITER_DIR}")
+
+    if not preflight():
+        print("[iter-2] aborting: preflight failed; will retry when gateway recovers", file=sys.stderr)
+        return 3
 
     all_results = []
     for i, ev in enumerate(evals, 1):

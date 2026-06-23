@@ -13,6 +13,14 @@ license: MIT
 
 Route to the right design sub-skill based on user intent.
 
+## Hub Contract (cross-agent compatibility)
+
+This file is a **router**, not a workflow. Each of the 5 sub-skills below is a self-contained, independently-discoverable skill per the [Agent Skills open standard](https://agentskills.io/). Compliant agents (Claude Code, Cursor, Codex, Gemini CLI, VS Code Copilot) see all 6 skills (this hub + 5 leaves) in their startup index and route directly to the right leaf without consulting this body.
+
+The hub exists for **two audiences**: (a) agents that don't recurse into subdirectories and need a single entry point that mentions every leaf, and (b) humans and `agent-device` workflows that want the workflow order, routing table, and companion-skill links in one place.
+
+If you're an agent that recursed here from a top-level scan: you don't need this router. Match the user's intent directly against the sub-skill descriptions — they all have `Do NOT use for X (use Y)` negative triggers that disambiguate siblings.
+
 ## Workflow Order
 
 The design pipeline flows in this order:

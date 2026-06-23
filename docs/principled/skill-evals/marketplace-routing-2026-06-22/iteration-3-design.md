@@ -27,7 +27,7 @@ The marketplace has not shipped `grader.py` yet (the 8-stage loop in `evaluating
 
 ## Per-eval structure
 
-Each eval becomes a JSON file with three required fields and a list of assertions. Adopt the [Gorinova et al. 2026 rubric schema](https://arxiv.org/abs/2606.17819) ([huggingface dataset](https://huggingface.co/datasets/tesslio/task-evals-for-skills)) as the canonical format, simplified for our 18 marketplace evals:
+Each eval becomes a JSON file with three required fields and a list of assertions. Adopt the [Gorinova et al. 2026 rubric schema](https://arxiv.org/abs/2606.17819) as the canonical format, simplified for our 18 marketplace evals (see also the related [tesslio/task-evals-for-skills dataset](https://huggingface.co/datasets/tesslio/task-evals-for-skills) as a separate Tessl reference):
 
 ```json
 {

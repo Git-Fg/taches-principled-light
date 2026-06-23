@@ -9,11 +9,11 @@ license: MIT
 
 ## Routing Guidance
 
-- AFTER plan-lifecycle EXECUTE mode completes and `SUMMARY.md` is created (PLAN-ARCHIVE).
+- AFTER plan-lifecycle EXECUTE mode completes and `SUMMARY.md` is created, OR a release tag + CHANGELOG entry + `grading_summary.json` is in place for marketplace-release cycles (PLAN-ARCHIVE). See `AGENTS.md` "Project Closure Convention".
 - On long-running VPS instances (30+ days) when memory files have accumulated (MEMORY-AUDIT, MEMORY-DEDUP, MEMORY-CLEAN).
 - When the user wants to preserve plan artifacts before starting fresh (PLAN-ARCHIVE).
 - When stale memory entries reference deleted projects or agents (MEMORY-ARCHIVE, MEMORY-CLEAN).
-- Do NOT use for ongoing plans (no `SUMMARY.md` yet) — plan-lifecycle EXECUTE mode first.
+- Do NOT use for ongoing plans (no `SUMMARY.md`, no release tag, no `grading_summary.json` yet) — plan-lifecycle EXECUTE mode first or, for marketplace-release cycles, run the release before archival.
 - Do NOT use for auditing rules files — use managing-rules AUDIT mode.
 - Do NOT use for capturing general session insights — use reviewing-and-polishing MEMORIZE.
 
@@ -68,11 +68,12 @@ The closure step in the plan lifecycle. Preserves plan artifacts and distills le
 
 #### Phase 1: Discovery
 
-1. Locate target plan artifacts: `PLAN.md`, `SUMMARY.md`, related scratchpad files.
+1. Locate target plan artifacts: `PLAN.md`, `SUMMARY.md` (if present), `CHANGELOG.md` release entries, `grading_summary.json` (if present), related scratchpad files.
 2. Identify the milestone/phase from `ROADMAP.md` or directory structure.
 3. **HARD PRECONDITION CHECK — ABORT if not satisfied:**
-   - **A. Plan completed:** `SUMMARY.md` MUST exist at the same path as `PLAN.md`. If missing, emit `{"status": "failed", "reason": "no-summary", "retry_possible": false, "completed_portion": "discovery", "remediation": "Run plan-lifecycle EXECUTE mode to produce SUMMARY.md, or run /archive with --abandoned flag if the plan was intentionally abandoned."}` and STOP. Do NOT proceed.
+   - **A. Plan completed (plan-lifecycle discipline):** `SUMMARY.md` MUST exist at the same path as `PLAN.md`. If missing, emit `{"status": "failed", "reason": "no-summary", "retry_possible": false, "completed_portion": "discovery", "remediation": "Run plan-lifecycle EXECUTE mode to produce SUMMARY.md, or run /archive with --abandoned flag if the plan was intentionally abandoned."}` and STOP. Do NOT proceed.
    - **B. Plan abandoned (explicit override):** If user passes `--abandoned` or `--force`, accept the plan as abandoned. Archive bundle includes a `STATUS.md` placeholder noting the abandonment and reason (sourced from the user); learnings extraction is limited to whatever `PLAN.md` captured.
+   - **C. Plan closed via alternative marker (CHANGELOG-as-summary convention):** For projects that do NOT use plan-lifecycle `SUMMARY.md` discipline, the closure marker is the CHANGELOG entry for the relevant release tag PLUS a `grading_summary.json` (or equivalent evaluation artifact such as `RELEASE-v*.md`). Detection: no `SUMMARY.md` at the `PLAN.md` path AND a `CHANGELOG.md` release entry exists referencing the work AND one of `grading_summary.json` / `RELEASE-v*.md` / `iter-N-*/grading_summary.json` exists. Accept and proceed; archive bundle `STATUS.md` MUST document (1) the release tag + commit SHA, (2) the CHANGELOG entry that serves as the closure record, and (3) the path to `grading_summary.json` or equivalent. Learnings extraction sources from `PLAN.md` + CHANGELOG entry + `grading_summary.json` together. This path is the standard for marketplace-release cycles (precedent: `docs/principled/attic/2026-06-22-marketplace-routing-v0.0.6/`). See `AGENTS.md` "Project Closure Convention".
 **Execution flags — there are no flag-based auto-confirm switches.** PLAN-ARCHIVE recognizes `--abandoned` (or `--force`) to override the `SUMMARY.md` precondition. MEMORY-ARCHIVE and MEMORY-CLEAN recognize `--days N` to override the default 30-day age threshold. The agent always presents a planned-action summary and waits for the user to say "yes" or "proceed" before any file move or delete. This is the safety boundary for all destructive operations. **Enforcement:** Phases 2 (Archive) and 3 (Condense) MUST NOT execute until Phase 1's precondition passes. This is a hard gate, not a warning.
 
 #### Phase 2: Archive
@@ -84,7 +85,7 @@ The closure step in the plan lifecycle. Preserves plan artifacts and distills le
 
 #### Phase 3: Condense
 
-1. Read all archived artifacts (`PLAN.md`, `SUMMARY.md`, scratchpad files).
+1. Read all archived artifacts (`PLAN.md`, `SUMMARY.md` if present, `CHANGELOG.md` entry if option C applies, `grading_summary.json` if present, scratchpad files).
 2. Extract learnings per the taxonomy at `references/learning-taxonomy.md` — you MUST read this reference BEFORE classifying any learning. Do NOT skip it.
 3. Classify each learning by category (TECHNICAL, PROCESS, PATTERN, ANTI-PATTERN, DECISION) and confidence (1–5).
 4. Append learnings to `docs/principled/memory/learnings.md` with date and plan reference.
@@ -103,7 +104,7 @@ After archival, consider starting a new cycle with `plan-lifecycle PLAN mode` to
 ### Boundary Policy
 
 Do NOT archive:
-- Plans currently being executed (no `SUMMARY.md`)
+- Plans currently being executed (no `SUMMARY.md`, no release tag, no `grading_summary.json` yet)
 - Plans from external projects
 - Generated code or build artifacts — only plan documents
 

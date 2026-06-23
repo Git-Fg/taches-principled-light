@@ -74,3 +74,9 @@ Four local meta-marketplace skills live in `.agents/skills/` for maintaining the
 | `releasing-marketplace` | 7-step approval-gated release orchestrator | (workflow, no script) |
 
 Run `marketplace-health` before any release cut. It catches cross-reference bugs, license gaps, and stale doc claims that the per-skill validator misses.
+
+## Project Closure Convention
+
+For this project, the durable closure marker for a completed work cycle is **CHANGELOG entry + release tag + `grading_summary.json`**. The plan-lifecycle `SUMMARY.md` is optional unless a specific skill explicitly requires it. For archive bundles, `STATUS.md` pointing to the release tag + CHANGELOG entry is an acceptable alternative to `SUMMARY.md` (precedent: `docs/principled/attic/2026-06-22-marketplace-routing-v0.0.6/STATUS.md`).
+
+Rationale: marketplace release cycles use CHANGELOG entries + release tags (e.g., commit `bd04ae0` + `v0.0.6` tag) as the durable summary. `SUMMARY.md` was designed for multi-phase feature delivery, not marketplace release cycles. Codified from `docs/principled/memory/learnings.md` entry titled `[PROCESS] [conf 4] plan-archive workflow needs adaptation for CHANGELOG-as-summary projects`.

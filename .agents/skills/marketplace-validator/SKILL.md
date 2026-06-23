@@ -1,18 +1,25 @@
 ---
 name: marketplace-validator
-description: "Load when linting SKILL.md frontmatter and body — schema, name format, description length, body size, stale platform refs, hardcoded tool names. Use when the user says 'lint the marketplace', 'validate before commit', or 'check frontmatter'. Do NOT use for authoring (use crafting-skills) or the aggregated marketplace audit pass (use marketplace-health)."
-when_to_use: |
-  Use before any commit that touches skills/, before any release cut, and on
-  request when sanity-checking a single skill. The script is the spine of
-  marketplace maintenance.
-argument-hint: "[skill-path] [--json] [--strict]"
-allowed-tools: Read, Bash
-license: MIT
+description: "Load when linting the full marketplace for spec compliance — schema, name format, description length, body size, stale refs, hardcoded tool names. Use for 'lint the marketplace', 'check all skills', 'pre-release lint'. Do NOT use for single-skill pre-commit checks (use crafting-skills), aggregated audit (use marketplace-health), or authoring."
 ---
 
 # Marketplace Validator
 
 Lint the marketplace for spec compliance and local-convention drift. Built on a Python stdlib script (no dependencies) that runs in <1s on the full 31-skill catalog.
+
+## Scope router (decide FIRST)
+
+Identify the scope before reading further. Wrong scope = wrong workflow. The iter-3 behavioral eval (June 2026, N=2) showed this skill **polarizes by scope**: it lifts +45pp on full-marketplace utterances but hurts -20pp on single-skill pre-commit utterances.
+
+| Scope | Utterance shape | Workflow |
+|---|---|---|
+| **Full marketplace lint** | "lint the marketplace", "validate all skills", "run the pre-release lint", "check the catalog" | `python scripts/validate.py skills/` — no path, default settings. |
+| **Single-skill lint** | "lint this skill", "check this skill's frontmatter" | `python scripts/validate.py skills/<name>/` — pass the path. |
+| **Pre-commit quick check** | "is this skill valid before I commit", "will this skill pass the linter" | Use `crafting-skills` OPTIMIZE mode or read the SKILL.md and check the 5 most common failure modes inline. This skill's full output is overkill. |
+| **CI / pre-commit hook** | (programmatic) | `python scripts/validate.py skills/<name>/ --json --strict` — exit code 1 = fail. |
+| **Unclear** | "is this skill valid" | Run on the single skill path, default settings. |
+
+**Default for ambiguous single-skill utterances**: route to `crafting-skills` instead of running this skill's full validator. The full validator is designed for marketplace-wide lint, not single-skill pre-commit checks.
 
 ## Decision Router
 
@@ -95,3 +102,8 @@ python .agents/skills/marketplace-validator/scripts/validate.py skills/ --json
 - The user wants to evaluate a skill's behavioral quality → `evaluating-skills` (this marketplace ships 8-stage skill evaluation with behavioral JSONL review).
 - The user wants the *broader* marketplace audit (manifests, license, cross-refs) → `marketplace-health`.
 - The user wants a release cut → `releasing-marketplace` (which calls this validator internally).
+- The user asks "is this skill valid before I commit" → `crafting-skills` OPTIMIZE mode is the right tool; this skill's full marketplace lint is overkill for a pre-commit check.
+
+## Behavioral evidence (iter-3 N=2, June 2026)
+
+The full marketplace lint reliably **lifts** +45pp on `lint-1` ("lint the marketplace and check the frontmatter") but **hurts** -20pp on `lint-2` ("is this skill valid before I commit"). Same skill, similar utterances, opposite effects. The scope router above is the fix — it routes pre-commit utterances to `crafting-skills` before this skill's full validator runs.

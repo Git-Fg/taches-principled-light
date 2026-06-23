@@ -1,21 +1,28 @@
 ---
 name: ingesting-skills
-description: "Load when porting a skill from an external source — local path, GitHub URL, plugin directory, or another collection. Use when the user says 'add this skill', 'port this', or 'import this plugin'. Do NOT use for authoring from scratch (use crafting-skills) or evaluating (use evaluating-skills)."
-when_to_use: |
-  Use whenever a new skill enters the marketplace, whether by porting from
-  ~/.agents/skills, cloning from anthropics/skills, copying from a teammate's
-  branch, or any other external source. The workflow enforces the local
-  convention systematically.
-argument-hint: "[source-path-or-url] [target-skill-name]"
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-license: MIT
+description: "Load when porting a skill from an external source — local path, GitHub URL, plugin directory, or another collection. Use for 'port this skill', 'add to marketplace', 'import this plugin'. Do NOT use for authoring from scratch (use crafting-skills), evaluating (use evaluating-skills), or quick single-file copies."
 ---
-
 # Ingesting Skills
 
 The repeatable workflow for bringing a skill into this marketplace from anywhere else. Runs in a fixed order so no step is forgotten; delegates each step's *how* to the right existing skill.
 
-## Decision Router
+## Scope router (decide FIRST)
+
+Identify the scope before reading further. Wrong scope = wrong workflow.
+
+| Scope | Utterance shape | Workflow |
+|---|---|---|
+| **Quick port** | "port this skill", "import this", "add to marketplace", "copy from URL" | Steps 1, 4, 5, 6 only (≈5 min). Skip inventory, evals scaffolding, full docs. |
+| **Full ingestion** | "audit and port this", "migrate and validate", "review the convention then port", "ingest + write evals" | All 9 steps (≈30 min). Full inventory, evals scaffold, validator pass, CHANGELOG. |
+| **Convention check only** | "is this skill ready for our marketplace?", "review this contribution" | Steps 1, 7, 8 only. Read source, scaffold eval prompts, run validator. No porting. |
+
+**Default**: when in doubt, ask the user to confirm scope before proceeding. The 9-step full workflow is the wrong default for "port this" because it overwhelms a quick task.
+
+The iter-3 behavioral eval (June 2026, N=2) showed the full workflow underperforms on quick-port utterances by ~16pp — the with-skill agent spent its effort on prescribed steps while the without-skill agent did the simple port directly and got the task done.
+
+## Source router
+
+After scope is identified:
 
 IF the source is a local directory → path is the path; read it directly
 IF the source is a GitHub URL (`github.com/owner/repo` or `https://…`) → `git clone` to `/tmp/` then read the resulting path
@@ -25,11 +32,11 @@ IF unclear → ask which source
 
 After the source is local:
 IF the user wants to do the porting themselves with guidance → walk through steps 2–9 interactively
-IF the user wants hands-off porting → execute steps 2–9 in one shot, present the diff, ask for approval before commit
+IF the user wants hands-off porting → execute the selected scope's steps in one shot, present the diff, ask for approval before commit
 
-## The 9-Step Porting Workflow
+## The 9-Step Porting Workflow (full ingestion only)
 
-Run these in order. Skip a step only with explicit justification.
+Run these in order. Skip a step only with explicit justification. Quick port uses only steps 1, 4, 5, 6; convention check uses only steps 1, 7, 8.
 
 ### 1. Inventory the source skill
 
@@ -140,3 +147,8 @@ Fix any *failures* (frontmatter schema, name format, description length, name-di
 - The user wants to fix or improve an existing marketplace skill's routing → `crafting-skills` OPTIMIZE mode.
 - The user wants to evaluate whether an existing skill actually changes behavior → `evaluating-skills`.
 - The user wants the broader pre-release audit (manifests, license, cross-refs) → `marketplace-health`.
+- The user wants a quick single-file copy with no convention check → just use Bash `cp`; this skill is overkill.
+
+## Behavioral evidence (iter-3 N=2, June 2026)
+
+The full 9-step workflow reliably **underperforms** on quick-port utterances by ~16pp (with-skill: 0/5, without-skill: 1/5). The with-skill agent spent its effort on the prescribed workflow; the without-skill agent did the simple port directly. The scope router above is the fix — it routes quick-port utterances to a minimal path before the full workflow kicks in.

@@ -1,0 +1,152 @@
+# iter-8 Design Supplements — MCP Mocking, CLI Flags, Multi-Model Gateway
+
+**Author:** Kimi Code (autonomous)
+**Date:** 2026-06-23
+**Scope:** Three research items that supplement the iter-8 plan at `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md`.
+
+---
+
+## 1. MCP Mock for `secret_detection` Grader
+
+### Problem identified after iter-8 plan committed
+
+The iter-8 plan uses `zerob13/mock-openai-api` to mock LLM judge responses.
+The sec-audit eval's `secret_detection` assertion uses MCP-style tool calls
+against the agent's runtime. iter-7's sec-audit swung +17.5pp on identical
+transcripts, partly because the MCP tool responses are not deterministic
+even when the agent's behavior is. The iter-8 plan as written does not
+address this.
+
+### MCP mocking options (research 2026-06-23)
+
+| Option | Stack | Maintenance | Pros | Cons | Verdict |
+|--------|-------|-------------|------|------|---------|
+| **Tyk mock MCP server** | Go, MCP 2025 spec | tyk.io, blog post (search hit) | Deterministic, self-contained, simple | Single-purpose; no schema-driven mock | A-grade for fixture-only tests |
+| **mcpland/mock-mcp** | TypeScript, OpenAPI → MCP | github.com/mcpland, 2026 | AI-driven mock data from OpenAPI schemas | Heavier setup; depends on schema quality | B-grade for schema-driven |
+| **AIMock MCPMock** (CopilotKit) | Part of AIMock superset | github.com/CopilotKit/aimock, Apr 2026 | Integrated with LLMock + A2AMock + VectorMock + drift detection; production-tested at AG-UI | Larger install footprint (the whole AIMock stack) | A-grade if you also need LLM mock |
+| **Custom Python mock** | Python, minimal HTTP | local | Minimal dependencies; total control | No maintenance; must hand-write all responses | C-grade escape hatch |
+
+**Recommended for iter-8:** **AIMock MCPMock** if we adopt the rest of AIMock (LLMock etc.) — one mock for the entire eval stack. Otherwise **Tyk mock MCP server** as a focused, low-overhead option. Drop the 30-line Python fallback to a "C-grade escape hatch" if neither works.
+
+### Claude Code CLI integration
+
+`claude --mcp-config <file>` (added in a recent claude-code version per the
+[changelog](https://code.claude.com/docs/en/changelog); the version pin is
+not verified from this research, treat as "newer claude-code only") accepts
+a JSON file that lists MCP servers. This flag is the cleanest integration
+point for iter-8: configure `secret_detection` to point at a mock MCP
+server via `--mcp-config`, the agent calls the mock, and the grader sees a
+deterministic response.
+
+```bash
+claude --mcp-config mocks/secret-detection-mock.json \
+       --add-dir <eval project dir> \
+       -p "<sec-audit prompt>"
+```
+
+**Sources:**
+- [Tyk mock MCP server blog post](https://tyk.io/blog/imagine-build-share-how-integration-testing-led-me-to-create-the-tyk-mock-mcp-server/)
+- [mcpland/mock-mcp on GitHub](https://github.com/mcpland/mock-mcp)
+- [AIMock: One Mock Server For Your Entire AI Stack (CopilotKit DEV.to post, 8 Apr 2026)](https://dev.to/copilotkit/aimock-one-mock-server-for-your-entire-ai-stack-1jhp)
+- [MockServer AI Protocol Mocking](https://www.mock-server.com/mock_server/ai_protocol_mocking.html)
+- [Claude Code changelog](https://code.claude.com/docs/en/changelog) (--mcp-config added)
+
+---
+
+## 2. Claude Code CLI Flag Inventory (full list, 2026-06-23)
+
+Discovered during the research for iter-8: the iter-7 design uses
+`--disable-slash-commands` and `--add-dir` exclusively. The cheat-sheet
+inventory below shows several other flags relevant to iter-8 and future
+iter-N design.
+
+### Flags directly relevant to the 3-config lift disambiguation
+
+| Flag | Description (per cheat sheet) | iter-N relevance |
+|------|------------------------------|------------------|
+| `--bare` | "Scripted mode — skip hooks, LSP, **plugins**" (cheat sheet description, not verified against official changelog) | Alternative to `--disable-slash-commands` for true no-plugin baseline. **Worth testing in iter-8B** to see if it's a cleaner mechanism than `--disable-slash-commands` (which only affects slash command resolution, not plugin auto-load). |
+| `--plugin-dir <path>` | Load plugin directory or `.zip` archive for the current session (cheat sheet description, version unverified) | Load a pinned version of the marketplace plugin for reproducibility. Iter-4 cache contamination finding made this relevant: loading a specific plugin path eliminates the v2.0.0 stale cache risk. |
+| `--settings <file>` | Point at a custom settings.json | Could be used to set per-config permissions, model, or allowedTools without touching the global settings. |
+| `--mcp-config <file>` | MCP server config (cheat sheet description, version unverified) | See section 1 above. |
+| `--model` | Override model for the session | Useful for testing different solver models on the same eval (relevant to iter-6's vendor-disjoint goal once the proxy is fixed). |
+| `--effort` | Set effort level: low, medium, high | Test whether effort changes the consultation/structure signals. |
+| `--allowedTools` | Restrict available tools (e.g., "Edit,Bash(npm:*)") | Could disable specific tools in the baseline to isolate the marketplace lift from tool-availability noise. |
+| `--max-turns` | Limit autonomous turns | Bounds the eval runtime. iter-7 already uses 180-300s timeouts; --max-turns would be a more deterministic budget. |
+| `--permission-mode` | Set permission mode (auto, plan, etc.) | Test whether agent autonomy changes the consultation signal. |
+
+### iter-8 design recommendation
+
+**Add `--mcp-config` to the iter-8B grader-noise root-cause sub-experiment** (sub-experiment 8B from iter-8 PLAN.md). Concretely:
+
+1. Run sec-audit with `--mcp-config mocks/secret-detection-mock.json` pointing at AIMock MCPMock (or Tyk mock).
+2. Replay the iter-7 sec-audit transcript through the same harness.
+3. If the +17.5pp grader swing collapses to <2pp, the cause was non-deterministic MCP tool responses, not LLM judge noise.
+4. If the swing persists, the cause is the LLM judge (which is the next thing to test via `zerob13/mock-openai-api`).
+
+This is a cheap 1-hour experiment that surgically disambiguates the two suspected noise sources.
+
+**Sources:**
+- [Claude Code Cheat Sheet 2026 (Blake Crosley)](https://blakecrosley.com/guides/claude-code-cheatsheet) — every flag, command, shortcut
+- [Claude Code changelog](https://code.claude.com/docs/en/changelog) — versioned flag additions
+
+---
+
+## 3. Multi-Model Gateway for `100.80.231.128:3456` Replacement
+
+### Problem
+
+The current proxy at `100.80.231.128:3456` is structurally a single-model
+gateway (20 vendor aliases — qwen, llama, gpt-4o, gemini, deepseek, mistral,
+claude-3×3, doubao, kimi, minimax, phi-4, mixtral, command-r, jamba, cerebras,
+fireworks, deepinfra, nex-agi/nex-n2-pro:free — all serve `MiniMax-M3`; only
+`glm-5.2` is vendor-disjoint and is rate-limited). This blocks iter-6's
+vendor-disjoint validation goal and is a real architectural constraint on
+the marketplace evaluation methodology going forward.
+
+### Gateway options (research 2026-06-23)
+
+| Gateway | Stack | License | Stars | MCP support | A2A support | Self-host complexity | Verdict |
+|---------|-------|---------|-------|-------------|-------------|----------------------|---------|
+| **LiteLLM** | Python | NOASSERTION (dual) | 51,254 | ✅ native MCP gateway | ✅ A2A Protocol | Low (single Docker) | **A-grade (recommended)** |
+| **Bifrost** | Go | open source | (smaller) | partial | partial | Low | B-grade |
+| **Portkey** | hosted + self-host | proprietary | n/a | yes | yes | Low (managed) | B-grade if managed is OK |
+| **Kong AI Gateway** | Kong + plugin | Apache | n/a | via plugin | via plugin | Medium (Kong stack) | B-grade for orgs already on Kong |
+| **OpenRouter** | hosted only | proprietary | n/a | no | no | Zero (managed) | A-grade if managed-only is OK |
+
+**Recommended:** **LiteLLM** as the self-hosted replacement. Reasons:
+
+1. **De-facto standard**: 51K stars, used by Stripe, Google ADK, Netflix, OpenAI Agents SDK
+2. **Drop-in OpenAI compatibility**: the existing iter-N harness code that talks to `100.80.231.128:3456` continues to work with just a base-URL change
+3. **Native MCP gateway**: iter-8's mock work extends naturally to a real MCP gateway in v0.0.6+
+4. **Native A2A protocol support**: future-proofs for agent-to-agent evaluations
+5. **8ms P95 latency at 1k RPS**: well within the eval harness's needs
+6. **Admin dashboard + virtual keys + spend tracking + guardrails**: production-ready
+7. **100+ providers**: includes the vendor-disjoint options needed (Anthropic, OpenAI, Z.AI/glm, Google, etc.)
+
+**Migration path (v0.0.6+):**
+
+1. Stand up LiteLLM in a Docker container pointing at the existing `MiniMax-M3` endpoint + at least 2 vendor-disjoint providers (e.g., Anthropic Claude, Google Gemini).
+2. Update the iter harness's `OPENAI_BASE_URL` env var from `http://100.80.231.128:3456` to `http://litellm:4000`.
+3. Re-run iter-6 with the new gateway. The vendor-disjoint grading should now succeed (instead of 503ing like in iter-6 REPORT.md).
+4. Drop the `zerob13/mock-openai-api` for production eval runs (keep it for offline regression tests).
+
+**Sources:**
+- [BerriAI/litellm on GitHub](https://github.com/BerriAI/litellm) — 51,254 stars, MCP gateway, A2A protocol
+- [Stop Juggling LLM APIs: 8 Gateways Ranked 2026 (TECHSY)](https://techsy.io/en/blog/best-llm-gateway-tools)
+- [AI Gateway Comparison 2026 (SlashLLM)](https://slashllm.com/resources/ai-gateway-comparison)
+- [LLM Gateway Comparison 2026 (FloTorch)](https://www.flotorch.ai/blogs/llm-gateway-comparison-2026)
+- [Multi-Model Routing — The AI Gateway Pattern (akshayghalme.com, 25 Apr 2026)](https://akshayghalme.com/blogs/multi-model-routing-ai-gateway-pattern/) — the 40-70% bill reduction thesis
+
+---
+
+## Summary
+
+| Finding | Impact on iter-8 | v0.0.6+ impact |
+|---------|-------------------|------------------|
+| AIMock / Tyk mock MCP server + `--mcp-config` | Surgical disambiguation of the sec-audit +17.5pp grader swing (1-hour experiment) | Real MCP gateway via LiteLLM MCP support |
+| Claude Code CLI flag inventory | iter-8B design needs `--mcp-config`; iter-8C design could use `--max-turns` for budget | iter-N+1 designs benefit from `--plugin-dir` for pinned reproducibility |
+| LiteLLM as multi-model gateway | Unblocks iter-6 vendor-disjoint validation | Replaces the single-model `100.80.231.128:3456` proxy |
+
+---
+
+*Generated autonomously as iter-8 design supplements (2026-06-23). All three findings sourced from web research 2026-06-23 (SearXNG + GitHub API).*

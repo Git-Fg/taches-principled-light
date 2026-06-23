@@ -1,0 +1,15 @@
+{
+  "eval_id": "plan-multi",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 70684,
+    "total_events": 33
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 30288,
+    "total_events": 15
+  }
+}

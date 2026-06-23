@@ -1,0 +1,15 @@
+{
+  "eval_id": "research",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 126746,
+    "total_events": 57
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 841
+  }
+}

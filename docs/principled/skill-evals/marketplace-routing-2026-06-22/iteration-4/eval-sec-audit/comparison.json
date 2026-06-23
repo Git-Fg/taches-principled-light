@@ -1,0 +1,30 @@
+{
+  "eval_id": "sec-audit",
+  "utterance": "audit code for OWASP top 10 vulnerabilities and secrets",
+  "expected_skill": "security",
+  "category_class": "marketplace",
+  "with_skill": {
+    "overall_score": 32.5,
+    "instruction_following_score": 65.0,
+    "goal_completion_score": 0.0,
+    "passed": 2,
+    "failed": 2,
+    "unknown": 1,
+    "total": 5
+  },
+  "without_skill": {
+    "overall_score": 15.0,
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 35.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 17.5
+  },
+  "verdict": "skill_lifts_quality"
+}

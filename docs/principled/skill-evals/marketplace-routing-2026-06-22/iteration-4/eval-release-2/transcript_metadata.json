@@ -1,0 +1,15 @@
+{
+  "eval_id": "release-2",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 97430,
+    "total_events": 62
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 18567,
+    "total_events": 10
+  }
+}

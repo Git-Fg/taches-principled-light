@@ -1,0 +1,30 @@
+{
+  "eval_id": "audit-1",
+  "utterance": "audit the marketplace and run the pre-release health check",
+  "expected_skill": "marketplace-health",
+  "category_class": "local-meta",
+  "with_skill": {
+    "overall_score": 16.5,
+    "instruction_following_score": 40.0,
+    "goal_completion_score": 0.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "overall_score": 0.0,
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 40.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 16.5
+  },
+  "verdict": "skill_lifts_quality"
+}

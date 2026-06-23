@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "without",
+  "eval_id": "release-1",
+  "expectations": [
+    {
+      "id": "consulted_releasing_marketplace",
+      "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md before any version bump or release cut",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'releasing-marketplace' (paths=['.agents/skills/releasing-marketplace/SKILL.md', 'skills/releasing-marketplace/SKILL.md'], observed_reads=[], observed_skills=['taches-principled-light:git'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "version_synced_across_files",
+      "text": "the agent should bump the version in all 4 plugin manifests (claude-plugin, codex-plugin, cursor-plugin, kimi-plugin) plus the marketplace's own version field \u2014 not just one",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "changelog_entry_drafted",
+      "text": "CHANGELOG.md should have a new top entry for 0.0.2 with date, summary of changes, and link to commit range",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ran_pre_release_gate",
+      "text": "the agent should run the pre-release gate (health check + validator on full marketplace + benchmark freshness) per the skill's fixed sequence; refuse to proceed if the gate fails",
+      "passed": false,
+      "evidence": "The agent loaded the git skill but never read the releasing-marketplace/SKILL.md, never ran a health check, never ran a validator on the marketplace, and never checked benchmark freshness; instead it found an empty directory and asked the user clarifying questions.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "tag_pushed",
+      "text": "the agent should create an annotated git tag (v0.0.2) and push it to origin, then confirm the remote tag exists \u2014 not just a local commit",
+      "passed": false,
+      "evidence": "The agent never created or pushed any tag; the transcript ends with the agent asking the user for more information about the project location and type after discovering an empty directory.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

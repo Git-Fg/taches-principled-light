@@ -1,0 +1,586 @@
+{
+  "iteration": 4,
+  "phase": "A",
+  "scope": "18 of 18 evals",
+  "judge_model": "sonnet",
+  "solver_model": "haiku",
+  "cache_state": "fresh (cleared 2026-06-23, smoke test passed)",
+  "results": [
+    {
+      "eval_id": "lint-1",
+      "utterance": "lint the marketplace and check the frontmatter",
+      "expected_skill": "marketplace-validator",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 25.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 50.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 50.0,
+        "overall_delta": 25.0
+      },
+      "verdict": "skill_lifts_quality"
+    },
+    {
+      "eval_id": "lint-2",
+      "utterance": "is this skill valid before I commit",
+      "expected_skill": "marketplace-validator",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "audit-1",
+      "utterance": "audit the marketplace and run the pre-release health check",
+      "expected_skill": "marketplace-health",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 16.5,
+        "instruction_following_score": 40.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 40.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 16.5
+      },
+      "verdict": "skill_lifts_quality"
+    },
+    {
+      "eval_id": "audit-2",
+      "utterance": "is the marketplace healthy, check for drift",
+      "expected_skill": "marketplace-health",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "ingest-1",
+      "utterance": "port this skill from a github url into our collection",
+      "expected_skill": "ingesting-skills",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "ingest-2",
+      "utterance": "add this skill to our marketplace, import it",
+      "expected_skill": "ingesting-skills",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "release-1",
+      "utterance": "cut a release and bump the version to 0.0.2",
+      "expected_skill": "releasing-marketplace",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "release-2",
+      "utterance": "tag and push the new version",
+      "expected_skill": "releasing-marketplace",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 40.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 50.0,
+        "passed": 2,
+        "failed": 3,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 25.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 50.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 30.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 15.0
+      },
+      "verdict": "skill_lifts_quality"
+    },
+    {
+      "eval_id": "critic",
+      "utterance": "review this PR and find the worst issues",
+      "expected_skill": "general-critic",
+      "category_class": "local-meta",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 4,
+        "unknown": 0,
+        "total": 4
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 4,
+        "unknown": 0,
+        "total": 4
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "research",
+      "utterance": "do deep research on agent skill evaluation methodology",
+      "expected_skill": "deep-research",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 32.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 0.0,
+        "passed": 2,
+        "failed": 2,
+        "unknown": 1,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 32.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 0.0,
+        "passed": 2,
+        "failed": 3,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "craft-create",
+      "utterance": "create a new agent skill for my project",
+      "expected_skill": "crafting-skills",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "craft-review",
+      "utterance": "review this skill's description and frontmatter",
+      "expected_skill": "crafting-skills",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 17.5,
+        "instruction_following_score": 35.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 17.5,
+        "instruction_following_score": 35.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "eval-skill",
+      "utterance": "write evals for this skill and grade the outputs",
+      "expected_skill": "evaluating-skills",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 30.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 15.0
+      },
+      "verdict": "skill_lifts_quality"
+    },
+    {
+      "eval_id": "plan-multi",
+      "utterance": "plan this multi-phase project with critic checkpoints",
+      "expected_skill": "plan-lifecycle",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "task-small",
+      "utterance": "add this small feature with verification and docs",
+      "expected_skill": "task-lifecycle",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "web-rust",
+      "utterance": "find documentation on the open web for Rust async traits",
+      "expected_skill": "web-search",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 62.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 60.0,
+        "passed": 3,
+        "failed": 2,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 62.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 60.0,
+        "passed": 3,
+        "failed": 2,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    },
+    {
+      "eval_id": "sec-audit",
+      "utterance": "audit code for OWASP top 10 vulnerabilities and secrets",
+      "expected_skill": "security",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 32.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 0.0,
+        "passed": 2,
+        "failed": 2,
+        "unknown": 1,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 35.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 17.5
+      },
+      "verdict": "skill_lifts_quality"
+    },
+    {
+      "eval_id": "rust-clippy",
+      "utterance": "configuring clippy and cargo-deny for my Rust project",
+      "expected_skill": "rust",
+      "category_class": "marketplace",
+      "with_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "without_skill": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 3,
+        "unknown": 1,
+        "total": 5
+      },
+      "delta": {
+        "instruction_following_delta": 0.0,
+        "goal_completion_delta": 0.0,
+        "overall_delta": 0.0
+      },
+      "verdict": "skill_neutral"
+    }
+  ],
+  "summary": {
+    "total_evals": 18,
+    "mean_instruction_following_delta": 7.5,
+    "mean_goal_completion_delta": 2.78,
+    "mean_overall_delta": 4.94,
+    "verdict_distribution": {
+      "skill_lifts_quality": 5,
+      "skill_neutral": 13,
+      "skill_hurts": 0
+    },
+    "per_skill_lift": {
+      "marketplace-validator": 12.5,
+      "marketplace-health": 8.25,
+      "ingesting-skills": 0.0,
+      "releasing-marketplace": 7.5,
+      "general-critic": 0.0,
+      "deep-research": 0.0,
+      "crafting-skills": 0.0,
+      "evaluating-skills": 15.0,
+      "plan-lifecycle": 0.0,
+      "task-lifecycle": 0.0,
+      "web-search": 0.0,
+      "security": 17.5,
+      "rust": 0.0
+    }
+  },
+  "iter3_reference": {
+    "mean_overall_delta": 8.69,
+    "verdict_distribution": {
+      "skill_lifts_quality": 6,
+      "skill_neutral": 11,
+      "skill_hurts": 0
+    },
+    "caveat": "iter-3 was contaminated by stale v2.0.0 plugin cache"
+  },
+  "notes": "Phase A: cache-refreshed re-run of iter-3 with heterogeneous judge (sonnet over haiku solver). Transcripts regenerated against fresh cache; iter-3 grader.py reused (commit b45c40a consultation fix)."
+}

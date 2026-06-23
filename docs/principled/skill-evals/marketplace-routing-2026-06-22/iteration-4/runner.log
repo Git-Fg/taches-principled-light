@@ -42,3 +42,151 @@
 
 [8/18] release-2 (expected=releasing-marketplace)
   utterance: tag and push the new version
+  with-skill:    completed dur=97430ms events=62
+  without-skill: completed dur=18567ms events=10
+
+[9/18] critic (expected=general-critic)
+  utterance: review this PR and find the worst issues
+  with-skill:    truncated_timeout dur=300000ms events=668
+  without-skill: completed dur=32630ms events=15
+
+[10/18] research (expected=deep-research)
+  utterance: do deep research on agent skill evaluation methodology
+  with-skill:    completed dur=126746ms events=57
+  without-skill: truncated_timeout dur=300000ms events=841
+
+[11/18] craft-create (expected=crafting-skills)
+  utterance: create a new agent skill for my project
+  with-skill:    completed dur=20859ms events=11
+  without-skill: completed dur=15575ms events=11
+
+[12/18] craft-review (expected=crafting-skills)
+  utterance: review this skill's description and frontmatter
+  with-skill:    completed dur=26493ms events=10
+  without-skill: completed dur=17878ms events=9
+
+[13/18] eval-skill (expected=evaluating-skills)
+  utterance: write evals for this skill and grade the outputs
+  with-skill:    completed dur=216984ms events=136
+  without-skill: completed dur=63860ms events=20
+
+[14/18] plan-multi (expected=plan-lifecycle)
+  utterance: plan this multi-phase project with critic checkpoints
+  with-skill:    completed dur=70684ms events=33
+  without-skill: completed dur=30288ms events=15
+
+[15/18] task-small (expected=task-lifecycle)
+  utterance: add this small feature with verification and docs
+  with-skill:    completed dur=21814ms events=11
+  without-skill: completed dur=8579ms events=6
+
+[16/18] web-rust (expected=web-search)
+  utterance: find documentation on the open web for Rust async traits
+  with-skill:    completed dur=53740ms events=28
+  without-skill: completed dur=136471ms events=68
+
+[17/18] sec-audit (expected=security)
+  utterance: audit code for OWASP top 10 vulnerabilities and secrets
+  with-skill:    completed dur=294817ms events=254
+  without-skill: completed dur=34389ms events=20
+
+[18/18] rust-clippy (expected=rust)
+  utterance: configuring clippy and cargo-deny for my Rust project
+  with-skill:    completed dur=51182ms events=27
+  without-skill: completed dur=22291ms events=15
+
+[iter-4] grading phase (18 evals x 2 configs = 36 calls)
+
+[1/18] grading lint-1
+  with-skill:    overall=25.0 IF=0.0 GC=50.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC=+50.0 overall=+25.0 → skill_lifts_quality
+
+[2/18] grading lint-2
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[3/18] grading audit-1
+  with-skill:    overall=16.5 IF=40.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF=+40.0 GC= +0.0 overall=+16.5 → skill_lifts_quality
+
+[4/18] grading audit-2
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[5/18] grading ingest-1
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[6/18] grading ingest-2
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[7/18] grading release-1
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[8/18] grading release-2
+  with-skill:    overall=40.0 IF=30.0 GC=50.0
+  without-skill: overall=25.0 IF=0.0 GC=50.0
+  delta: IF=+30.0 GC= +0.0 overall=+15.0 → skill_lifts_quality
+
+[9/18] grading critic
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[10/18] grading research
+  with-skill:    overall=32.5 IF=65.0 GC=0.0
+  without-skill: overall=32.5 IF=65.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[11/18] grading craft-create
+  with-skill:    overall=15.0 IF=30.0 GC=0.0
+  without-skill: overall=15.0 IF=30.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[12/18] grading craft-review
+  with-skill:    overall=17.5 IF=35.0 GC=0.0
+  without-skill: overall=17.5 IF=35.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[13/18] grading eval-skill
+  with-skill:    overall=15.0 IF=30.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF=+30.0 GC= +0.0 overall=+15.0 → skill_lifts_quality
+
+[14/18] grading plan-multi
+  with-skill:    overall=15.0 IF=30.0 GC=0.0
+  without-skill: overall=15.0 IF=30.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[15/18] grading task-small
+  with-skill:    overall=0.0 IF=0.0 GC=0.0
+  without-skill: overall=0.0 IF=0.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[16/18] grading web-rust
+  with-skill:    overall=62.5 IF=65.0 GC=60.0
+  without-skill: overall=62.5 IF=65.0 GC=60.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[17/18] grading sec-audit
+  with-skill:    overall=32.5 IF=65.0 GC=0.0
+  without-skill: overall=15.0 IF=30.0 GC=0.0
+  delta: IF=+35.0 GC= +0.0 overall=+17.5 → skill_lifts_quality
+
+[18/18] grading rust-clippy
+  with-skill:    overall=15.0 IF=30.0 GC=0.0
+  without-skill: overall=15.0 IF=30.0 GC=0.0
+  delta: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+
+[iter-4] done. 18/18 evals graded.
+[iter-4] mean overall delta: +4.94 (iter-3 ref: +8.69)
+[iter-4] verdicts: {'skill_lifts_quality': 5, 'skill_neutral': 13}

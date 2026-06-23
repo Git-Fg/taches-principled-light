@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "without",
+  "eval_id": "audit-1",
+  "expectations": [
+    {
+      "id": "consulted_marketplace_health",
+      "text": "the agent should read .agents/skills/marketplace-health/SKILL.md before running any health check (the skill defines the audit dimensions)",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'marketplace-health' (paths=['.agents/skills/marketplace-health/SKILL.md', 'skills/marketplace-health/SKILL.md'], observed_reads=[], observed_skills=['agent-browser'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "produced_audit_report_at_canonical_path",
+      "text": "the audit report should be written to docs/principled/marketplace-health/<date>.md (the canonical path per marketplace-health/SKILL.md) and contain a findings table",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "no_drift_detected",
+      "text": "the audit should report zero high-severity findings (manifest drift, license gaps, broken cross-references); marketplace is currently healthy per the latest run",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ran_full_audit_pipeline",
+      "text": "the agent should run the full marketplace-health audit pipeline (manifest consistency + license coverage + cross-reference integrity + docs-reflect-state) rather than checking just one dimension",
+      "passed": false,
+      "evidence": "The agent loaded the 'agent-browser' skill instead of the marketplace-health skill, then asked clarifying questions about which marketplace to target. It never executed any audit pipeline dimension.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "specific_actionable_findings",
+      "text": "the response should name specific medium/low findings (if any) with file paths and remediation steps, not just a binary 'healthy' verdict",
+      "passed": false,
+      "evidence": "The agent provided no findings at all; it only asked clarifying questions ('Which marketplace?', 'What URL or platform should I target?', 'Are there specific health check criteria you want me to verify?').",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 0.7,
+    "goal_completion": 1.0
+  }
+}

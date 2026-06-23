@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "with",
+  "eval_id": "web-rust",
+  "expectations": [
+    {
+      "id": "consulted_web_search",
+      "text": "the agent should read skills/web-search/SKILL.md before searching; the skill defines the 5-movement loop and source hierarchy",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: taches-principled-light:web-search",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "preferred_primary_sources",
+      "text": "the response should prefer primary sources (docs.rs, Rust RFCs, the Rust reference) over secondary aggregators (StackOverflow, blogs)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "cited_specific_urls",
+      "text": "the response should cite \u22652 specific URLs (with stable identifiers like docs.rs/std/...) for the Rust async traits documentation",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_5_movement_loop",
+      "text": "the agent should apply the 5-movement loop (frame -> reformulate -> inspect -> cross-reference -> stop/surface), not a single-pass search",
+      "passed": true,
+      "evidence": "The agent framed the topic ('this topic has evolved significantly\u2026 so I want primary sources'), issued 4 reformulated search queries, fetched/inspected 4 primary source pages, cross-referenced results (noting 'The 1.78 blog post didn't directly cover async traits\u2026 so I should note that the async fn in trait stabilization was actually in 1.75, not 1.78'), and then stopped to synthesize/surface findings \u2014 a clear 5-movement loop rather than a single-pass search.",
+      "points_awarded": 35,
+      "unknown": false
+    },
+    {
+      "id": "surfaced_recency_or_limitations",
+      "text": "the response should note the recency of sources (e.g. async-trait crate status, whether Rust 1.75+ stabilized native async traits) and surface limitations of the search (e.g. 'official std docs are sparse on this topic')",
+      "passed": true,
+      "evidence": "The agent explicitly cited recency anchors ('async fn in traits stabilized in 1.75, return type notation in 1.78'), fetched the docs.rs/async-trait crate page for current crate status, and surfaced a search limitation by correcting its own framing ('The 1.78 blog post didn't directly cover async traits (it was about diagnostic attributes, etc.)\u2026 I should not pretend the 1.78 post is the async traits one') before beginning synthesis.",
+      "points_awarded": 60,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 65.0,
+    "goal_completion_score": 60.0,
+    "overall_score": 62.5,
+    "passed": 3,
+    "failed": 2,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

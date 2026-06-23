@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "with",
+  "eval_id": "lint-2",
+  "expectations": [
+    {
+      "id": "consulted_marketplace_validator",
+      "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before answering, since the validator encodes the canonical frontmatter schema and required-field list",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'marketplace-validator' (paths=['.agents/skills/marketplace-validator/SKILL.md', 'skills/marketplace-validator/SKILL.md'], observed_reads=['/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/marketplace-health/2026-06-23.md', '/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/SKILL-DISCOVERY-ARCHITECTURE.md'], observed_skills=[])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "warned_on_local_extensions",
+      "text": "the response should mention that local extensions (when_to_use, argument-hint, context, agent) trigger warnings but not failures, distinguishing spec-required from local-convention fields",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "passes_required_fields",
+      "text": "the target skill's name and description fields must pass validation (required-field check)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_skill_specific_path",
+      "text": "the agent should run the validator on the specific skill path (python scripts/validate.py skills/<name>) rather than the whole marketplace, per the SKILL.md Decision Router 'IF the user wants to check a single skill \u2192 pass the path' branch",
+      "passed": false,
+      "evidence": "The agent never ran any validator command like `python scripts/validate.py skills/<name>`; it only used Glob, Read, and `git diff` tools, exploring files without executing the skill-specific validation script.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "named_specific_issues",
+      "text": "the response should name any specific issues (line numbers, exact fields, suggested fix), not a generic 'looks good' or 'you should check the schema'",
+      "passed": false,
+      "evidence": "The agent produced no issue analysis at all\u2014no specific line numbers, fields, or fixes were named; the transcript ends mid-exploration without any concrete findings reported.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

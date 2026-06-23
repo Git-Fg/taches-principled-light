@@ -1,0 +1,15 @@
+{
+  "eval_id": "rust-clippy",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 51182,
+    "total_events": 27
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 22291,
+    "total_events": 15
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "without",
+  "eval_id": "plan-multi",
+  "expectations": [
+    {
+      "id": "consulted_plan_lifecycle",
+      "text": "the agent should read skills/plan-lifecycle/SKILL.md before planning; the skill defines the ROADMAP.md + per-phase PLAN.md structure",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: taches-principled-light:plan-lifecycle",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "deviation_tracking_documented",
+      "text": "each PLAN.md should include a 'deviation tracking' section per the skill (how to record when actuals diverge from planned)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "phase_boundaries_clear",
+      "text": "the phases should have explicit boundaries (each phase has a deliverable + acceptance criteria), not a vague sequential sketch",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "created_roadmap_plus_phase_plans",
+      "text": "the agent should produce both ROADMAP.md (high-level phase breakdown) and per-phase PLAN.md files with critic checkpoints per the skill's contract",
+      "passed": false,
+      "evidence": "The agent loaded the plan-lifecycle skill, checked the empty working directory, and then asked the user for more information ('What would you like me to plan?'). No ROADMAP.md or PLAN.md files were created.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "critic_checkpoints_meaningful",
+      "text": "the critic checkpoints between phases should be substantive review gates (e.g. 'verify acceptance criteria + run adversarial critic'), not generic 'review the work' placeholders",
+      "passed": false,
+      "evidence": "No PLAN.md files were created, so no critic checkpoints of any kind (substantive or otherwise) were defined. The agent only asked the user for project details.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 15.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

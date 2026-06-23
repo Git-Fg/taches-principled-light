@@ -1,0 +1,30 @@
+{
+  "eval_id": "craft-review",
+  "utterance": "review this skill's description and frontmatter",
+  "expected_skill": "crafting-skills",
+  "category_class": "marketplace",
+  "with_skill": {
+    "overall_score": 17.5,
+    "instruction_following_score": 35.0,
+    "goal_completion_score": 0.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "overall_score": 17.5,
+    "instruction_following_score": 35.0,
+    "goal_completion_score": 0.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 0.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 0.0
+  },
+  "verdict": "skill_neutral"
+}

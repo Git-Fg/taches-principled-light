@@ -36,7 +36,8 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
 ### Verified
 
 - `marketplace-health`: **HEALTH: pass** (validator 0/87 warnings across 31 skills; manifest consistency at 0.0.3; license coverage OK; cross-references OK; docs reflect state — README says 31, CHANGELOG latest = 0.0.3, INDEX.md lists 4 iterations).
-- **Behavior eval (iter-3 corrected)**: 17 evals × {with, without}-skill = 34 runs on haiku solver (matches marketplace consumer base). Mean delta **+8.69pp** vs without-skill baseline; 6 lifts / 11 neutrals / **0 hurts**. Lifts: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp, `release-1` +15pp, `eval-skill` +15pp. Bucket A neutrals (8) split A1/A2/A3 per BUCKET-A-INSPECTION; A3 most likely caused by H1 plugin shadowing, to be confirmed by iter-3.1.
+- **Behavior eval (iter-3 corrected)**: 17 evals × {with, without}-skill = 34 runs on haiku solver (matches marketplace consumer base). Mean delta **+8.69pp** vs without-skill baseline; 6 lifts / 11 neutrals / **0 hurts**. Lifts: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp, `release-1` +15pp, `eval-skill` +15pp. Bucket A neutrals (8) split A1/A2/A3 per BUCKET-A-INSPECTION; A3 most likely caused by H1 plugin shadowing, to be confirmed by iter-3.1. **SUPERSEDED by iter-4** (cache contamination inflated the +8.69pp by ≈3.75pp; corrected headline is +4.94pp).
+- **Behavior eval (iter-4 — canonical)**: 18 evals × {with, without}-skill = 36 runs on haiku solver with fresh v0.0.3 cache. Mean delta **+4.94pp** vs without-skill baseline; 5 lifts / 13 neutrals / **0 hurts**. Lifts: `sec-audit` +17.5pp, `eval-skill` +15pp, `release-2` +15pp, `lint-1` +25pp, `audit-1` +16.5pp. **Lift mechanism split:** 2 consultation-driven (eval-skill, sec-audit — agent read/invoked SKILL.md), 3 file-access-driven (lint-1, audit-1, release-2 — agent ran the skill's colocated scripts via filesystem glob). Consultation-driven lower bound: +1.81pp. Upper bound if research/without_skill timeout had auto-zeroed: +6.75pp. See [`iteration-4/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/REPORT.md).
 - **Methodology note** (`docs/.../methodology-note-routing-vs-validator.md`): distinguishes this as a behavioral eval (measuring agent routing behavior against graded assertion sets) not a static validator run.
 
 ### Known follow-up work
@@ -45,6 +46,61 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
 - Re-run A1 evals (plan-multi, task-small) on clean proxy to get discovery-failure verdicts.
 - Multi-trial N=3 reliability study for the 7 single-sample skills and 3 Bucket B neutrals.
 - Re-run the 6 lifts with `--judge-model sonnet` for same-family bias mitigation (Wataoka 2024).
+
+## [0.0.3] — iter-4 correction — 2026-06-23
+
+Cache-refreshed re-run of iter-3 with a freshly cleared plugin cache
+(`~/.claude/plugins/cache/taches-principled-light/`). The iter-3 results
+were contaminated by a stale v2.0.0 cache that contained 22 SKILL.md files
+with different names (`skill-authoring`, `mcp-expertise`, `ideation`, etc.)
+than the live v0.0.3 working tree (`crafting-skills`, `engineering-mcp`,
+`generating-ideas`, etc.). iter-4 corrects that.
+
+### What iter-4 changed
+
+- **Mean overall delta: +8.69pp → +4.94pp** (a 3.75pp reduction).
+  5 lifts / 13 neutrals / **0 hurts**. The +8.69pp headline was inflated
+  by the cache mismatch; the corrected, publishable number is +4.94pp.
+- **But the headline is structurally confounded.** Of 5 lifts, only 2 are
+  skill-body consultation (eval-skill +15, sec-audit +17.5). The other 3
+  (lint-1 +25, audit-1 +16.5, release-2 +15) are **file-access-driven**:
+  the agent found the marketplace skill's colocated scripts on disk via
+  filesystem glob and ran them without consulting the SKILL.md. Pure
+  skill-body lift, isolated, is closer to **+1.81pp** (the average of
+  the 2 consultation-driven lifts).
+- All 5 iter-4 lifts come from local-meta skills (`marketplace-validator`,
+  `marketplace-health`, `releasing-marketplace`) plus well-defined workflow
+  skills (`evaluating-skills`, `security`). 8 skills showed 0pp lift,
+  consistent with iter-3.1 H4: haiku in short headless runs tends to act
+  from prior knowledge rather than read skill bodies.
+- **4/36 runs hit the 300s timeout cap** (lint-2, audit-2, critic with-skill;
+  research without-skill). Per the iter-3 grader convention, the grader runs
+  on the partial transcript and scores whatever work is present. The
+  `research/without_skill` timeout produced 32.5 pts (same as with_skill),
+  which masks a potential +32.5 lift in the headline. The lower bound of
+  the confidence interval is therefore +1.81pp; the upper bound is +6.75pp.
+- Heterogeneous judge: sonnet over haiku solver. Same-family bias (Wataoka
+  2024) not yet mitigated; iter-6 should re-grade with sonnet-on-sonnet.
+- **1 UNKNOWN verdict** emitted (research/with_skill, `surfaced_disagreement`
+  assertion, truncated transcript). Treated as FAIL per `evaluating-skills`
+  convention. Logged in `iteration-4/unknowns.md`.
+
+### Iteration-4 artifacts (`docs/.../iteration-4/`)
+
+- `REPORT.md` (canonical) — full results, per-eval table, per-skill breakdown (with consultation-driven / file-access-driven split), verdict, methodology notes, caveats.
+- `benchmark.json` — machine-readable per-eval results + summary (now includes `skill_hurts: 0` for schema consistency).
+- `benchmark.md` — human-readable benchmark summary.
+- `unknowns.md` — UNKNOWN judge verdict log (1 entry: research/with_skill, `surfaced_disagreement`).
+- `runner.log` — 71-minute wall-clock transcript.
+- `PLAN.md` — iter-4 design (Phase A: heterogeneous; Phase B: sonnet-only).
+
+### Recommended actions
+
+1. **Release v0.0.3 as-is** — no skill changes needed. The +4.94pp (with consultation-driven lower bound +1.81pp) is a positive signal with zero hurts, no phantom lifts, all in the local-meta + well-defined workflow category.
+2. **Document the cache workaround** in `AGENTS.md` and `README.md` so other marketplaces avoid the iter-3 trap. Upstream bug unfixed: [Issue #14061](https://github.com/anthropics/claude-code/issues/14061) (open since 2025-12-15, 3 duplicates).
+3. **Plan iter-5 (REQUIRED, not optional)** — N=3 reliability study to measure the noise floor. Yagubyan 2026 shows ±13.6% flip rate for single trials; 3-trial mean would tighten CI enough to validate the +1.81pp consultation-driven lower bound.
+4. **Plan iter-6 (REQUIRED, not optional)** — sonnet solver + sonnet judge (homogeneous) to rule out same-family bias from Wataoka 2024. The current heterogeneous judge could be inflating the consultation-driven lifts relative to the file-access-driven ones.
+5. **Plan iter-7 (defer)** — harness fix: separate `--add-dir` (file access) from `--marketplace-plugin` (skill listing) to isolate the two lift mechanisms. Without this, future iterations will keep conflating filesystem access with skill-body consultation.
 
 ## [0.0.2] — 2026-06-22
 

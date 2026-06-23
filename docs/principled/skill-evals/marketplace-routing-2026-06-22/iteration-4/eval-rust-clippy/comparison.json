@@ -1,0 +1,30 @@
+{
+  "eval_id": "rust-clippy",
+  "utterance": "configuring clippy and cargo-deny for my Rust project",
+  "expected_skill": "rust",
+  "category_class": "marketplace",
+  "with_skill": {
+    "overall_score": 15.0,
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "overall_score": 15.0,
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "passed": 1,
+    "failed": 3,
+    "unknown": 1,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 0.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 0.0
+  },
+  "verdict": "skill_neutral"
+}

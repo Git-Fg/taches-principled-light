@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "without",
+  "eval_id": "research",
+  "expectations": [
+    {
+      "id": "consulted_deep_research",
+      "text": "the agent should read skills/deep-research/SKILL.md before starting, since the skill defines the 5-stage pipeline",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: deep-research, deep-research, deep-research, deep-research",
+      "points_awarded": 25,
+      "unknown": false
+    },
+    {
+      "id": "triangulated_sources",
+      "text": "the response should cite \u22653 independent sources for any non-trivial claim, with primary sources preferred over secondary aggregators",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "long_form_evidence",
+      "text": "the output should be a long-form (multi-section) report written to docs/principled/research/<slug>/index.md per the skill's canonical output path",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "followed_5_stage_pipeline",
+      "text": "the agent should follow the 5-stage pipeline (frame -> reformulate -> inspect -> cross-reference -> stop/surface) per the skill, not a single-pass summary",
+      "passed": true,
+      "evidence": "Agent invokes the deep-research skill/workflow, reads pipeline reference files (query-shapes.md for reformulation, source-hierarchy.md, verification-protocol.md), and launches multiple parallel research agents for different angles\u2014evidence of executing structured stages rather than a single-pass summary.",
+      "points_awarded": 40,
+      "unknown": false
+    },
+    {
+      "id": "surfaced_disagreement",
+      "text": "the report should explicitly surface areas of disagreement between sources (e.g. 'Tessl reports +19.7 lift while SkillsBench reports +25.1; the difference is methodology, not noise') rather than averaging into false consensus",
+      "passed": false,
+      "evidence": "The transcript is cut off before any final report is produced; there is no evidence in the visible output of explicit disagreement surfacing between sources (e.g., the Tessl vs SkillsBench comparison is entirely absent).",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 65.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 32.5,
+    "passed": 2,
+    "failed": 3,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

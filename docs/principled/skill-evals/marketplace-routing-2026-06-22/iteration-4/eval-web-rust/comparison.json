@@ -1,0 +1,30 @@
+{
+  "eval_id": "web-rust",
+  "utterance": "find documentation on the open web for Rust async traits",
+  "expected_skill": "web-search",
+  "category_class": "marketplace",
+  "with_skill": {
+    "overall_score": 62.5,
+    "instruction_following_score": 65.0,
+    "goal_completion_score": 60.0,
+    "passed": 3,
+    "failed": 2,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "overall_score": 62.5,
+    "instruction_following_score": 65.0,
+    "goal_completion_score": 60.0,
+    "passed": 3,
+    "failed": 2,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 0.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 0.0
+  },
+  "verdict": "skill_neutral"
+}

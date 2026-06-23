@@ -1,0 +1,15 @@
+{
+  "eval_id": "task-small",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 21814,
+    "total_events": 11
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 8579,
+    "total_events": 6
+  }
+}

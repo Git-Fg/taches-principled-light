@@ -10,15 +10,20 @@ on port 3456) using the `evaluating-skills` 8-stage harness.
 |---|------|----------------|--------|---------|
 | 1 | 2026-06-22 | Pilot — single eval `craft-create` end-to-end on Claude Code CLI | superseded by iter-2 | passed |
 | 2 | 2026-06-22 | Full N=18 evals × {with, without}-skill = 36 runs | superseded by iter-3 | 17/18 completed; 1 proxy 503 |
-| 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **canonical, with caveat** | mean delta **+8.69pp**, 6 lifts / 11 neutrals / **0 hurts**. ⚠️ results reflect stale v2.0.0 plugin cache; see `SKILL-DISCOVERY-ARCHITECTURE.md` v1.2 |
+| 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **superseded by iter-4** | mean delta +8.69pp, 6 lifts / 11 neutrals / 0 hurts. ⚠️ results reflect stale v2.0.0 plugin cache; see `SKILL-DISCOVERY-ARCHITECTURE.md` v1.3 |
 | 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | **complete** (9/15 runs) | H1 confirmed for `craft-create`; H2 confirmed for `craft-review`; H3 not dominant; **H4 bonus**: zero-skill invocations in 6/9 runs (routing-heuristic failure upstream). See [`iteration-3.1/RESULTS.md`](marketplace-routing-2026-06-22/iteration-3.1/RESULTS.md) |
-| 4 | planned | Cache-refreshed re-run of iter-3 (Phase A: heterogeneous judges; Phase B: sonnet only) | **designed** | [`iteration-4/PLAN.md`](marketplace-routing-2026-06-22/iteration-4/PLAN.md) v1.1. Cache refresh smoke test PASSED — `craft-create` now picks `crafting-skills` directly |
+| 4 | 2026-06-23 | Cache-refreshed re-run of iter-3 with fresh v0.0.3 cache (heterogeneous judges) | **complete** (18/18 evals) | mean delta **+4.94pp**, 5 lifts / 13 neutrals / **0 hurts**. The iter-3 +8.69pp was inflated by ≈3.75pp due to stale v2.0.0 cache; corrected headline is +4.94pp. See [`iteration-4/REPORT.md`](marketplace-routing-2026-06-22/iteration-4/REPORT.md) |
 
 ## Canonical report
 
-The corrected iter-3 results live at
-[`marketplace-routing-2026-06-22/iteration-3/REPORT.md`](marketplace-routing-2026-06-22/iteration-3/REPORT.md).
-This is the report to cite.
+The iter-4 results are now the canonical headline:
+[`marketplace-routing-2026-06-22/iteration-4/REPORT.md`](marketplace-routing-2026-06-22/iteration-4/REPORT.md).
+This supersedes iter-3 as the citation target.
+
+iter-3's REPORT is preserved at
+[`marketplace-routing-2026-06-22/iteration-3/REPORT.md`](marketplace-routing-2026-06-22/iteration-3/REPORT.md)
+for the historical record (the +8.69pp number is now understood as
+stale-cache-inflated).
 
 The intermediate `INTERIM-FINDINGS.md` is SUPERSEDED and archived at
 [`marketplace-routing-2026-06-22/.archive/INTERIM-FINDINGS-iter3-SUPERSEDED.md`](marketplace-routing-2026-06-22/.archive/INTERIM-FINDINGS-iter3-SUPERSEDED.md).

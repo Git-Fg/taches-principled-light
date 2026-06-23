@@ -1,0 +1,15 @@
+{
+  "eval_id": "craft-review",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 26493,
+    "total_events": 10
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 17878,
+    "total_events": 9
+  }
+}

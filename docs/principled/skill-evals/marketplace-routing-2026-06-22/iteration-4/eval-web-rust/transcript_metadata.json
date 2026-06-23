@@ -1,0 +1,15 @@
+{
+  "eval_id": "web-rust",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 53740,
+    "total_events": 28
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 136471,
+    "total_events": 68
+  }
+}

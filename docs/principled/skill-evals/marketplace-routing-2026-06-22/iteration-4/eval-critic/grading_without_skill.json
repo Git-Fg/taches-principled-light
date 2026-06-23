@@ -1,0 +1,52 @@
+{
+  "judge_model": "sonnet",
+  "config": "without",
+  "eval_id": "critic",
+  "expectations": [
+    {
+      "id": "consulted_general_critic",
+      "text": "the agent should read skills/general-critic/SKILL.md before reviewing; the skill defines the HIGH/MEDIUM/LOW severity taxonomy",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'general-critic' (paths=['.agents/skills/general-critic/SKILL.md', 'skills/general-critic/SKILL.md'], observed_reads=[], observed_skills=['code-review'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "named_specific_findings",
+      "text": "the review should name specific findings with file paths, line numbers, and concrete remediation \u2014 not vague 'consider improving' suggestions",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_severity_taxonomy",
+      "text": "the agent should classify findings by HIGH/MEDIUM/LOW severity per the skill, with explicit thresholds (HIGH = blocker; MEDIUM = should-fix; LOW = nice-to-have)",
+      "passed": false,
+      "evidence": "The agent never read the SKILL.md, never invoked the code-review skill's taxonomy, and ended by asking the user for a repository path instead of producing any severity-classified findings.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "found_real_issues",
+      "text": "the review should surface \u22651 substantive issue (correctness, security, performance, or design flaw), not just style nits",
+      "passed": false,
+      "evidence": "The agent did not review any code and surfaced zero issues; it only reported that no git repository was available in the working directory.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 4,
+    "unknown": 0,
+    "total": 4
+  },
+  "weight": {
+    "instruction_following": 0.6,
+    "goal_completion": 1.0
+  }
+}

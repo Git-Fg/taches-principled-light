@@ -1,0 +1,15 @@
+{
+  "eval_id": "craft-create",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 20859,
+    "total_events": 11
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 15575,
+    "total_events": 11
+  }
+}

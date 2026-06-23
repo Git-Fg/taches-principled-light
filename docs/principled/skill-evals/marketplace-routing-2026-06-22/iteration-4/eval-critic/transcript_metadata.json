@@ -1,0 +1,15 @@
+{
+  "eval_id": "critic",
+  "with_skill": {
+    "config": "with",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 668
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 32630,
+    "total_events": 15
+  }
+}

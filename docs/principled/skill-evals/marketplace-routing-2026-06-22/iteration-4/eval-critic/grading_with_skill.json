@@ -1,0 +1,52 @@
+{
+  "judge_model": "sonnet",
+  "config": "with",
+  "eval_id": "critic",
+  "expectations": [
+    {
+      "id": "consulted_general_critic",
+      "text": "the agent should read skills/general-critic/SKILL.md before reviewing; the skill defines the HIGH/MEDIUM/LOW severity taxonomy",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'general-critic' (paths=['.agents/skills/general-critic/SKILL.md', 'skills/general-critic/SKILL.md'], observed_reads=['/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/eval-release-2/without_skill.jsonl', '/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/eval-release-2/transcript_metadata.json', '/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/runner.log'], observed_skills=['taches-principled-light:reviewing-and-polishing'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "named_specific_findings",
+      "text": "the review should name specific findings with file paths, line numbers, and concrete remediation \u2014 not vague 'consider improving' suggestions",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_severity_taxonomy",
+      "text": "the agent should classify findings by HIGH/MEDIUM/LOW severity per the skill, with explicit thresholds (HIGH = blocker; MEDIUM = should-fix; LOW = nice-to-have)",
+      "passed": false,
+      "evidence": "The transcript is truncated mid-review; the agent launched the skill and fanned out 6 parallel review agents, but no final consolidated report with HIGH/MEDIUM/LOW severity classifications and explicit thresholds is visible in the provided output.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "found_real_issues",
+      "text": "the review should surface \u22651 substantive issue (correctness, security, performance, or design flaw), not just style nits",
+      "passed": false,
+      "evidence": "The transcript is truncated during the data-gathering and parallel-agent fan-out phase; no final review output identifying any specific substantive correctness, security, performance, or design issues is visible.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 4,
+    "unknown": 0,
+    "total": 4
+  },
+  "weight": {
+    "instruction_following": 0.6,
+    "goal_completion": 1.0
+  }
+}

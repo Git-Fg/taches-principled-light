@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "with",
+  "eval_id": "research",
+  "expectations": [
+    {
+      "id": "consulted_deep_research",
+      "text": "the agent should read skills/deep-research/SKILL.md before starting, since the skill defines the 5-stage pipeline",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: deep-research",
+      "points_awarded": 25,
+      "unknown": false
+    },
+    {
+      "id": "triangulated_sources",
+      "text": "the response should cite \u22653 independent sources for any non-trivial claim, with primary sources preferred over secondary aggregators",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "long_form_evidence",
+      "text": "the output should be a long-form (multi-section) report written to docs/principled/research/<slug>/index.md per the skill's canonical output path",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "followed_5_stage_pipeline",
+      "text": "the agent should follow the 5-stage pipeline (frame -> reformulate -> inspect -> cross-reference -> stop/surface) per the skill, not a single-pass summary",
+      "passed": true,
+      "evidence": "The agent executed a multi-stage process: 5 parallel web searches (scope/search), followed by 8 parallel source fetches (fetch/inspect), then synthesis \u2014 clearly not a single-pass summary, and the assistant explicitly outlined 5 phases (Scope, Search, Fetch, Verify, Synthesize).",
+      "points_awarded": 40,
+      "unknown": false
+    },
+    {
+      "id": "surfaced_disagreement",
+      "text": "the report should explicitly surface areas of disagreement between sources (e.g. 'Tessl reports +19.7 lift while SkillsBench reports +25.1; the difference is methodology, not noise') rather than averaging into false consensus",
+      "passed": false,
+      "evidence": "The final report is truncated in the transcript after the opening of the Executive Summary ('Agent skill evaluation is a rapidly maturing discipline...'), so there is no visible evidence of explicit disagreement surfacing between sources; the report content needed to verify this assertion is cut off.",
+      "points_awarded": 0,
+      "unknown": true
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 65.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 32.5,
+    "passed": 2,
+    "failed": 2,
+    "unknown": 1,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

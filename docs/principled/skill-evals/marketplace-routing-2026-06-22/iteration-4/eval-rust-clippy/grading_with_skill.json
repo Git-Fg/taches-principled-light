@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "with",
+  "eval_id": "rust-clippy",
+  "expectations": [
+    {
+      "id": "consulted_rust_skill",
+      "text": "the agent should read skills/rust/SKILL.md before configuring; the skill encodes clippy/cargo-deny/cargo-vet setup patterns",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: taches-principled-light:rust",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "clippy_config_produced",
+      "text": "the response should produce a clippy.toml (or [lints] table in Cargo.toml) with at least the workspace-level lints (clippy::all, clippy::pedantic, clippy::nursery)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "cargo_deny_config_produced",
+      "text": "the response should produce a deny.toml configuration with licenses, bans, advisories, and sources sections per the rust skill's recommended template",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ci_integration_mentioned",
+      "text": "the response should mention CI integration (GitHub Actions or similar) running cargo clippy --all-targets --all-features -- -D warnings and cargo deny check",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "version_pinned",
+      "text": "the response should pin specific versions (clippy = Rust 1.74+ stable; cargo-deny = 0.14+) and note MSRV implications, not just 'install latest'",
+      "passed": false,
+      "evidence": "The agent never produced any configuration output; it stopped at asking a clarification question about which Rust project to work on, noting 'The user declined to answer my clarification question,' and never pinned clippy/cargo-deny versions or addressed MSRV implications.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 15.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

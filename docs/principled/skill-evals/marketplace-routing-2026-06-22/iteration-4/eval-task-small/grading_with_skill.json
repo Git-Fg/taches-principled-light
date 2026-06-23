@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "with",
+  "eval_id": "task-small",
+  "expectations": [
+    {
+      "id": "consulted_task_lifecycle",
+      "text": "the agent should read skills/task-lifecycle/SKILL.md before implementing; the skill defines the draft -> spec -> implement-verify -> docs lifecycle",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'task-lifecycle' (paths=['.agents/skills/task-lifecycle/SKILL.md', 'skills/task-lifecycle/SKILL.md'], observed_reads=[], observed_skills=[])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "verification_automated",
+      "text": "the verification stage should produce an automated check (test, command, or assertion) rather than 'looks good to me'",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "docs_updated_to_match",
+      "text": "the relevant docs (README, AGENTS.md, or skill body) should be updated to reflect the new feature; not just code committed",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "followed_lifecycle_stages",
+      "text": "the agent should follow all 4 stages (draft capture -> spec refine -> implement+verify -> docs update) rather than jumping straight to code",
+      "passed": false,
+      "evidence": "The agent only ran two exploratory bash commands (pwd/git log and directory listing) and then asked the user for clarification about what feature to add; it never read SKILL.md, drafted a spec, implemented code, or updated docs.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "small_scope_preserved",
+      "text": "the agent should resist scope creep \u2014 the feature should match the original spec, not balloon into a multi-file refactor unless explicitly justified",
+      "passed": false,
+      "evidence": "The agent produced no implementation at all \u2014 it stalled asking the user to clarify the feature request, so the task was not completed and scope preservation cannot be demonstrated.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

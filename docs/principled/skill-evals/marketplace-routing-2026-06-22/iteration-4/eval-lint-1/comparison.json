@@ -1,0 +1,30 @@
+{
+  "eval_id": "lint-1",
+  "utterance": "lint the marketplace and check the frontmatter",
+  "expected_skill": "marketplace-validator",
+  "category_class": "local-meta",
+  "with_skill": {
+    "overall_score": 25.0,
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 50.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "overall_score": 0.0,
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 0.0,
+    "goal_completion_delta": 50.0,
+    "overall_delta": 25.0
+  },
+  "verdict": "skill_lifts_quality"
+}

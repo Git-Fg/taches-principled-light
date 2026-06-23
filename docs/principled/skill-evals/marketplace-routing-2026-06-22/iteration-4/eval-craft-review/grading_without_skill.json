@@ -1,0 +1,60 @@
+{
+  "judge_model": "sonnet",
+  "config": "without",
+  "eval_id": "craft-review",
+  "expectations": [
+    {
+      "id": "consulted_crafting_skills",
+      "text": "the agent should read skills/crafting-skills/SKILL.md before reviewing; the skill encodes the description-quality rubric",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: taches-principled-light:crafting-skills",
+      "points_awarded": 35,
+      "unknown": false
+    },
+    {
+      "id": "specific_findings_with_diff",
+      "text": "the review should present findings as a before/after diff (current description + suggested rewrite), not just 'consider improving X'",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "frontmatter_validates",
+      "text": "the reviewed skill's frontmatter should pass marketplace-validator (name format, description length \u22641024, license present, no stale platform refs)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_routing_checklist",
+      "text": "the agent should apply the routing-quality checklist (Load when / Use when / Do NOT use for / concrete trigger phrases / negative scope) to the reviewed skill's description",
+      "passed": false,
+      "evidence": "The agent only asked 'Which skill would you like me to review?' and never applied any routing-quality checklist or analyzed any skill's description.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "routing_improvement_actionable",
+      "text": "the suggested description rewrite should be measurably better for routing \u2014 i.e., include trigger phrases the user would actually type, and explicit negative scope to prevent over-triggering",
+      "passed": false,
+      "evidence": "No description rewrite was provided; the agent did not produce any suggested description, trigger phrases, or negative scope statements.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 35.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 17.5,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

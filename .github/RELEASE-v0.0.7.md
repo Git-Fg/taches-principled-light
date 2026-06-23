@@ -148,8 +148,8 @@ per-eval `lifts.total_lift.overall_delta < 0pp`) is unchanged.
   hurts) and the headline is dominated by deterministic
   `filesystem_access_lift` (+13.75pp mean).
 - **Vendor-disjoint validation is structurally blocked** on the
-  current `100.80.231.128:3456` proxy (single-model gateway; only
-  `glm-5.2` is vendor-disjoint and rate-limited). iter-8A unblocks
+  current `<private inference gateway>` proxy (single-family gateway; only
+  the external judge vendor alias is vendor-disjoint and rate-limited). iter-8A unblocks
   this via a local mock; v0.0.6+ LiteLLM deployment unblocks it for
   the real proxy. iter-8-PLAN.md is preserved in the active tree
   awaiting execution.
@@ -163,8 +163,8 @@ python3 .agents/skills/marketplace-validator/scripts/validate.py .
 # Health sweep (manifest consistency at 0.0.7)
 python3 .agents/skills/marketplace-health/scripts/health.py
 
-# Release-gate (CI parity, validates committed iter-7 benchmark JSON)
-python3 .github/scripts/release-gate.py
+# Release-gate (CI parity, validates committed iter-7 benchmark JSON; removed in v0.0.8 — see CHANGELOG [0.0.8])
+# python3 .github/scripts/release-gate.py
 ```
 
 ## Install
@@ -187,8 +187,8 @@ to a tag:
   ([`STATUS.md`](../../docs/principled/attic/2026-06-23-closure/STATUS.md)
   ·
   [`metadata.md`](../../docs/principled/attic/2026-06-23-closure/metadata.md))
-- iter-7 canonical headline:
-  [`iteration-7/REPORT.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md)
+- iter-7 canonical headline: see canonical retrospective:
+  [`ITERATION-PHASE-RETROSPECTIVE.md`](../../docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md)
 - iter-8 forward-looking plan:
   [`iteration-8-PLAN.md`](../../docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md)
 - v0.0.6 release notes: [`.github/RELEASE-v0.0.6.md`](RELEASE-v0.0.6.md)

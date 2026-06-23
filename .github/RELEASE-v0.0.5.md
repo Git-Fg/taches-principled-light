@@ -10,7 +10,7 @@ directional finding is robust (4/4 lift, 0 hurts) and the headline
 is dominated by deterministic `filesystem_access_lift` (+13.75pp
 mean).
 
-Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md)
+Full report: [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) (canonical narrative; the per-iteration `iteration-7/REPORT.md` is preserved in the closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-7/REPORT.md`).
 
 ## What's in the box
 
@@ -49,12 +49,8 @@ Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iterat
   benchmark rather than re-running the harness, because the harness
   depends on a private proxy that is not publicly routable from GitHub
   Actions runners (re-run path is deferred to a future version when
-  either the proxy has a public endpoint or a self-hosted runner exists).
-- **Grader-noise investigation** at `iter-7/GRADER-NOISE-INVESTIGATION.md`
-  showing that `temperature=0` does not make the current proxy's
-  `MiniMax-M3` model deterministic (5-run probe, default vs temp=0 both
-  stochastic). Mitigation: multi-run averaging (3× per cell, median),
-  deferred to iter-8.
+  either the proxy has a public endpoint or a self-hosted runner exists). **Removed in v0.0.8** — the v0.0.7 closure marker removed the eval iterations from the active tree, making the release-gate's input JSON structurally inoperable; `marketplace-health` remains as the pre-release gate.
+- **Grader-noise investigation** at `iter-7/GRADER-NOISE-INVESTIGATION.md` (preserved in closure archive) showing that `temperature=0` does not make the current proxy's configured backend deterministic (5-run probe, default vs temp=0 both stochastic). Mitigation: multi-run averaging (3× per cell, median), deferred to iter-8.
 
 ### Changed
 
@@ -106,8 +102,8 @@ Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iterat
   [CoEval (Aperstein et al. 2026)](https://arxiv.org/abs/2606.03650)
   for vendor-disjoint panel evaluation that cancels
   same-family self-preference.
-- **Vendor-disjoint grader**: the LLM judge (`sonnet` tier on the
-  proxy) is in a different family from the solver (`haiku` tier on the
+- **Vendor-disjoint grader**: the LLM judge (one tier on the
+  proxy) is in a different family from the solver (another tier on the
   same proxy). This guards against the **self-preference bias**
   quantified in Wataoka 2024 (the bias mechanism is
   lower-perplexity preference: LLMs assign higher evaluations to
@@ -121,14 +117,12 @@ Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iterat
   when the skill body is hidden vs exposed. Our `consultation_lift`
   measurement deliberately uses body-hidden to avoid this inflation.
 - **Proxy architecture finding**: the proxy at
-  `100.80.231.128:3456` is a single-model gateway — every alias in the
-  vendor catalog (qwen, llama, gpt-4o, gemini, deepseek, mistral,
-  claude-3×3, doubao, kimi, minimax, phi-4, mixtral, command-r, jamba,
-  cerebras, fireworks, deepinfra, nex-agi/nex-n2-pro:free) resolves to
-  `MiniMax-M3`. The `haiku` / `sonnet` / `opus` aliases are proxy tier
-  labels, not different models. Only `glm-5.2` is a genuine second
-  family and it is rate-limited (503 `circuit_breaker_open: RateLimit`).
-  This is documented in iter-6 REPORT.md.
+  `<private inference gateway>` is a single-family gateway — every alias in the
+  vendor catalog (20 vendor aliases) resolves to the same
+  configured backend. The tier aliases are proxy tier
+  labels, not different models. Only the external judge vendor alias is a genuine second
+  family and it is rate-limited (503 `rate-limited`). This is
+  documented in iter-6 REPORT.md (preserved in closure archive).
 
 ## Known limitations
 
@@ -153,11 +147,11 @@ python3 .agents/skills/marketplace-validator/scripts/validate.py .
 # Health sweep
 python3 .agents/skills/marketplace-health/scripts/health.py
 
-# iter-7 harness (re-uses cached baselines/ by default)
-python3 docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/scripts/run_iteration_7.py
+# iter-7 harness (re-uses cached baselines/ by default; closure archive)
+# python3 docs/principled/attic/2026-06-23-closure/skill-evals/iteration-7/scripts/run_iteration_7.py
 
-# Release gate (CI parity)
-python3 .github/scripts/release-gate.py
+# Release gate (CI parity; removed in v0.0.8 — see CHANGELOG [0.0.8])
+# python3 .github/scripts/release-gate.py
 ```
 
 ## Install
@@ -168,7 +162,7 @@ the matching plugin root (`.claude-plugin/`, `.kimi-plugin/`,
 
 ## Links
 
-- Full iter-7 report: `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md`
-- Grader-noise investigation: `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/GRADER-NOISE-INVESTIGATION.md`
+- Full iter-7 report: `docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md` (per-iteration `iteration-7/REPORT.md` preserved in closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-7/REPORT.md`)
+- Grader-noise investigation: preserved in closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-7/GRADER-NOISE-INVESTIGATION.md`
 - CHANGELOG: `CHANGELOG.md`
 - Marketplace-health sweep: `docs/principled/marketplace-health/2026-06-23.md`

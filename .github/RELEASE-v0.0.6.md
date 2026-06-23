@@ -34,10 +34,10 @@ Same as v0.0.5 — no changes to the public surface:
   **(295 lines)**: three sub-experiments to address the two open
   follow-ups from iter-7.
   - **8A vendor-disjoint grader mock** — local
-    `zerob13/mock-openai-api` mock (B-grade) or
+    mock OpenAI-compatible grader (B-grade) or
     WireMock+LiteLLM (A-grade) running on
-    `http://localhost:4010/v1/chat/completions`; haiku solver
-    continues against the real `100.80.231.128:3456` proxy;
+    `http://localhost:4010/v1/chat/completions`; the configured solver
+    continues against the real `<private inference gateway>` proxy;
     `JUDGE_FIXTURE_MODE=1` env flag routes the judge tier to the
     mock.
   - **8B grader-noise root-cause** — re-grades 4 bit-for-bit
@@ -68,8 +68,8 @@ Same as v0.0.5 — no changes to the public surface:
     `+17.5pp sec-audit` grader swing.
   - **LiteLLM** (51,259 stars, native MCP + A2A, drop-in OpenAI
     compat, 8ms P95 at 1k RPS) as the recommended self-hosted
-    replacement for the structurally-single-model
-    `100.80.231.128:3456` proxy; unblocks iter-6 vendor-disjoint
+    replacement for the structurally-single-family
+    `<private inference gateway>` proxy; unblocks iter-6 vendor-disjoint
     validation in v0.0.6+ once deployed.
 - **CI release-gate job** at
   [`.github/workflows/eval-regression.yml`](../../.github/workflows/eval-regression.yml)
@@ -80,10 +80,10 @@ Same as v0.0.5 — no changes to the public surface:
   tag push ran the gate in 10s and **PASSED**.
 - **Vendor-disjoint grader mock research** at
   [`docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`](../../docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md)
-  (205 lines): three implementations evaluated.
+  (205 lines): three implementations evaluated. **Removed in v0.0.8** — absorbed into the iter-8 design supplements note.
   - **A-grade**: WireMock + LiteLLM (most flexible, but ~120 lines
     of stub config).
-  - **B-grade**: `zerob13/mock-openai-api` (single binary, 30-line
+  - **B-grade**: a popular OpenAI-compatible mock (single binary, 30-line
     python `scenario.yaml` config, recommended for iter-8A).
   - **C-grade fallback**: 30-line Python shim with FastAPI +
     `openai` SDK (lowest dependency surface, but no fixtures /
@@ -202,8 +202,8 @@ cross-confirmations of the iter-7 +21.88pp headline:
   lift, 0 hurts) and the headline is dominated by deterministic
   `filesystem_access_lift` (+13.75pp mean).
 - **Vendor-disjoint validation is structurally blocked** on the
-  current `100.80.231.128:3456` proxy (single-model gateway; only
-  `glm-5.2` is vendor-disjoint and rate-limited). iter-8A
+  current `<private inference gateway>` proxy (single-family gateway; only
+  the external judge vendor alias is vendor-disjoint and rate-limited). iter-8A
   unblocks this via a local mock; v0.0.6+ LiteLLM deployment
   unblocks it for the real proxy.
 
@@ -216,11 +216,11 @@ python3 .agents/skills/marketplace-validator/scripts/validate.py .
 # Health sweep (manifest consistency at 0.0.6)
 python3 .agents/skills/marketplace-health/scripts/health.py
 
-# Release-gate (CI parity, validates committed iter-7 benchmark JSON)
-python3 .github/scripts/release-gate.py
+# Release-gate (CI parity, validates committed iter-7 benchmark JSON; removed in v0.0.8 — see CHANGELOG [0.0.8])
+# python3 .github/scripts/release-gate.py
 
 # iter-8 (when Docker + Claude Code CLI are available)
-python3 docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8/scripts/run_iteration_8.py
+# python3 docs/principled/attic/2026-06-23-closure/skill-evals/iteration-8/scripts/run_iteration_8.py
 ```
 
 ## Install
@@ -242,5 +242,5 @@ Pin to a tag:
 - iter-8 plan: `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md`
 - iter-8 design supplements: `docs/principled/research/2026-06-23-iter8-design-supplements.md`
 - v0.0.5 release notes: [`.github/RELEASE-v0.0.5.md`](RELEASE-v0.0.5.md)
-- iter-7 report: `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md`
+- iter-7 report: `docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md` (per-iteration `iteration-7/REPORT.md` preserved in closure archive)
 - Marketplace-health sweep: `docs/principled/marketplace-health/2026-06-23.md`

@@ -2,9 +2,44 @@
 
 All notable changes to the taches-principled-light marketplace.
 
-## [Unreleased]
+## [0.0.7] — iteration phase closure marker (repo finalization) — 2026-06-23
 
-No active development. The v0.0.6 release tag (pending) is the latest published release.
+Repository finalization release. No new skills, no breaking changes, no new behavioral data. Patch-level release that archives 13 MB of historical artifacts (5 superseded eval iterations, 2 executed plans with no `SUMMARY.md`, 2 design specs, 1 design note for an already-shipped feature, 13 intermediate research work products) into `docs/principled/attic/2026-06-23-closure/` and tightens the working tree to 2.4 MB. All 4 plugin manifests synchronized to 0.0.7. **`iter-7` remains the canonical headline** (+21.88pp, 4/4 lifts, 0 hurts).
+
+### Added
+
+- **Closure archive bundle** (`docs/principled/attic/2026-06-23-closure/`): `STATUS.md` (closure record per AGENTS.md "Project Closure Convention") + `metadata.md` (file inventory, key decisions, closure list) + 4 subdirectories (plans/, specs/, design/, research/, skill-evals/). Total: 19 files preserved as audit trail.
+- **v0.0.7 release notes** (`.github/RELEASE-v0.0.7.md`): long-form description for the GitHub release page. Documents what was archived, what stays in the active tree, the cross-reference updates, and the iter-8 forward-looking plan.
+
+### Changed
+
+- **Active tree reduction: 15 MB → 2.4 MB** (84% reduction in `docs/principled/skill-evals/marketplace-routing-2026-06-22/` size). The active tree now contains only the canonical signal: `iteration-6/` (proxy architecture finding), `iteration-7/` (canonical headline), `iteration-8-PLAN.md` (forward-looking), `baselines/`, `evals/`, `scripts/`, `capabilities.json`, `SKILL-DISCOVERY-ARCHITECTURE.md`, `methodology-note-routing-vs-validator.md`, `.archive/`.
+- **Cross-reference updates** in 4 active files: `docs/principled/skill-evals/INDEX.md` (iter-1/2/3/3.1/4 entries now point to closure archive), `iteration-7/REPORT.md` (line 151), `iteration-7/GRADER-NOISE-INVESTIGATION.md` (lines 19, 22, 68, 69), `SKILL-DISCOVERY-ARCHITECTURE.md` (line 164).
+- **`.gitignore` broadened**: `__pycache__` coverage extended from `plugins/**/__pycache__/` to cover all paths (`skills/**/`, `.agents/**/`, `docs/**/`, `**/`). Added `.pytest_cache/`.
+
+### Removed
+
+- 5 historical eval iterations: `iteration-1/` (296K, pilot), `iteration-2/` (4.4M, broken by API overload), `iteration-3/` (396K, +8.69pp headline superseded by cache-refreshed iter-4), `iteration-3.1/` (336K, per-skill `--add-dir` experiment), `iteration-4/` (7.2M, +4.94pp filesystem_access_lift only). Full transcripts preserved in closure archive.
+- 2 plans without `SUMMARY.md` (Task 1 executed, rest abandoned in each).
+- 2 design specs for the above plans.
+- 1 design note for an already-shipped feature (`hub-subskills-compatibility.md`).
+- 13 intermediate research work products (2 bundles — `agent-skills-evaluation/` with 6 files, `hub-references-routing-evals/` with 7 files) where the canonical artifact is either the closure archive or already cited in the CHANGELOG.
+- 1 orphan `run_iteration_2.py` (hardcoded `ITER_DIR = .../iteration-2` path that no longer exists).
+- 7 untracked `__pycache__` directories, 10 `.pyc` files, 1 `.DS_Store`, 1 `.pytest_cache/` (removed via `trash`).
+
+### Fixed
+
+- **Stale CHANGELOG `[Unreleased]` section** (lines 5-7): said "The v0.0.6 release tag (pending) is the latest published release" but v0.0.6 was already tagged (`bd04ae0`). Replaced with the v0.0.7 closure entry.
+- **Orphan `scripts/run_iteration_2.py`**: hardcoded `ITER_DIR = WORKSPACE / "iteration-2"` path that no longer exists in the active tree. Moved to closure archive (`attic/2026-06-23-closure/skill-evals/iteration-2/scripts/run_iteration_2.py`).
+- **`hub-subskills-compatibility.md` design note**: 2026-06-23 design analysis not referenced from any active artifact (zero grep hits). Moved to closure archive.
+
+### Verified
+
+- **marketplace-health**: HEALTH: pass (validator 0/87 across 31 skills; manifest consistency at 0.0.7; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`.
+- **`iter-7` canonical headline preserved**: `iter-7/REPORT.md` + `iter-7/GRADER-NOISE-INVESTIGATION.md` cross-references updated to point to the closure archive paths; the +21.88pp headline (4/4 lifts, 0 hurts) is unchanged.
+- **iter-8 forward-looking plan preserved**: `iteration-8-PLAN.md` stays in the active tree, awaiting the LiteLLM multi-model proxy deployment that unblocks iter-6 vendor-disjoint validation.
+- **CI release-gate**: passes on `iter-7/grading_summary.json` (unaffected by archive moves; the grading_summary.json file is still in the active tree).
+- **No tracked dev cruft** (`git ls-files | grep -E "(__pycache__|\.pyc$|\.DS_Store$|pytest_cache)"` returns 0).
 
 ## [0.0.6] — post-v0.0.5 polish, iter-8 design, citation audit — 2026-06-22
 

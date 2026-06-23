@@ -13,7 +13,14 @@
 
 # Python bytecode caches
 plugins/**/__pycache__/
+skills/**/__pycache__/
+.agents/**/__pycache__/
+docs/**/__pycache__/
+**/__pycache__/
 *.pyc
+
+# Pytest local cache
+.pytest_cache/
 
 # Mavis runtime (local plans, session state)
 .mavis/

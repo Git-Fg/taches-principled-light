@@ -148,6 +148,6 @@ python3 scripts/run_iteration_7.py --skip-transcripts
 
 ## Related
 
-- [`iteration-4/REPORT.md`](../iteration-4/REPORT.md) — original 18-eval campaign whose `without_skill` baseline was contaminated. The +4.94pp headline is the filesystem_access_lift only.
+- [`iteration-4/REPORT.md`](../../attic/2026-06-23-closure/skill-evals/iteration-4/REPORT.md) — original 18-eval campaign whose `without_skill` baseline was contaminated. The +4.94pp headline is the filesystem_access_lift only. (Archived in `attic/2026-06-23-closure/`.)
 - [`iteration-6/REPORT.md`](../iteration-6/REPORT.md) — proxy architecture finding (haiku/sonnet/opus/nex-agi all silently map to MiniMax-M3; only glm-5.2 is vendor-disjoint and is rate-limited). The +7.5pp code-only lift decomposition is the conservative lower bound.
 - [`iteration-5-6-7-PLAN.md`](../iteration-5-6-7-PLAN.md) — original iter-5/6/7 design (superseded by the iter-6 proxy architecture finding; iter-5 deferred).

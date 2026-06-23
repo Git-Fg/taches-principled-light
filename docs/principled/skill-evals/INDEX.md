@@ -8,12 +8,12 @@ on port 3456) using the `evaluating-skills` 8-stage harness.
 
 | # | Date | What it tested | Status | Verdict |
 |---|------|----------------|--------|---------|
-| 1 | 2026-06-22 | Pilot — single eval `craft-create` end-to-end on Claude Code CLI | superseded by iter-2 | passed |
-| 2 | 2026-06-22 | Full N=18 evals × {with, without}-skill = 36 runs | superseded by iter-3 | 17/18 completed; 1 proxy 503 |
-| 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **superseded by iter-4** | mean delta +8.69pp, 6 lifts / 11 neutrals / 0 hurts. ⚠️ results reflect stale v2.0.0 plugin cache; see `SKILL-DISCOVERY-ARCHITECTURE.md` v1.3 |
-| 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | **complete** (9/15 runs) | H1 confirmed for `craft-create`; H2 confirmed for `craft-review`; H3 not dominant; **H4 bonus**: zero-skill invocations in 6/9 runs (routing-heuristic failure upstream). See [`iteration-3.1/RESULTS.md`](marketplace-routing-2026-06-22/iteration-3.1/RESULTS.md) |
-| 4 | 2026-06-23 | Cache-refreshed re-run of iter-3 with fresh v0.0.3 cache (heterogeneous judges) | **complete** (18/18 evals) | mean delta **+4.94pp**, 5 lifts / 13 neutrals / **0 hurts**. 3 of 5 lifts are file-access-driven (agent ran colocated scripts via filesystem glob), 2 are consultation-driven (eval-skill, sec-audit). Consultation-driven lower bound: +1.81pp. See [`iteration-4/REPORT.md`](marketplace-routing-2026-06-22/iteration-4/REPORT.md) |
-| 4.1 | 2026-06-23 | **Baseline contamination finding** (no new runs) | **discovered** | iter-4's `without_skill` is contaminated: the marketplace plugin auto-loads into the agent's `slash_commands` regardless of `--add-dir`, so the "no-skill" baseline is actually `plugin_only` (no filesystem access). The agent invoked `/crafting-skills` at event 4 of the without_skill.jsonl. **iter-4's +4.94pp is the FILESYSTEM ACCESS lift, not the total lift vs no-plugin baseline.** True total lift is ≥ +4.94pp (lower bound). See [`iteration-4/RESEARCH-FINDINGS-iter5-design.md`](marketplace-routing-2026-06-22/iteration-4/RESEARCH-FINDINGS-iter5-design.md) § Baseline Contamination. |
+| 1 | 2026-06-22 | Pilot — single eval `craft-create` end-to-end on Claude Code CLI | superseded by iter-2 | passed. Archived at [`attic/2026-06-23-closure/skill-evals/iteration-1/`](../../attic/2026-06-23-closure/skill-evals/iteration-1/) |
+| 2 | 2026-06-22 | Full N=18 evals × {with, without}-skill = 36 runs | superseded by iter-3 | 17/18 completed; 1 proxy 503. Archived at [`attic/2026-06-23-closure/skill-evals/iteration-2/`](../../attic/2026-06-23-closure/skill-evals/iteration-2/) |
+| 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **superseded by iter-4** | mean delta +8.69pp, 6 lifts / 11 neutrals / 0 hurts. ⚠️ results reflect stale v2.0.0 plugin cache; see `SKILL-DISCOVERY-ARCHITECTURE.md` v1.3. Archived at [`attic/2026-06-23-closure/skill-evals/iteration-3/`](../../attic/2026-06-23-closure/skill-evals/iteration-3/) |
+| 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | **complete** (9/15 runs) | H1 confirmed for `craft-create`; H2 confirmed for `craft-review`; H3 not dominant; **H4 bonus**: zero-skill invocations in 6/9 runs (routing-heuristic failure upstream). Archived at [`attic/2026-06-23-closure/skill-evals/iteration-3.1/`](../../attic/2026-06-23-closure/skill-evals/iteration-3.1/) |
+| 4 | 2026-06-23 | Cache-refreshed re-run of iter-3 with fresh v0.0.3 cache (heterogeneous judges) | **complete** (18/18 evals) | mean delta **+4.94pp**, 5 lifts / 13 neutrals / **0 hurts**. 3 of 5 lifts are file-access-driven (agent ran colocated scripts via filesystem glob), 2 are consultation-driven (eval-skill, sec-audit). Consultation-driven lower bound: +1.81pp. Archived at [`attic/2026-06-23-closure/skill-evals/iteration-4/`](../../attic/2026-06-23-closure/skill-evals/iteration-4/) |
+| 4.1 | 2026-06-23 | **Baseline contamination finding** (no new runs) | **discovered** | iter-4's `without_skill` is contaminated: the marketplace plugin auto-loads into the agent's `slash_commands` regardless of `--add-dir`, so the "no-skill" baseline is actually `plugin_only` (no filesystem access). The agent invoked `/crafting-skills` at event 4 of the without_skill.jsonl. **iter-4's +4.94pp is the FILESYSTEM ACCESS lift, not the total lift vs no-plugin baseline.** True total lift is ≥ +4.94pp (lower bound). See [`attic/2026-06-23-closure/skill-evals/iteration-4/RESEARCH-FINDINGS-iter5-design.md`](../../attic/2026-06-23-closure/skill-evals/iteration-4/RESEARCH-FINDINGS-iter5-design.md) § Baseline Contamination. |
 | 5 | 2026-06-23 | N=11 reliability study (4-eval subset, 88 runs) per Yagubyan 2026 (N=3 underpowered) | **designed, deferred** | Will measure intra-rater noise on the +21.9pp iter-7 headline. Deferred because iter-7 already lifts 4/4 with 0 hurts, and the proxy is structurally single-model (no vendor-disjoint judge available). See [`iteration-5-6-7-PLAN.md`](marketplace-routing-2026-06-22/iteration-5-6-7-PLAN.md) § iter-5. Subset: eval-skill, sec-audit, lint-1, release-2. Documented as future-work in iter-7 REPORT. |
 | 6 | 2026-06-23 | Vendor-disjoint judge (haiku solver + glm-5.2 judge) per CoEval 2026 | **complete — proxy architecture finding** | glm-5.2 returned 503 `circuit_breaker_open: RateLimit` for all 12 grading cells. Re-purposed as **code-only lift decomposition**: mean **+7.5pp** across 4 evals (consultation + structure-with-compare_args only). The +14.4pp gap to iter-7's +21.9pp is the LLM-judgment contribution. Vendor-disjoint validation structurally blocked: the proxy is a single-model gateway (haiku/sonnet/opus/nex-agi all silently map to MiniMax-M3; only glm-5.2 is vendor-disjoint and is rate-limited). See [`iteration-6/REPORT.md`](marketplace-routing-2026-06-22/iteration-6/REPORT.md). |
 | 7 | 2026-06-23 | 3-config lift disambiguation (baseline/plugin_only/plugin_with_add_dir on 4-eval subset) | **complete** | consultation_lift=+8.12pp (NOISY, sec-audit +17.5pp swing on identical transcript), filesystem_access_lift=+13.75pp (deterministic), **total_lift=+21.88pp**. 4/4 evals lift, 0 hurts. **Canonical headline.** True no-plugin baseline uses `--disable-slash-commands`. Cross-link to iter-4 caveat #8 (sec-audit grader noise). See [`iteration-7/REPORT.md`](marketplace-routing-2026-06-22/iteration-7/REPORT.md). |
@@ -47,7 +47,7 @@ for the proxy architecture finding and the code-only lift decomposition
 total lift under a working vendor-disjoint judge).
 
 iter-3's REPORT is preserved at
-[`marketplace-routing-2026-06-22/iteration-3/REPORT.md`](marketplace-routing-2026-06-22/iteration-3/REPORT.md)
+[`attic/2026-06-23-closure/skill-evals/iteration-3/REPORT.md`](../../attic/2026-06-23-closure/skill-evals/iteration-3/REPORT.md)
 for the historical record (the +8.69pp number is now understood as
 stale-cache-inflated).
 
@@ -64,11 +64,11 @@ The intermediate `INTERIM-FINDINGS.md` is SUPERSEDED and archived at
 | `iteration-3/BUCKET-A-INSPECTION.md` | Splits the 8 Bucket A neutrals into A1 (proxy errors) / A2 (partial discovery) / A3 (true discovery failures) |
 | `iteration-3/unknowns.md` | Empty queue for UNKNOWN judge verdicts — schema + log |
 | `methodology-note-routing-vs-validator.md` | Why this is a behavioral eval (measuring agent routing behavior) not a static validator run |
-| `iteration-2/API-OVERLOAD-INCIDENT.md` | Forensic record of iter-2 partial failure |
-| `iteration-2/METRIC-BUG-NOTE.md` | Forensic record of grader bug found by self-critic |
-| `iteration-2/OUTCOME.md` | iter-2 final outcome summary |
-| `iteration-3.1/RESULTS-PARTIAL.md` | 8 of 15 runs captured. H1 confirmed for `craft-create`; craft-review picked wrong marketplace skill; 6 of 8 runs invoked zero skills (routing-heuristic failure) |
-| `iteration-4/RESEARCH-FINDINGS-iter5-design.md` | Web-research synthesis driving iter-5/6/7 designs: Yagubyan 2026 (N=11), CoEval 2026 (vendor-disjoint), Wataoka 2024 (self-preference), SkillRouter 2026 (body-hidden drop), Paik Kim 2026 (power analysis), Belmadani 2026 (generator-aware). **Includes the baseline-contamination finding (CRITICAL) that motivates iter-7.** |
+| `iteration-2/API-OVERLOAD-INCIDENT.md` | Forensic record of iter-2 partial failure (archived at `attic/2026-06-23-closure/skill-evals/iteration-2/API-OVERLOAD-INCIDENT.md`) |
+| `iteration-2/METRIC-BUG-NOTE.md` | Forensic record of grader bug found by self-critic (archived at `attic/2026-06-23-closure/skill-evals/iteration-2/METRIC-BUG-NOTE.md`) |
+| `iteration-2/OUTCOME.md` | iter-2 final outcome summary (archived at `attic/2026-06-23-closure/skill-evals/iteration-2/OUTCOME.md`) |
+| `iteration-3.1/RESULTS-PARTIAL.md` | 8 of 15 runs captured. H1 confirmed for `craft-create`; craft-review picked wrong marketplace skill; 6 of 8 runs invoked zero skills (routing-heuristic failure) (archived at `attic/2026-06-23-closure/skill-evals/iteration-3.1/RESULTS-PARTIAL.md`) |
+| `iteration-4/RESEARCH-FINDINGS-iter5-design.md` | Web-research synthesis driving iter-5/6/7 designs: Yagubyan 2026 (N=11), CoEval 2026 (vendor-disjoint), Wataoka 2024 (self-preference), SkillRouter 2026 (body-hidden drop), Paik Kim 2026 (power analysis), Belmadani 2026 (generator-aware). **Includes the baseline-contamination finding (CRITICAL) that motivates iter-7.** (archived at `attic/2026-06-23-closure/skill-evals/iteration-4/RESEARCH-FINDINGS-iter5-design.md`) |
 | `iteration-5-6-7-PLAN.md` | Revised iter-5/6/7 designs. Supersedes iter-4 PLAN's recommended designs based on research findings + baseline contamination. |
 
 ## Archived experiments
@@ -88,9 +88,9 @@ The intermediate `INTERIM-FINDINGS.md` is SUPERSEDED and archived at
 ## Reproducing iter-3
 
 ```bash
-cd docs/principled/skill-evals/marketplace-routing-2026-06-22
-python iteration-3/scripts/run_iteration_3.py    # 17 evals x 2 configs = 34 runs
-python iteration-3/scripts/grader.py             # reads benchmarks/, writes REPORT.md
+cd docs/principled/attic/2026-06-23-closure/skill-evals/iteration-3
+python scripts/run_iteration_3.py    # 17 evals x 2 configs = 34 runs
+python scripts/grader.py             # reads benchmarks/, writes REPORT.md
 ```
 
 Wall-clock budget: ~50 min for runs + ~5 min for grading on a warm proxy.
@@ -98,7 +98,8 @@ Wall-clock budget: ~50 min for runs + ~5 min for grading on a warm proxy.
 ## Reproducing iter-3.1 (in progress)
 
 ```bash
-python iteration-3.1/scripts/run_per_skill_experiment.py
+cd docs/principled/attic/2026-06-23-closure/skill-evals/iteration-3.1
+python scripts/run_per_skill_experiment.py
 ```
 
 5 Bucket A3 evals x 3 configs (without_skill / with_full_marketplace / with_skill_only)

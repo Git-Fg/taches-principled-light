@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 0.0.6 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
+**Version:** 0.0.7 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
@@ -41,7 +41,7 @@ claude plugin install https://github.com/Git-Fg/taches-principled-light
 Pin to a specific branch/tag/commit:
 ```bash
 /plugins install https://github.com/Git-Fg/taches-principled-light/tree/main
-/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.6
+/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.7
 ```
 
 ### Codex
@@ -74,6 +74,10 @@ https://github.com/Git-Fg/taches-principled-light
 | **Idea** | `generating-ideas` |
 
 All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `orchestrating-subagents` skill for the canonical reference.
+
+## What's New in 0.0.7
+
+**Iteration phase closure marker (repo finalization).** No new skills; no breaking changes; no new behavioral data. Patch-level release that archives ~13 MB of historical artifacts (5 superseded eval iterations, 2 executed plans with no `SUMMARY.md`, 2 design specs, 1 design note for an already-shipped feature, 13 intermediate research work products) into `docs/principled/attic/2026-06-23-closure/` with `STATUS.md` + `metadata.md` per the AGENTS.md "Project Closure Convention." Active tree shrank from 15 MB → 2.4 MB (84% reduction). **`iter-7` remains the canonical headline** (+21.88pp total_lift, 4/4 lifts, 0 hurts, deterministic endpoint grades). All 4 plugin manifests synchronized to 0.0.7. iter-8 forward-looking plan preserved in the active tree, awaiting LiteLLM multi-model proxy deployment that unblocks iter-6 vendor-disjoint validation. See CHANGELOG for the long-form breakdown and the closure archive's `STATUS.md` for the full closure record.
 
 ## What's New in 0.0.6
 

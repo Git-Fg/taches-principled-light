@@ -16,10 +16,10 @@ The same `sec-audit` transcript md5 `bda20918d4b7d0b7245bd12b59b09e58` (the iter
 
 ## Root cause
 
-`grader.py` (iteration-3/scripts/grader.py, md5 `330b9a6253f0a88b69241691738da8e0`) issues the LLM judge call without setting a `temperature` parameter:
+`grader.py` (`../../attic/2026-06-23-closure/skill-evals/iteration-3/scripts/grader.py`, md5 `330b9a6253f0a88b69241691738da8e0`) issues the LLM judge call without setting a `temperature` parameter:
 
 ```python
-# iteration-3/scripts/grader.py:215-219
+# ../../attic/2026-06-23-closure/skill-evals/iteration-3/scripts/grader.py:215-219
 "-d", json.dumps({
     "model": judge_model,
     "max_tokens": 4000,
@@ -65,8 +65,8 @@ The headline remains publishable. The `consultation_lift` cell should be cited a
 
 ## References
 
-- `iteration-3/scripts/grader.py` — the LLM judge call (lines 215-219)
-- `iteration-4/eval-sec-audit/grading_without_skill.json` — 15.0 grade on transcript `bda20918...`
+- `../../attic/2026-06-23-closure/skill-evals/iteration-3/scripts/grader.py` — the LLM judge call (lines 215-219)
+- `../../attic/2026-06-23-closure/skill-evals/iteration-4/eval-sec-audit/grading_without_skill.json` — 15.0 grade on transcript `bda20918...`
 - `iteration-7/eval-sec-audit/grading_plugin_only_skill.json` — 32.5 grade on the same transcript
 - `iteration-6/REPORT.md` — proxy architecture finding (single model, vendor-disjoint blocked)
 - `iteration-7/REPORT.md` caveat #3 — already documents "grader non-determinism" at headline level

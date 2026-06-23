@@ -247,6 +247,139 @@ read but the agent never loaded the skill, return "passed": false
 
 The model is fixed (Haiku 4.5, same chain as the solver) per Tessl's methodology: a fixed strong judge ensures consistent scoring across experiments.
 
+## SkillsBench: the canonical reference for skill evaluation
+
+[SkillsBench](https://skillsbench.ai) (paper arXiv [2602.12670](https://arxiv.org/abs/2602.12670), v1.2, June 2026) is the first published benchmark measuring how well AI agents use skills. It is **direct prior art** for iter-3 and we should treat its task-package format, verifier design, and lift numbers as the canonical reference.
+
+### Headline numbers (SkillsBench v1.1, 87 tasks, 8 domains)
+
+- **Aggregate lift**: 33.9% → 50.5% with curated skills (+16.6 pp; +25.5% normalized gain)
+- **Per-config range**: +4.1 to +25.7 pp across 18 model-harness configs
+- **Haiku 4.5 Claude Code**: 8.8% → 30.1% with skills (Δ +21.3 pp; +23.4% normalized)
+
+This is our target configuration. If our 18 marketplace evals are well-calibrated, we should expect similar lift when an agent consults the right skill vs doesn't. Lift below +10 pp would be a red flag — either the skills are too weak, or the evals are too easy.
+
+### SkillsBench task package format (BenchFlow v1.2 native `task.md`)
+
+```text
+tasks/<task-id>/
+├── task.md                  # YAML frontmatter + human-written prompt
+├── environment/
+│   ├── Dockerfile           # pinned deps, frozen inputs
+│   ├── <bundled inputs>
+│   └── skills/
+│       └── <skill-name>/    # the skill under test
+│           ├── SKILL.md
+│           ├── references/
+│           └── scripts/
+├── oracle/
+│   └── solve.sh             # held-out reference (computes, not hardcodes)
+└── verifier/
+    ├── test.sh              # runs pytest, writes 0/1 to /logs/verifier/reward.txt
+    └── test_outputs.py      # outcome-based assertions
+```
+
+`task.md` frontmatter (from `CONTRIBUTING.md`):
+
+```yaml
+---
+schema_version: '1.3'
+metadata:
+  author_name: ...
+  difficulty: medium
+  difficulty_explanation: ...
+  category: office-white-collar        # one of 8 controlled categories
+  subcategory: spreadsheet-analysis
+  category_confidence: high
+  task_type: [analysis, calculation]   # YAML list
+  modality: [spreadsheet]
+  interface: [terminal, python]
+  skill_type: [domain-procedure]
+  tags: [revenue-report, excel-formulas]
+verifier:
+  type: test-script
+  timeout_sec: 900.0
+agent:
+  timeout_sec: 900.0
+environment:
+  network_mode: no-network
+  build_timeout_sec: 600.0
+  os: linux
+  cpus: 1
+  memory_mb: 4096
+  storage_mb: 10240
+---
+```
+
+### Verifier design (SkillsBench)
+
+`verifier/test.sh`:
+
+```bash
+#!/bin/bash
+mkdir -p /logs/verifier
+uvx --with pytest==8.4.1 --with openpyxl==3.1.5 \
+  pytest /verifier/test_outputs.py -rA -v > /logs/verifier/output.txt 2>&1
+RC=$?
+cat /logs/verifier/output.txt
+if [ $RC -eq 0 ]; then echo 1 > /logs/verifier/reward.txt; else echo 0 > /logs/verifier/reward.txt; fi
+exit 0
+```
+
+`verifier/test_outputs.py` — pytest functions, outcome-based (file exists, format valid, numerical correctness). **Anti-cheat**: agent cannot read `/tests` or `/solution` during execution.
+
+**For iter-3**, our assertions map naturally to this verifier pattern:
+
+| iter-3 assertion | SkillsBench verifier equivalent |
+|---|---|
+| `consultation` (skill was read) | `test.sh` reads `~/.claude/skills/<name>/` after agent run; checks SKILL.md read timestamp |
+| `structure` (output has right form) | pytest `test_file_exists()`, `test_frontmatter_keys()` |
+| `compliance` (followed skill guidance) | model-based grader (SkillsBench does NOT do this — they only check outcomes) |
+| `quality` (qualitative judgment) | model-based grader (NOT in SkillsBench) |
+
+SkillsBench is **strictly outcome-based** (deterministic verifiers, no LLM judge). Our iter-3 is broader — we add the LLM judge layer for `compliance` and `quality`. This is a deliberate extension: SkillsBench measures "did the task get done correctly?"; we additionally measure "did the agent consult + follow the skill?" Both signals are valuable for our domain (skill efficacy research).
+
+### Task Quality Rubric (SkillsBench `.agents/skills/task-review/`)
+
+From SkillsBench's task-review skill — what makes a task good:
+
+1. **Authenticity**: real scenario, real data, human-authored prompt and oracle.
+2. **Skill quality**: accurate, reusable, useful beyond one task.
+3. **Verification**: deterministic, outcome-based, anti-cheat aware.
+4. **Instructions**: concise, fair, no skill hints.
+5. **Environment**: reproducible Docker image, pinned deps, no leaked skills.
+
+Specific anti-patterns (SkillsBench rejects PRs that have these):
+
+- **Tests that check which tools were used instead of what was produced** — BAD
+- **Task-specific skills that only solve one instance** — BAD
+- **Hardcoded expected values without independent derivation** — BAD
+- **Synthetic toy data when realistic data exists** — BAD
+- **AI-generated prompts or oracle logic** — BAD
+
+**For iter-3**: our `compliance` and `quality` assertions (which use LLM-as-judge) should be designed with these anti-patterns in mind. The LLM judge should focus on **outcome quality** (does the artifact satisfy the user request?) rather than **process compliance** (did the agent literally call the named tool?). The `compare_args` pattern (tau-bench) helps with this.
+
+### Key SkillsBench findings relevant to iter-3
+
+1. **Focused skills (≤3 modules) outperform larger bundles.** Our design-hub with 5 sub-skills is in the "borderline" zone; we should monitor whether the hub routing + subskills combo outperforms a flat skill with all 5 modules.
+2. **Smaller models with skills can match larger models without them.** On SkillsBench, Haiku 4.5 with skills ≈ Sonnet 4.5 without skills on several domains. This validates the value of skills as model-level leverage.
+3. **8 controlled categories** (office-white-collar, software-eng, scientific, infrastructure, multimodal, research, finance, robotics) — our marketplace spans most of these implicitly; we may want to add a `category` field to each of our 18 evals.
+4. **3 trials per task** for confidence intervals. Our iter-3 should consider this — current iter-2/3 design is single-trial per (eval, config), which gives noisier lift estimates.
+
+### Comparison: iter-3 vs SkillsBench
+
+| Dimension | SkillsBench | iter-3 |
+|---|---|---|
+| Domain | Cross-domain (8 categories, 87 tasks) | Marketplace routing (1 category, 18 tasks) |
+| Verifier | Pure deterministic pytest (outcome only) | Hybrid: code + model-based (outcome + compliance + quality) |
+| Judge model | None (deterministic) | Fixed Haiku 4.5 |
+| Trials per task | 3 | 1 |
+| Lift signal | Binary pass/fail | Per-assertion points summing to 100 |
+| Anti-cheat | No `/tests`/`/solution` access | N/A (single-agent, isolated) |
+| Task difficulty | Tuned for SOTA <50% | Tuned for skill lift signal >5 pp |
+
+We borrow SkillsBench's **task-package format** and **verifier architecture** but extend with **model-based graders** for the compliance + quality dimensions that deterministic tests can't capture.
+
 ## See also
 
 - `methodology-note-routing-vs-validator.md` — the same instruction-following vs goal-completion distinction in the context of the validator's `\b\w+\b` count vs the routing test's content-word filter.

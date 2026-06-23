@@ -1,6 +1,6 @@
 ---
 name: design-hub
-description: "Load when the user needs design guidance — palette, typography, tokens, spacing, or visual hierarchy. Use when the user says 'pick palette', 'design system', or 'font pair'. Covers the full design pipeline from mood to implementation. Do NOT use for accessibility-only audits (use security SAST) or browser automation."
+description: "Load when the user needs design guidance — palette, typography, tokens, spacing, or visual hierarchy. Use when the user says 'pick palette', 'design system', or 'font pair'. Covers the full design pipeline from mood to implementation. Do NOT use for accessibility-only audits or browser automation."
 when_to_use: |
   Route to the matching sub-skill based on the user's intent. Use browser
   automation for screenshot-based dogfood loops.
@@ -40,6 +40,5 @@ The design pipeline flows in this order:
 
 ## Companion Skills
 
-- `security` — for WCAG/accessibility audits
 - `reviewing-and-polishing` — for design doc review and polishing
 - Any browser-automation skill — for screenshot verification of design implementation

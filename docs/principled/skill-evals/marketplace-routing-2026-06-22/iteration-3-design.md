@@ -380,6 +380,45 @@ Specific anti-patterns (SkillsBench rejects PRs that have these):
 
 We borrow SkillsBench's **task-package format** and **verifier architecture** but extend with **model-based graders** for the compliance + quality dimensions that deterministic tests can't capture.
 
+## Anthropic "Complete Guide" skill testing methodology
+
+Per [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) (Anthropic, January 2026), skill testing covers **three areas** that map directly onto our iter-3 assertion taxonomy:
+
+| Anthropic testing area | iter-3 assertion type | Method |
+|---|---|---|
+| **Triggering tests** (does the skill load at the right times?) | `consultation` (was the right skill read/invoked?) | Code-based: parse transcript for `Read`/`Skill` events on the expected skill path |
+| **Functional tests** (does the skill produce correct outputs?) | `structure` + `compliance` (does output follow skill guidance?) | Hybrid: code-based for structure; model-based for compliance |
+| **Performance comparison** (does the skill improve results vs baseline?) | The with-skill vs without-skill A/B comparison (Tessl delta) | Statistical: pass-rate delta + per-category score delta |
+
+**Pro Tip from the guide**: *"We've found that the most effective skill creators iterate on a single challenging task until Claude succeeds, then extract the winning approach into a skill. This leverages Claude's in-context learning and provides faster signal than broad testing."*
+
+**For iter-3**: this argues for *paired eval authoring* — for each marketplace skill, find a single real failure mode the skill is designed to prevent, then write the assertion set around that specific failure. Don't try to cover all possible failure modes at once. A focused eval that catches the dominant failure mode is more valuable than a broad eval that catches no failures.
+
+### Three skill categories (Anthropic)
+
+The guide classifies skills into 3 categories, useful for understanding what our marketplace skills encode:
+
+1. **Document & Asset Creation**: deterministic output formatting (frontend-design, docx, pptx, xlsx). **SkillsBench lift: high** — these are workflow-encoded.
+2. **Workflow Automation**: multi-step processes (skill-creator). **SkillsBench lift: high** — procedural knowledge the model lacks.
+3. **MCP Enhancement**: workflow guidance on top of MCP tools (sentry-code-review). **SkillsBench lift: medium** — depends on tool stability.
+
+Our marketplace spans all 3:
+- Category 1: `pdf-design-guide`, `design-hub` subskills (palette/typography/conventions)
+- Category 2: `crafting-skills`, `releasing-marketplace`, `ingesting-skills`, `plan-lifecycle`, `task-lifecycle`, `evaluating-skills`
+- Category 3: `engineering-mcp`, `security`, `rust` (MCP-like domain guidance)
+
+Tessl Table 5 predicts the highest lift for Category 2 (workflow automation) and the lowest for Category 3 (knowledge encoding), consistent with SkillsBench's data.
+
+### Iteration signals (from Anthropic guide)
+
+For each marketplace skill, the iteration signals are:
+
+- **Undertriggering** (skill doesn't load when it should): `consultation` assertion fails (PASS but expected_skill not consulted). Solution: add keywords to `description`.
+- **Overtriggering** (skill loads for irrelevant queries): `consultation` assertion succeeds but `compliance`/`quality` assertions fail. Solution: add negative triggers to `description` (this is exactly our `Do NOT use for X` clause).
+- **Execution issues** (inconsistent results, errors): `compliance` assertion fails randomly across trials. Solution: improve SKILL.md body, add error handling.
+
+Iter-3 per-eval results can be classified by these three signals to produce actionable description/skill edits.
+
 ## See also
 
 - `methodology-note-routing-vs-validator.md` — the same instruction-following vs goal-completion distinction in the context of the validator's `\b\w+\b` count vs the routing test's content-word filter.

@@ -31,7 +31,7 @@
       "id": "ran_full_audit_pipeline",
       "text": "the agent should run the full marketplace-health audit pipeline (manifest consistency + license coverage + cross-reference integrity + docs-reflect-state) rather than checking just one dimension",
       "passed": true,
-      "evidence": "Agent ran health.py which aggregates all four dimensions and produced a report covering manifest consistency, license coverage, cross-reference integrity, and docs-reflect-state.",
+      "evidence": "Agent executed health.py which generated a report covering all four audit dimensions (manifest consistency, license coverage, cross-reference integrity, docs-reflect-state) as seen in the summary table.",
       "points_awarded": 40,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "specific_actionable_findings",
       "text": "the response should name specific medium/low findings (if any) with file paths and remediation steps, not just a binary 'healthy' verdict",
       "passed": false,
-      "evidence": "Agent only gave a top-level summary stating all checks passed and did not list any specific findings, file paths, or remediation steps despite 82 warnings being present.",
+      "evidence": "Agent's chat response only provided a summary table with pass/fail checks and did not list any specific medium/low findings, file paths, or remediation steps despite 82 warnings being present.",
       "points_awarded": 0,
       "unknown": false
     }

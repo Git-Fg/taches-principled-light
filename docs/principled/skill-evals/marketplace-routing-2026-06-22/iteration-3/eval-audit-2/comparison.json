@@ -1,0 +1,30 @@
+{
+  "eval_id": "audit-2",
+  "utterance": "is the marketplace healthy, check for drift",
+  "expected_skill": "marketplace-health",
+  "category_class": "local-meta",
+  "with_skill": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 0.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 0.0
+  },
+  "verdict": "skill_neutral"
+}

@@ -1,0 +1,30 @@
+{
+  "eval_id": "ingest-2",
+  "utterance": "add this skill to our marketplace, import it",
+  "expected_skill": "ingesting-skills",
+  "category_class": "local-meta",
+  "with_skill": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "instruction_following_score": 35.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 17.5,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": -35.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": -17.5
+  },
+  "verdict": "skill_hurts"
+}

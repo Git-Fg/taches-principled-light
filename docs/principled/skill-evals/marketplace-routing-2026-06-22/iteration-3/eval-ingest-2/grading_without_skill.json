@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "ingest-2",
+  "expectations": [
+    {
+      "id": "consulted_ingesting_skills",
+      "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before importing, since the skill encodes local-convention adapters",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: superpowers:writing-skills, taches-principled-light:skill-authoring",
+      "points_awarded": 35,
+      "unknown": false
+    },
+    {
+      "id": "ran_validator_post_import",
+      "text": "after importing, the agent should run marketplace-validator on the new skill and report the result before committing",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "manifest_updated",
+      "text": "the marketplace manifest (CHANGELOG.md or skills/INDEX) should list the new skill with name, category, and version",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_local_adapters",
+      "text": "the agent should adapt the imported skill's frontmatter to marketplace conventions (add when_to_use if missing, normalize description to single-line YAML) \u2014 not just copy verbatim",
+      "passed": false,
+      "evidence": "Transcript ends before any adaptation of frontmatter is performed; agent only asked preliminary questions.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "no_duplicate_added",
+      "text": "the agent should detect and refuse to add a skill that's a near-duplicate of an existing marketplace skill (or explicitly call out the overlap as a feature, not a bug)",
+      "passed": false,
+      "evidence": "No duplicate detection or refusal observed in transcript; agent only reviewed existing skills and posed clarifying questions.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 35.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 17.5,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

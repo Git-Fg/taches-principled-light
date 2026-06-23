@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "with",
+  "eval_id": "ingest-1",
+  "expectations": [
+    {
+      "id": "consulted_ingesting_skills",
+      "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before cloning anything, since the skill encodes the 9-step onboarding workflow",
+      "passed": false,
+      "evidence": "agent did not read or invoke any skill",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ran_preflight_checks",
+      "text": "the agent should run preflight checks (does the source repo have a SKILL.md? does the marketplace already have an equivalent skill?) and report results before cloning",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "skill_added_to_marketplace",
+      "text": "after the run, the new skill should exist in skills/<name>/SKILL.md with valid frontmatter and the manifest should list it",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "followed_9_step_workflow",
+      "text": "the agent should follow the documented 9-step workflow (preflight -> clone -> audit -> adapt -> integrate -> validate -> manifest update -> changelog -> commit) rather than ad-hoc copy-paste",
+      "passed": false,
+      "evidence": "Agent only asked for a GitHub URL, no evidence of workflow steps.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "produced_onboarding_doc",
+      "text": "the agent should produce a short onboarding doc/note describing what the skill does, why it was added, and how to invoke it \u2014 not just silently commit code",
+      "passed": false,
+      "evidence": "No onboarding doc produced; agent only requested a skill URL.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "eval_id": "critic",
+  "utterance": "review this PR and find the worst issues",
+  "expected_skill": "general-critic",
+  "category_class": "local-meta",
+  "with_skill": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 50.0,
+    "overall_score": 31.2,
+    "passed": 1,
+    "failed": 3,
+    "unknown": 0,
+    "total": 4
+  },
+  "without_skill": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 11.2,
+    "passed": 1,
+    "failed": 3,
+    "unknown": 0,
+    "total": 4
+  },
+  "delta": {
+    "instruction_following_delta": -30.0,
+    "goal_completion_delta": 50.0,
+    "overall_delta": 20.0
+  },
+  "verdict": "skill_lifts_quality"
+}

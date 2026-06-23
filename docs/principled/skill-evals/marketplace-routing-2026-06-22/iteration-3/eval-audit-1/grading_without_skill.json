@@ -31,7 +31,7 @@
       "id": "ran_full_audit_pipeline",
       "text": "the agent should run the full marketplace-health audit pipeline (manifest consistency + license coverage + cross-reference integrity + docs-reflect-state) rather than checking just one dimension",
       "passed": false,
-      "evidence": "Agent only started by asking for clarification and did not execute any audit dimensions.",
+      "evidence": "The agent only asked for marketplace type and did not execute any of the four audit dimensions (manifest consistency, license coverage, cross-reference integrity, docs-reflect-state) before the transcript ended.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "specific_actionable_findings",
       "text": "the response should name specific medium/low findings (if any) with file paths and remediation steps, not just a binary 'healthy' verdict",
       "passed": false,
-      "evidence": "No findings were reported; agent only asked for clarification on marketplace.",
+      "evidence": "The agent produced no findings, file paths, or remediation steps; it only requested clarification without running any audit.",
       "points_awarded": 0,
       "unknown": false
     }

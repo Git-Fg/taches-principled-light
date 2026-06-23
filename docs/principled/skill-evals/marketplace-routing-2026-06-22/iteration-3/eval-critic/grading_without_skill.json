@@ -1,0 +1,52 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "critic",
+  "expectations": [
+    {
+      "id": "consulted_general_critic",
+      "text": "the agent should read skills/general-critic/SKILL.md before reviewing; the skill defines the HIGH/MEDIUM/LOW severity taxonomy",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: code-review",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "named_specific_findings",
+      "text": "the review should name specific findings with file paths, line numbers, and concrete remediation \u2014 not vague 'consider improving' suggestions",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_severity_taxonomy",
+      "text": "the agent should classify findings by HIGH/MEDIUM/LOW severity per the skill, with explicit thresholds (HIGH = blocker; MEDIUM = should-fix; LOW = nice-to-have)",
+      "passed": false,
+      "evidence": "Agent did not classify any findings; after failing to obtain a diff and finding no code, it asked for clarification without conducting a review.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "found_real_issues",
+      "text": "the review should surface \u22651 substantive issue (correctness, security, performance, or design flaw), not just style nits",
+      "passed": false,
+      "evidence": "Agent performed no review and did not surface any issue.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 11.2,
+    "passed": 1,
+    "failed": 3,
+    "unknown": 0,
+    "total": 4
+  },
+  "weight": {
+    "instruction_following": 0.6,
+    "goal_completion": 1.0
+  }
+}

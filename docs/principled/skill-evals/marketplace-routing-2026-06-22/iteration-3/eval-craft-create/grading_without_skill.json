@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "craft-create",
+  "expectations": [
+    {
+      "id": "consulted_crafting_skills",
+      "text": "the agent should read skills/crafting-skills/SKILL.md OR invoke the Skill tool on crafting-skills before drafting the new skill's frontmatter",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: superpowers:writing-skills",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "decision_router_top",
+      "text": "the new SKILL.md body should start with a Decision Router / Hub Contract section that enumerates sibling skills and routes to them by intent",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "produced_valid_skill",
+      "text": "the output file parses as a valid SKILL.md with name + description + license frontmatter, and the body markdown has at least one actionable section",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_routing_pattern",
+      "text": "the new skill's frontmatter description should follow the Compendium's 'Load when\u2026 / Use when\u2026 / Do NOT use for\u2026 (use Y)' structure with concrete trigger phrases, not a generic capability statement",
+      "passed": false,
+      "evidence": "The agent did not produce any new skill file; transcript shows only an initial query without generating a skill, so the required frontmatter structure is absent.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "no_recipe_overfit",
+      "text": "the new skill should not be a verbatim recipe copy of an existing skill (e.g. 'follow the PDF parsing tutorial'); it should encode project-specific guidance the base agent lacks",
+      "passed": false,
+      "evidence": "No skill was generated, therefore no assessment can be made that it avoids being a verbatim copy; as no skill exists, the assertion fails.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 15.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

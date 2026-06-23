@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "lint-2",
+  "expectations": [
+    {
+      "id": "consulted_marketplace_validator",
+      "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before answering, since the validator encodes the canonical frontmatter schema and required-field list",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: taches-principled-light:skill-authoring",
+      "points_awarded": 40,
+      "unknown": false
+    },
+    {
+      "id": "warned_on_local_extensions",
+      "text": "the response should mention that local extensions (when_to_use, argument-hint, context, agent) trigger warnings but not failures, distinguishing spec-required from local-convention fields",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "passes_required_fields",
+      "text": "the target skill's name and description fields must pass validation (required-field check)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_skill_specific_path",
+      "text": "the agent should run the validator on the specific skill path (python scripts/validate.py skills/<name>) rather than the whole marketplace, per the SKILL.md Decision Router 'IF the user wants to check a single skill \u2192 pass the path' branch",
+      "passed": false,
+      "evidence": "The agent never executed the validator; instead it asked for clarification and checked for files, but did not run the specific path command.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "named_specific_issues",
+      "text": "the response should name any specific issues (line numbers, exact fields, suggested fix), not a generic 'looks good' or 'you should check the schema'",
+      "passed": false,
+      "evidence": "The agent did not produce any validation output; it only asked which skill to validate, thus no specific issues were named.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 40.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 20.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

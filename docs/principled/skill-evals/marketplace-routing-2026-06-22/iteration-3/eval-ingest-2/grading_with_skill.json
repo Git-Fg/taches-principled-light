@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "with",
+  "eval_id": "ingest-2",
+  "expectations": [
+    {
+      "id": "consulted_ingesting_skills",
+      "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before importing, since the skill encodes local-convention adapters",
+      "passed": false,
+      "evidence": "agent did not read or invoke any skill",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ran_validator_post_import",
+      "text": "after importing, the agent should run marketplace-validator on the new skill and report the result before committing",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "manifest_updated",
+      "text": "the marketplace manifest (CHANGELOG.md or skills/INDEX) should list the new skill with name, category, and version",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_local_adapters",
+      "text": "the agent should adapt the imported skill's frontmatter to marketplace conventions (add when_to_use if missing, normalize description to single-line YAML) \u2014 not just copy verbatim",
+      "passed": false,
+      "evidence": "Agent only asked for clarification and did not adapt any frontmatter; transcript shows no evidence of frontmatter modification.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "no_duplicate_added",
+      "text": "the agent should detect and refuse to add a skill that's a near-duplicate of an existing marketplace skill (or explicitly call out the overlap as a feature, not a bug)",
+      "passed": false,
+      "evidence": "Agent did not proceed to add a skill or check for duplicates; transcript shows no detection or refusal.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

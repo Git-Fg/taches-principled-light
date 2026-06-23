@@ -31,7 +31,7 @@
       "id": "applied_validator_script",
       "text": "the agent should run the validator's documented script (python .agents/skills/marketplace-validator/scripts/validate_marketplace.py) rather than improvising a regex-based check; the SKILL.md explicitly says to use the script",
       "passed": false,
-      "evidence": "Agent only listed directories and noted they were empty; did not run any validator script.",
+      "evidence": "Agent did not run the validator script; it only listed directories and concluded they are empty.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "named_specific_findings",
       "text": "the response should name at least one specific finding (even if it's 'all skills pass'), referencing skill paths and line numbers when applicable, not a generic 'looks good' summary",
       "passed": false,
-      "evidence": "Agent's response only states directories are empty and asks for clarification; no specific findings named.",
+      "evidence": "Agent's response only states directories are empty, no specific skills or findings are named.",
       "points_awarded": 0,
       "unknown": false
     }

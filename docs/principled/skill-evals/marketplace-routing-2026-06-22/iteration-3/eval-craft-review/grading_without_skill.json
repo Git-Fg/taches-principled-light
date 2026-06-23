@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "craft-review",
+  "expectations": [
+    {
+      "id": "consulted_crafting_skills",
+      "text": "the agent should read skills/crafting-skills/SKILL.md before reviewing; the skill encodes the description-quality rubric",
+      "passed": false,
+      "evidence": "agent did not read or invoke any skill",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "specific_findings_with_diff",
+      "text": "the review should present findings as a before/after diff (current description + suggested rewrite), not just 'consider improving X'",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "frontmatter_validates",
+      "text": "the reviewed skill's frontmatter should pass marketplace-validator (name format, description length \u22641024, license present, no stale platform refs)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_routing_checklist",
+      "text": "the agent should apply the routing-quality checklist (Load when / Use when / Do NOT use for / concrete trigger phrases / negative scope) to the reviewed skill's description",
+      "passed": false,
+      "evidence": "The agent only requested clarification on which skill to review ('Could you let me know which specific skill you're referring to?') and did not proceed to apply the routing-quality checklist.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "routing_improvement_actionable",
+      "text": "the suggested description rewrite should be measurably better for routing \u2014 i.e., include trigger phrases the user would actually type, and explicit negative scope to prevent over-triggering",
+      "passed": false,
+      "evidence": "The agent failed to produce any description rewrite or routing test delta; the transcript ends with a preliminary question instead of completing the task.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

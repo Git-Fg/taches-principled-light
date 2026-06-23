@@ -1,0 +1,30 @@
+{
+  "eval_id": "release-1",
+  "utterance": "cut a release and bump the version to 0.0.2",
+  "expected_skill": "releasing-marketplace",
+  "category_class": "local-meta",
+  "with_skill": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 15.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "without_skill": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "delta": {
+    "instruction_following_delta": 30.0,
+    "goal_completion_delta": 0.0,
+    "overall_delta": 15.0
+  },
+  "verdict": "skill_lifts_quality"
+}

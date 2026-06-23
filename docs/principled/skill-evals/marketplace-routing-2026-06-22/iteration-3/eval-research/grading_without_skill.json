@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "research",
+  "expectations": [
+    {
+      "id": "consulted_deep_research",
+      "text": "the agent should read skills/deep-research/SKILL.md before starting, since the skill defines the 5-stage pipeline",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: deep-research",
+      "points_awarded": 25,
+      "unknown": false
+    },
+    {
+      "id": "triangulated_sources",
+      "text": "the response should cite \u22653 independent sources for any non-trivial claim, with primary sources preferred over secondary aggregators",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "long_form_evidence",
+      "text": "the output should be a long-form (multi-section) report written to docs/principled/research/<slug>/index.md per the skill's canonical output path",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "followed_5_stage_pipeline",
+      "text": "the agent should follow the 5-stage pipeline (frame -> reformulate -> inspect -> cross-reference -> stop/surface) per the skill, not a single-pass summary",
+      "passed": false,
+      "evidence": "Transcript shows only the skill launch, with no evidence of the 5-stage pipeline being executed (no frame, reformulate, inspect, cross-reference, or stop/surface steps observed).",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "surfaced_disagreement",
+      "text": "the report should explicitly surface areas of disagreement between sources (e.g. 'Tessl reports +19.7 lift while SkillsBench reports +25.1; the difference is methodology, not noise') rather than averaging into false consensus",
+      "passed": false,
+      "evidence": "Transcript does not contain any report or output that surfaces disagreements between sources; only the skill launch event is recorded.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 25.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 12.5,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

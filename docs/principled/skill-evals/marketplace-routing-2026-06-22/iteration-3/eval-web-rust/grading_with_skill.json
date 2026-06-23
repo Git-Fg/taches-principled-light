@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "with",
+  "eval_id": "web-rust",
+  "expectations": [
+    {
+      "id": "consulted_web_search",
+      "text": "the agent should read skills/web-search/SKILL.md before searching; the skill defines the 5-movement loop and source hierarchy",
+      "passed": false,
+      "evidence": "agent did not read or invoke any skill",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "preferred_primary_sources",
+      "text": "the response should prefer primary sources (docs.rs, Rust RFCs, the Rust reference) over secondary aggregators (StackOverflow, blogs)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "cited_specific_urls",
+      "text": "the response should cite \u22652 specific URLs (with stable identifiers like docs.rs/std/...) for the Rust async traits documentation",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_5_movement_loop",
+      "text": "the agent should apply the 5-movement loop (frame -> reformulate -> inspect -> cross-reference -> stop/surface), not a single-pass search",
+      "passed": false,
+      "evidence": "Agent did not perform any search actions; transcript shows only an API error, no evidence of applying the 5-movement loop.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "surfaced_recency_or_limitations",
+      "text": "the response should note the recency of sources (e.g. async-trait crate status, whether Rust 1.75+ stabilized native async traits) and surface limitations of the search (e.g. 'official std docs are sparse on this topic')",
+      "passed": false,
+      "evidence": "Agent did not produce a response; transcript shows only an API error, no mention of recency or limitations.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

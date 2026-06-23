@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "without",
+  "eval_id": "audit-2",
+  "expectations": [
+    {
+      "id": "consulted_marketplace_health",
+      "text": "the agent should read .agents/skills/marketplace-health/SKILL.md before answering the drift check, since the skill defines the 4 audit dimensions",
+      "passed": false,
+      "evidence": "agent did not read or invoke any skill",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "zero_high_drift",
+      "text": "the report should contain zero HIGH-severity drift findings (broken cross-references, manifest drift, doc-code mismatch)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "checked_drift_dimension",
+      "text": "the agent should specifically check the cross-reference-integrity and docs-reflect-state dimensions (the 'drift' framing maps to those two dimensions per the skill)",
+      "passed": false,
+      "evidence": "The agent did not proceed to check any drift dimensions; it asked for clarification due to an empty directory.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ran_health_script",
+      "text": "the agent should run python .agents/skills/marketplace-health/scripts/health_check.py (or equivalent) rather than improvising its own drift check",
+      "passed": false,
+      "evidence": "The agent did not run any health script; it stopped after finding an empty directory.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "listed_drift_findings",
+      "text": "the response should list any MEDIUM/LOW drift findings (stale doc refs, missing CHANGELOG entries) with file paths and remediation",
+      "passed": false,
+      "evidence": "No drift findings were listed because the agent did not perform any drift analysis.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

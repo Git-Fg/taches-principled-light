@@ -164,6 +164,89 @@ Per Tessl's published benchmark:
 
 Our iter-2/3 also targets Haiku 4.5. If our marketplace skills are well-constructed, we should expect similar instruction-following lift (+20 to +30 points) when an agent consults the right skill vs doesn't.
 
+## EvaluationCriteria schema (synthesized from tau-bench + Anthropic + Tessl)
+
+The cleanest published schema for structured task evaluation is Sierra's `tau2-bench` `EvaluationCriteria` Pydantic model. It defines 5 components per task, each with a `RewardType` that gates the final score:
+
+| tau-bench field | Maps to iter-3 assertion type | Grader |
+|---|---|---|
+| `actions[]` (reference tool-call trajectory) | `consultation` (was the skill read?) + `structure` (was the right tool called?) | Code-based; `compare_args[]` lets us check only specific args, ignore others |
+| `env_assertions[]` (DB state checks) | `goal_completion` `structure` assertions on the output artifact | Code-based |
+| `communicate_info[]` (substring-match in agent msgs) | `compliance` substring checks (lightweight) | Code-based |
+| `nl_assertions[]` (LLM-judged NL criteria) | `compliance` + `quality` (model-based) | Model-based |
+| `reward_basis[]` (which components gate the score) | **NEW**: per-task `reward_basis` field | Configurable |
+
+### Adapted iter-3 EvaluationCriteria schema
+
+```python
+class Assertion(BaseModel):
+    id: str
+    text: str
+    type: Literal["consultation", "compliance", "structure", "quality"]
+    category: Literal["instruction_following", "goal_completion"]
+    points: int  # within category, sums to 100
+    grader: Literal["code", "model"]
+    compare_args: Optional[list[str]] = None  # like tau-bench Action.compare_args
+
+class EvaluationCriteria(BaseModel):
+    assertions: list[Assertion]
+    reward_basis: list[Literal["instruction_following", "goal_completion"]] = [
+        "instruction_following", "goal_completion"
+    ]
+```
+
+### Reward combination: multiplicative per category
+
+Tau-bench computes the final reward as a **product** of per-category rewards, where each category is either 1.0 (all assertions pass) or 0.0 (any assertion fails). This is stricter than Tessl's additive approach but matches Anthropic's "the agent either solved the task or didn't" framing.
+
+Iter-3 will use a **hybrid** approach:
+
+- **Within category**: Tessl-style partial credit via `points_awarded` summing to category total. e.g., 4/5 assertions in `instruction_following` → 80/100.
+- **Across categories**: Multiplicative, with each category worth 50%. e.g., `0.5 * instruction_following_score + 0.5 * goal_completion_score` (tau-bench uses multiplication; we use weighted sum to keep the score interpretable as 0–100).
+- **`reward_basis` controls whether a category is included** — if `instruction_following` is not in `reward_basis`, that category is computed as a diagnostic but does not gate the score.
+
+Final score formula:
+
+```
+score = 100 * (
+    (instruction_following_avg if "instruction_following" in reward_basis else 1.0) *
+    (goal_completion_avg if "goal_completion" in reward_basis else 1.0)
+)
+```
+
+This is a "tau-bench product, weighted by Tessl's per-category averaging" compromise. The product captures "any failure in any gating category is a real failure"; the per-category averaging captures partial credit for sub-assertions.
+
+### `compare_args` pattern (specification match, not verbatim)
+
+Tau-bench's `Action.compare_with_tool_call` only checks the args in `compare_args[]`, ignoring others. Iter-3 adopts this for `structure` assertions on tool calls: a skill that says "call `release_marketplace(version='0.0.2')`" can be checked with `compare_args=['version']` — the agent's exact tool name spelling or other args don't matter. This is the "grade the outcome, not the path" principle from Anthropic applied to specific-arg inspection.
+
+### LLM-as-judge prompt (synthesized from tau-bench + Anthropic)
+
+The grader LLM gets a tightly-scoped system prompt (adapted from `evaluator_nl_assertions.py`):
+
+```
+TASK
+- You will be given a list of expected outcomes (assertions), a transcript
+  of the agent's run, and the relevant skill's SKILL.md.
+- Your job is to evaluate whether the agent satisfies each assertion.
+- Grade each assertion individually.
+
+FORMAT
+- Your response should be a JSON object with the following fields:
+- For each assertion, return: {"text": ..., "passed": true|false,
+  "evidence": "...", "points_awarded": 0|N}
+- A summary: {"instruction_following_score": 0-100,
+  "goal_completion_score": 0-100}
+
+If you cannot determine whether an assertion was satisfied from the
+transcript and final response, return "passed": false and explain why
+in "evidence". If a consultation assertion is checking that a skill was
+read but the agent never loaded the skill, return "passed": false
+(NOT "not_applicable" — the assertion is binary).
+```
+
+The model is fixed (Haiku 4.5, same chain as the solver) per Tessl's methodology: a fixed strong judge ensures consistent scoring across experiments.
+
 ## See also
 
 - `methodology-note-routing-vs-validator.md` — the same instruction-following vs goal-completion distinction in the context of the validator's `\b\w+\b` count vs the routing test's content-word filter.

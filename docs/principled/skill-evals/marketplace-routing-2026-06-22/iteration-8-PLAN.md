@@ -17,7 +17,7 @@ multi-family judge would require.
 > mcp-assert is a test runner, not a mock); (2) a **Claude Code CLI flag
 > inventory** with `--mcp-config` and `--max-turns` recommended for
 > sub-experiments 8B and 8C; (3) a **LiteLLM multi-model gateway** as the
-> v0.0.6+ replacement for the single-family live grader.
+> v0.0.6+ replacement for the single-model live grader.
 
 ---
 
@@ -32,7 +32,7 @@ hurts, deterministic endpoint grades**) but left two follow-ups open:
    when judged by a model from the same family." One external judge vendor
    is available but returns `rate-limited` for the full 12-cell grading
    matrix, so the gap is unresolved. The +21.88pp iter-7 number is
-   **conservative** (a single-family judge cannot apply the cross-family
+   **conservative** (a single-model judge cannot apply the cross-family
    bias correction described in the iter-8 design supplements), but the
    +14.4pp gap between iter-6's code-only +7.5pp and iter-7's LLM-judgment
    +21.88pp suggests LLM judgment contributes substantially.

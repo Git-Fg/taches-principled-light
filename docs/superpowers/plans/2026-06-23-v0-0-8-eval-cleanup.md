@@ -229,7 +229,7 @@ for the full mock-implementation evaluation (3 candidates compared: WireMock
 > mcp-assert is a test runner, not a mock); (2) a **Claude Code CLI flag
 > inventory** with `--mcp-config` and `--max-turns` recommended for
 > sub-experiments 8B and 8C; (3) a **LiteLLM multi-model gateway** as the
-> v0.0.6+ replacement for the single-model `100.80.231.128:3456` proxy.
+> v0.0.6+ replacement for the configured single-model backend.
 ```
 
 With:

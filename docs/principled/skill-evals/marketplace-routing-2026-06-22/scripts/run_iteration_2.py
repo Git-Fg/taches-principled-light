@@ -273,7 +273,7 @@ def main() -> int:
             "Iteration 2 scales the pilot to full N=18 with 180s timeout. "
             "Signal: marketplace SKILL.md read counts. Limitation: read-counting is "
             "a necessary-but-not-sufficient proxy for skill application per the "
-            "Tessl framework (arxiv 2606.17819v1). Iteration 3 would add "
+            "Gorinova et al. 2026 (arxiv 2606.17819v1). Iteration 3 would add "
             "assertion-based grading (per Anthropic skill-creator's executor/grader/"
             "comparator/analyzer pattern)."
         ),
@@ -315,7 +315,7 @@ def main() -> int:
         "",
         "- **Signal strength:** read-counting measures consultation, not application.",
         "  A skill read but not applied would still show as a positive signal. The",
-        "  Tessl framework (arxiv 2606.17819v1) and Anthropic's skill-creator evals",
+        "  Gorinova et al. 2026 (arxiv 2606.17819v1) and Anthropic's skill-creator evals",
         "  instead use assertion-based grading of the final output.",
         "- **Iteration 3 scope:** write `assertions[]` per eval (Anthropic pattern)",
         "  and grade the final response text against them with an LLM-as-judge.",

@@ -62,7 +62,7 @@ the stale-filter issue absent a code fix. The iter-3 design already
 incorporates all lessons from iter-2:
 
 1. **Metric fix**: `MARKETPLACE_SKILL_DIRS` widened (commit `069b31c`)
-2. **Assertion-based grading**: Tessl rubric replaces read-counting
+2. **Assertion-based grading**: Gorinova 2026 rubric replaces read-counting
 3. **Judge calibration**: self-attribution bias mitigation (Sonnet 4.5 judge)
 4. **Timeout handling**: iter-3 uses the 8-stage loop from `evaluating-skills`,
    which has its own timeout management

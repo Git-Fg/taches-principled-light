@@ -35,7 +35,7 @@ ASSERTIONS_DIR = ITER_DIR / "assertions"
 GRADER = ITER_DIR / "scripts/grader.py"
 TIMEOUT_S = 300
 DEFAULT_JUDGE_MODEL = "sonnet"  # override with --judge-model
-LIFT_THRESHOLD_PP = 5  # per Tessl Table 4 norms; matches marketplace material_difference
+LIFT_THRESHOLD_PP = 5  # per Gorinova 2026 Table 4 norms; matches marketplace material_difference
 
 
 def run_grader(eval_id: str, config: str, transcript_path: Path,
@@ -81,7 +81,7 @@ def run_grader(eval_id: str, config: str, transcript_path: Path,
 
 
 def compute_deltas(with_grading: dict, without_grading: dict) -> dict:
-    """Compute Tessl-style deltas + verdict classification."""
+    """Compute Gorinova 2026-style deltas + verdict classification."""
     s_with = with_grading["summary"]
     s_without = without_grading["summary"]
     if_delta = round(s_with["instruction_following_score"] - s_without["instruction_following_score"], 1)
@@ -222,7 +222,7 @@ def main() -> int:
             "per_skill_lift": per_skill_mean,
         },
         "notes": (
-            "Iteration 3 uses assertion-based grading per the Tessl framework "
+            "Iteration 3 uses assertion-based grading per the Gorinova et al. 2026 "
             "(arxiv 2606.17819v1). Judge model = "
             f"{args.judge_model} (proxy alias; see iteration-3-design.md for "
             "the bias mitigation rationale). Solver model = haiku chain. "
@@ -279,7 +279,7 @@ def main() -> int:
         "",
         "## Methodology",
         "",
-        "- Tessl-style per-category 0-100 scoring (IF + GC, weighted 50/50 by default)",
+        "- Gorinova 2026-style per-category 0-100 scoring (IF + GC, weighted 50/50 by default)",
         "- Two assertions per category minimum; some evals use weight overrides",
         "- Code-based checks (consultation, structure with compare_args) bypass the LLM",
         "- UNKNOWN verdicts (judge couldn't determine) are treated as FAIL for scoring",

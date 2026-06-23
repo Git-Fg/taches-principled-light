@@ -105,9 +105,9 @@ a positive validation of the marketplace's curation process.
   iter-3 shows 5 lifts, 8 neutrals, 3 hurts.
 - **The marketplace's skill authoring process** for releasing-marketplace
   works; the process for ingesting-skills needs work.
-- **The Tessl-style IF/GC split** is informative: most "neutral" results
+- **The Gorinova 2026-style IF/GC split** is informative: most "neutral" results
   are 0/0 IF, not 0/0 GC. This means the agents achieved goal completion
-  equally well; the discriminating metric (per Tessl) is instruction
+  equally well; the discriminating metric (per Gorinova 2026) is instruction
   following, where the marketplace skills add value when they add it.
 
 ## What this does NOT validate (limitations)

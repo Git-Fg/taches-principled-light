@@ -4,7 +4,7 @@
 
 Iteration 1 and iteration 2 use **read-counting** as the behavioral signal: how many marketplace SKILL.md files did the agent consult? This is a *necessary but not sufficient* signal. An agent can read the right skill and still fail to apply it. Conversely, a strong model can produce a correct answer without reading any skill.
 
-The Tessl framework ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1), June 2026) and Anthropic's `skill-creator` (4 modes: Create / Eval / Improve / Benchmark, March 2026) both grade on **task completion** via custom rubrics, not on consultation. The Tessl paper showed that **instruction-following** is the discriminating metric: "Kimi K2.6, MiniMax 2.7, Qwen3-Coder-Next, and Gemini 3.1 Flash Lite all cluster around 57–60 — roughly 25–30 points below the frontier." By contrast, **goal-completion** "close to saturation, frequently exceeding 90%" for almost all models except the Nemotron family — so the wide spread is on instruction-following, not goal-completion.
+The Gorinova et al. 2026 ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1), June 2026) and Anthropic's `skill-creator` (4 modes: Create / Eval / Improve / Benchmark, March 2026) both grade on **task completion** via custom rubrics, not on consultation. The Gorinova 2026 paper showed that **instruction-following** is the discriminating metric: "Kimi K2.6, MiniMax 2.7, Qwen3-Coder-Next, and Gemini 3.1 Flash Lite all cluster around 57–60 — roughly 25–30 points below the frontier." By contrast, **goal-completion** "close to saturation, frequently exceeding 90%" for almost all models except the Nemotron family — so the wide spread is on instruction-following, not goal-completion.
 
 This document specifies the iteration-3 design that adopts the assertion-based pattern.
 
@@ -27,7 +27,7 @@ The marketplace has not shipped `grader.py` yet (the 8-stage loop in `evaluating
 
 ## Per-eval structure
 
-Each eval becomes a JSON file with three required fields and a list of assertions. Adopt the [Tessl framework rubric schema](https://arxiv.org/abs/2606.17819) ([huggingface dataset](https://huggingface.co/datasets/tesslio/task-evals-for-skills)) as the canonical format, simplified for our 18 marketplace evals:
+Each eval becomes a JSON file with three required fields and a list of assertions. Adopt the [Gorinova et al. 2026 rubric schema](https://arxiv.org/abs/2606.17819) ([huggingface dataset](https://huggingface.co/datasets/tesslio/task-evals-for-skills)) as the canonical format, simplified for our 18 marketplace evals:
 
 ```json
 {
@@ -56,19 +56,19 @@ Each eval becomes a JSON file with three required fields and a list of assertion
 
 Note: `instruction_following` assertions sum to 30 + 40 + 30 = **100**. `goal_completion` assertions sum to 40 + 60 = **100**. Each category is independently scored on 0–100. The author must size each category's assertions to sum to exactly 100.
 
-Tessl rules (apply directly to our schema):
+Gorinova 2026 rules (apply directly to our schema):
 
 - **`points` sum to 100 per category** — `instruction_following` and `goal_completion` are scored independently, each on a 0–100 scale.
-- **Each assertion is one of 4 types** — `consultation` (did the agent read/invoke the right skill?), `compliance` (did the agent follow the skill's specific guidance?), `structure` (does the output have the right structural form?), `quality` (qualitative judgment — typically requires LLM-as-judge). The 4-type taxonomy is **our extension** of Tessl's 2-axis IF/GC split (Tessl itself uses natural-language assertions scored 1–10 per dimension, without naming type variants). The 4 types map to Anthropic's "triggering / functional / comparison" testing areas and to grader type recommendations (consultation/structure = code-based; compliance/quality = model-based).
-- **`category` is one of `instruction_following` or `goal_completion`** — Tessl's two-axis split. Per Tessl Table 4, `instruction_following` is the discriminating metric for skill lift (5.5–22 point delta on the overall score, driven primarily by IF); `goal_completion` saturates near 90% for almost all models.
+- **Each assertion is one of 4 types** — `consultation` (did the agent read/invoke the right skill?), `compliance` (did the agent follow the skill's specific guidance?), `structure` (does the output have the right structural form?), `quality` (qualitative judgment — typically requires LLM-as-judge). The 4-type taxonomy is **our extension** of Gorinova 2026's 2-axis IF/GC split (Gorinova 2026 itself uses natural-language assertions scored 1–10 per dimension, without naming type variants). The 4 types map to Anthropic's "triggering / functional / comparison" testing areas and to grader type recommendations (consultation/structure = code-based; compliance/quality = model-based).
+- **`category` is one of `instruction_following` or `goal_completion`** — Gorinova 2026's two-axis split. Per Gorinova 2026 Table 4, `instruction_following` is the discriminating metric for skill lift (5.5–22 point delta on the overall score, driven primarily by IF); `goal_completion` saturates near 90% for almost all models.
 - **Assertions are hidden from the solver agent** and used only by the judge agent.
 
-### Per-category guidance (from Tessl + Anthropic)
+### Per-category guidance (from Gorinova 2026 + Anthropic)
 
 | Category | What it measures | When to use |
 |---|---|---|
-| `instruction_following` | Did the agent follow the preferences encoded in the skill? Library choices, structural conventions, naming rules, prohibited patterns, required steps. (Tessl verbatim.) | When the skill encodes a specific opinionated workflow or convention. |
-| `goal_completion` | Did the solution produce the requested outputs and is the final artifact correct? (Tessl verbatim.) | When the skill encodes knowledge or capabilities unavailable to the base agent. |
+| `instruction_following` | Did the agent follow the preferences encoded in the skill? Library choices, structural conventions, naming rules, prohibited patterns, required steps. (Gorinova 2026 verbatim.) | When the skill encodes a specific opinionated workflow or convention. |
+| `goal_completion` | Did the solution produce the requested outputs and is the final artifact correct? (Gorinova 2026 verbatim.) | When the skill encodes knowledge or capabilities unavailable to the base agent. |
 
 For each assertion type:
 - `consultation` (did the agent read/invoke the right skill?) — deterministic check on the transcript. Counts BOTH `Skill` tool invocations AND `Read` tool calls on `*/SKILL.md` paths. **Empirical finding from iter-2 data** (`eval-audit-1/with_skill.jsonl`): the agent used `Read` (4 times) but NOT the `Skill` tool (0 times). The marketplace skills were accessed by reading the SKILL.md files directly. Both paths are valid consultations; an assertion that only counts `Skill` invocations would miss 100% of the consultation signal in practice. Often a 20-pt "gating" assertion.
@@ -91,7 +91,7 @@ For each `(eval, config)` pair, grades the final response against the eval's `as
 - `sonnet` → `MiniMax-M3` (mid-tier, the proxy's "frontier" model)
 - `opus` → `MiniMax-M3-1m` (same family as sonnet, 1M context)
 
-**These are not actual Anthropic models** — they are local model families exposed via the proxy. The user's project convention is to target the `haiku` chain for the solver; the **judge should target a different family** to mitigate same-family bias (Wataoka et al. 2024). Tessl uses Anthropic Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). Our deployment translates this to **`sonnet` (i.e. `MiniMax-M3`) as the first-choice judge**, with `haiku` as a calibration-validated fallback. The judge-model choice is **separate from the solver-model choice** — the solver remains on the `haiku` chain per project convention; only the judge varies.
+**These are not actual Anthropic models** — they are local model families exposed via the proxy. The user's project convention is to target the `haiku` chain for the solver; the **judge should target a different family** to mitigate same-family bias (Wataoka et al. 2024). Gorinova 2026 uses Anthropic Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). Our deployment translates this to **`sonnet` (i.e. `MiniMax-M3`) as the first-choice judge**, with `haiku` as a calibration-validated fallback. The judge-model choice is **separate from the solver-model choice** — the solver remains on the `haiku` chain per project convention; only the judge varies.
 
 **Alternative: GLM-5.2 (`glm-5.2` alias)** — verified stronger candidate. Per Simon Willison's [17 June 2026 review](https://simonwillison.net/2026/Jun/17/glm-52/) and [Artificial Analysis Intelligence Index v4.1](https://artificialanalysis.ai/articles/glm-5-2-is-the-new-leading-open-weights-model-on-the-artificial-analysis-intelligence-index): **GLM-5.2 scores 51 vs MiniMax-M3's 44** (also beats DeepSeek V4 Pro at 44 and Kimi K2.6 at 43). Open weights (MIT license), 753B parameters with 40 active (Mixture of Experts), 1M context window. Three reasons to prefer it as judge:
 1. **Higher raw capability** — judges benefit from frontier-level reasoning, not just different-family bias mitigation.
@@ -142,7 +142,7 @@ For the `consultation` assertions, the grader is **not** needed — those checks
 
 ### 3. Comparator
 
-For each eval, computes (per Tessl's with-skill vs without-skill methodology and Anthropic's blind-A/B pattern: "give two outputs to an independent agent without telling it which is which"):
+For each eval, computes (per Gorinova 2026's with-skill vs without-skill methodology and Anthropic's blind-A/B pattern: "give two outputs to an independent agent without telling it which is which"):
 
 - `with_skill_instruction_following_score` (0–100)
 - `without_skill_instruction_following_score` (0–100)
@@ -150,31 +150,31 @@ For each eval, computes (per Tessl's with-skill vs without-skill methodology and
 - `without_skill_goal_completion_score` (0–100)
 - `instruction_following_delta` = with − without
 - `goal_completion_delta` = with − without
-- `overall_delta` = weighted average delta (Tessl uses equal weighting; we may choose instruction-following-heavy for workflow-encoding skills)
+- `overall_delta` = weighted average delta (Gorinova 2026 uses equal weighting; we may choose instruction-following-heavy for workflow-encoding skills)
 
 And classifies each eval as one of:
 
-- `skill_lifts_quality` (overall_delta > 5 points per Tessl Table 4 norms; with-skill substantially better). The 5-point threshold is borrowed from our marketplace's own `material_difference` rule in `skills/evaluating-skills/references/behavioral-review.md:73` (≥2 points on ≥2 dimensions OR ≥1.5 on the mean — the 5pp rule is the simpler single-number version used here for clarity). Alternative: use the median `Overall Δ` across all 18 evals as the threshold.
+- `skill_lifts_quality` (overall_delta > 5 points per Gorinova 2026 Table 4 norms; with-skill substantially better). The 5-point threshold is borrowed from our marketplace's own `material_difference` rule in `skills/evaluating-skills/references/behavioral-review.md:73` (≥2 points on ≥2 dimensions OR ≥1.5 on the mean — the 5pp rule is the simpler single-number version used here for clarity). Alternative: use the median `Overall Δ` across all 18 evals as the threshold.
 - `skill_neutral` (|overall_delta| ≤ 5 points, similar)
 - `skill_hurts` (overall_delta < -5 points, with-skill worse)
-- `skill_redundant` (instruction_following_delta ≈ 0; the model already captures the skill's behavior — per Tessl "Implications for skill authors": "the skill can be removed")
+- `skill_redundant` (instruction_following_delta ≈ 0; the model already captures the skill's behavior — per Gorinova 2026 "Implications for skill authors": "the skill can be removed")
 - `inconclusive` (transcript truncated, sample too small, etc.)
 
-Per Tessl Table 4 (with-skill vs without-skill across 19 model-harness configurations), the typical delta is **5.5–22 points on the overall score** (e.g., +19.7 for Haiku 4.5), driven primarily by `instruction_following` (Tessl §5.1: *"driven primarily by the instruction-following component"*). The same range applied to IF-only deltas (e.g., Haiku's +31.7 IF delta sits above the 5.5–22 range, indicating Haiku is an unusually strong IF responder). `goal_completion` deltas are smaller (+7.7 for Haiku 4.5) and saturate near 90% for frontier models. Note: SkillsBench's separate 18-config study (line 296) reports a different highest delta (+25.7 for GLM 5.1 OpenHands); these are two different papers and the +25.7 figure should not be attributed to Tessl.
+Per Gorinova 2026 Table 4 (with-skill vs without-skill across 19 model-harness configurations), the typical delta is **5.5–22 points on the overall score** (e.g., +19.7 for Haiku 4.5), driven primarily by `instruction_following` (Gorinova 2026 §5.1: *"driven primarily by the instruction-following component"*). The same range applied to IF-only deltas (e.g., Haiku's +31.7 IF delta sits above the 5.5–22 range, indicating Haiku is an unusually strong IF responder). `goal_completion` deltas are smaller (+7.7 for Haiku 4.5) and saturate near 90% for frontier models. Note: SkillsBench's separate 18-config study (line 296) reports a different highest delta (+25.7 for GLM 5.1 OpenHands); these are two different papers and the +25.7 figure should not be attributed to Gorinova 2026.
 
 ### 4. Analyzer
 
 Aggregates across all evals. Computes:
-- **Overall skill lift** = mean `overall_delta` across all evals (Tessl reports this as the headline metric)
+- **Overall skill lift** = mean `overall_delta` across all evals (Gorinova 2026 reports this as the headline metric)
 - **Per-category skill lift** = mean `instruction_following_delta` and `goal_completion_delta` separately
-- **Per-skill utility score** (Tessl's term) — mean overall delta for each expected_skill
+- **Per-skill utility score** (Gorinova 2026's term) — mean overall delta for each expected_skill
 - **Per-eval verdict distribution** (skill_lifts_quality / skill_neutral / skill_hurts / skill_redundant / inconclusive)
 - **Failure pattern clustering** (which assertion `text` patterns fail most often?)
 - **Recommended description edits** (for any eval where delta < 0)
 
-Tessl Table 5's full domain list (not just the 4 cherry-picked rows in the earlier draft — the doc now carries all domains for transparency):
+Gorinova 2026 Table 5's full domain list (not just the 4 cherry-picked rows in the earlier draft — the doc now carries all domains for transparency):
 
-| Tessl domain | Uplift |
+| Gorinova 2026 domain | Uplift |
 |---|---|
 | Media & File Processing | +38.1 |
 | Productivity & Communication | +32.5 |
@@ -183,13 +183,13 @@ Tessl Table 5's full domain list (not just the 4 cherry-picked rows in the earli
 | Scientific & Domain Computing | +17.0 |
 | Testing, QA & Code Quality | +16.7 |
 
-Anthropic's 3 categories (Document & Asset Creation / Workflow Automation / MCP Enhancement) **do not map cleanly** to Tessl's domains — they are different axes. Our marketplace spans all 3 Anthropic categories; predicted lift is best characterized by Tessl's domain data above. The most analogous mappings: `pdf-design-guide` + design-hub ≈ Media & File Processing (+38); `crafting-skills` + `plan-lifecycle` + `task-lifecycle` ≈ Workflow Automation (no direct equivalent in Tessl Table 5; closest is Productivity & Communication at +32.5); `rust` + `security` + `engineering-mcp` ≈ Security & Compliance or Scientific & Domain Computing. Predicted lift for our marketplace: **+15 to +38 points** depending on which skill.
+Anthropic's 3 categories (Document & Asset Creation / Workflow Automation / MCP Enhancement) **do not map cleanly** to Gorinova 2026's domains — they are different axes. Our marketplace spans all 3 Anthropic categories; predicted lift is best characterized by Gorinova 2026's domain data above. The most analogous mappings: `pdf-design-guide` + design-hub ≈ Media & File Processing (+38); `crafting-skills` + `plan-lifecycle` + `task-lifecycle` ≈ Workflow Automation (no direct equivalent in Gorinova 2026 Table 5; closest is Productivity & Communication at +32.5); `rust` + `security` + `engineering-mcp` ≈ Security & Compliance or Scientific & Domain Computing. Predicted lift for our marketplace: **+15 to +38 points** depending on which skill.
 
 Per Anthropic's pattern, also surface patterns the aggregate stats might hide: assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
 
-### Haiku 4.5 baseline reference (Tessl Table 4)
+### Haiku 4.5 baseline reference (Gorinova 2026 Table 4)
 
-Per Tessl's published benchmark:
+Per Gorinova 2026's published benchmark:
 
 | Condition | IF score | GC score | Overall (50/50 avg) | Cost |
 |---|---|---|---|---|
@@ -199,11 +199,11 @@ Per Tessl's published benchmark:
 | **Δ GC** | — | **+7.7** | — | — |
 | **Δ Overall** | — | — | **+19.7** | **+37%** |
 
-The `Δ` rows are derived (one per column, not aggregated). The "+19.7 overall" matches Tessl's "Skill Δ" headline because the overall score is computed as a 50/50 weighted average of IF and GC: `0.5 × 75.3 + 0.5 × 93.0 = 84.15 ≈ 84.1` and `0.5 × 43.6 + 0.5 × 85.3 = 64.45 ≈ 64.4`. The lift is driven primarily by IF (+31.7) — Tessl's central finding for the Haiku tier.
+The `Δ` rows are derived (one per column, not aggregated). The "+19.7 overall" matches Gorinova 2026's "Skill Δ" headline because the overall score is computed as a 50/50 weighted average of IF and GC: `0.5 × 75.3 + 0.5 × 93.0 = 84.15 ≈ 84.1` and `0.5 × 43.6 + 0.5 × 85.3 = 64.45 ≈ 64.4`. The lift is driven primarily by IF (+31.7) — Gorinova 2026's central finding for the Haiku tier.
 
 Our iter-2/3 also targets Haiku 4.5. If our marketplace skills are well-constructed, we should expect similar IF lift (**+25 to +32 points**) when an agent consults the right skill vs doesn't.
 
-## EvaluationCriteria schema (synthesized from tau-bench + Anthropic + Tessl)
+## EvaluationCriteria schema (synthesized from tau-bench + Anthropic + Gorinova 2026)
 
 The cleanest published schema for structured task evaluation is Sierra's `tau2-bench` `EvaluationCriteria` Pydantic model. It defines 5 components per task, each with a `RewardType` that gates the final score:
 
@@ -242,15 +242,15 @@ class EvaluationCriteria(BaseModel):
     }
 ```
 
-**Default weighting rationale**: 50/50 (1.0/1.0) is the iter-3 default because (a) it matches Tessl's headline metric and is the only weighting for which we have published comparison numbers (the +19.7 Haiku delta), (b) it preserves cross-eval comparability with the Tessl/SkillsBench literature, and (c) per-skill overrides are allowed but opt-in. The 50/50 default also matches the marketplace's own needs: most marketplace skills encode both a workflow (IF) and a domain knowledge (GC), and equal weighting reflects this duality. **Override mechanism**: a per-eval `weight` field on `EvaluationCriteria` lets the author bias toward IF (for workflow-encoding skills like `crafting-skills`, `plan-lifecycle`) or GC (for knowledge-encoding skills like `rust`, `engineering-mcp`). The override is documented in the eval's JSON metadata, not hidden in prose, so downstream tooling can report the weighting used per eval.
+**Default weighting rationale**: 50/50 (1.0/1.0) is the iter-3 default because (a) it matches Gorinova 2026's headline metric and is the only weighting for which we have published comparison numbers (the +19.7 Haiku delta), (b) it preserves cross-eval comparability with the Gorinova 2026 / SkillsBench literature, and (c) per-skill overrides are allowed but opt-in. The 50/50 default also matches the marketplace's own needs: most marketplace skills encode both a workflow (IF) and a domain knowledge (GC), and equal weighting reflects this duality. **Override mechanism**: a per-eval `weight` field on `EvaluationCriteria` lets the author bias toward IF (for workflow-encoding skills like `crafting-skills`, `plan-lifecycle`) or GC (for knowledge-encoding skills like `rust`, `engineering-mcp`). The override is documented in the eval's JSON metadata, not hidden in prose, so downstream tooling can report the weighting used per eval.
 
-### Reward combination: weighted average across categories (Tessl-style)
+### Reward combination: weighted average across categories (Gorinova-style)
 
-Tau-bench computes the final reward as a **product** of per-category rewards, where each category is either 1.0 (all assertions pass) or 0.0 (any assertion fails). This is stricter than Tessl's additive approach but matches Anthropic's "the agent either solved the task or didn't" framing.
+Tau-bench computes the final reward as a **product** of per-category rewards, where each category is either 1.0 (all assertions pass) or 0.0 (any assertion fails). This is stricter than Gorinova 2026's additive approach but matches Anthropic's "the agent either solved the task or didn't" framing.
 
-Iter-3 will follow **Tessl's approach** (verified against Table 4 numerics: `0.5 × 75.3 + 0.5 × 93.0 = 84.15 ≈ 84.1` overall):
+Iter-3 will follow **Gorinova 2026's approach** (verified against Table 4 numerics: `0.5 × 75.3 + 0.5 × 93.0 = 84.15 ≈ 84.1` overall):
 
-- **Within category**: Tessl-style partial credit. Each assertion has a `points` value; `points_awarded` is summed per category and divided by the category total (100) to get a 0-100 category score. 4/5 assertions in `instruction_following` summing to 80 pts → IF score = 80.
+- **Within category**: Gorinova-style partial credit. Each assertion has a `points` value; `points_awarded` is summed per category and divided by the category total (100) to get a 0-100 category score. 4/5 assertions in `instruction_following` summing to 80 pts → IF score = 80.
 - **Across categories**: Weighted average. With default equal weights (`weight["instruction_following"] = 1.0`, `weight["goal_completion"] = 1.0`), the overall score is the simple average: `0.5 × IF + 0.5 × GC`. Per-eval `reward_basis` can omit a category (set its weight to 0) to gate it out — omitted categories are still computed as diagnostics but do not affect the overall score.
 
 Final score formula:
@@ -260,7 +260,7 @@ score = 100 * sum(category_avg[c] * weight[c] for c in reward_basis) \
             / sum(weight[c] for c in reward_basis)
 ```
 
-With default `weight = {"instruction_following": 1.0, "goal_completion": 1.0}` and `reward_basis = ["instruction_following", "goal_completion"]`, this simplifies to `0.5 × IF + 0.5 × GC` — verified to reproduce Tessl Table 4's overall score exactly.
+With default `weight = {"instruction_following": 1.0, "goal_completion": 1.0}` and `reward_basis = ["instruction_following", "goal_completion"]`, this simplifies to `0.5 × IF + 0.5 × GC` — verified to reproduce Gorinova 2026 Table 4's overall score exactly.
 
 **Why weighted average, not tau-bench's product**: a product treats any category failure as zero, which discards partial-credit signal. For skill efficacy research, we want to know "how much did consulting the skill help?" — a weighted average preserves that signal even when one category fails. For example, an eval where IF=100, GC=60 (full skill compliance, partial goal completion) gets score=80 with averaging vs score=0 with product. The former is more useful for deciding whether to keep the skill.
 
@@ -453,7 +453,7 @@ Per [The Complete Guide to Building Skills for Claude](https://resources.anthrop
 |---|---|---|
 | **Triggering tests** (does the skill load at the right times?) | `consultation` (was the right skill read/invoked?) | Code-based: parse transcript for `Read`/`Skill` events on the expected skill path |
 | **Functional tests** (does the skill produce correct outputs?) | `structure` + `compliance` (does output follow skill guidance?) | Hybrid: code-based for structure; model-based for compliance |
-| **Performance comparison** (does the skill improve results vs baseline?) | The with-skill vs without-skill A/B comparison (Tessl delta) | Statistical: pass-rate delta + per-category score delta |
+| **Performance comparison** (does the skill improve results vs baseline?) | The with-skill vs without-skill A/B comparison (Gorinova 2026 delta) | Statistical: pass-rate delta + per-category score delta |
 
 **Pro Tip from the guide**: *"We've found that the most effective skill creators iterate on a single challenging task until Claude succeeds, then extract the winning approach into a skill. This leverages Claude's in-context learning and provides faster signal than broad testing."*
 
@@ -472,7 +472,7 @@ Our marketplace spans all 3:
 - Category 2: `crafting-skills`, `releasing-marketplace`, `ingesting-skills`, `plan-lifecycle`, `task-lifecycle`, `evaluating-skills`
 - Category 3: `engineering-mcp`, `security`, `rust` (MCP-like domain guidance)
 
-Tessl Table 5 predicts the highest lift for Category 2 (workflow automation) and the lowest for Category 3 (knowledge encoding), consistent with SkillsBench's data.
+Gorinova 2026 Table 5 predicts the highest lift for Category 2 (workflow automation) and the lowest for Category 3 (knowledge encoding), consistent with SkillsBench's data.
 
 ### Iteration signals (from Anthropic guide)
 
@@ -491,7 +491,7 @@ The design document presents three schema forms for assertions. Their canonical 
 | Form | Source | When used | Status |
 |---|---|---|---|
 | **YAML** (`task.graders[]` with `deterministic_tests` / `llm_rubric` / `state_check` entries) | Anthropic Demystying Evals | Human authoring of new evals | Authoring format |
-| **JSON** (`assertions[]` flat list with `points` + `category` + `type`) | Tessl rubric schema | Runtime harness input | **Canonical runtime format** |
+| **JSON** (`assertions[]` flat list with `points` + `category` + `type`) | Gorinova 2026 rubric schema | Runtime harness input | **Canonical runtime format** |
 | **Pydantic** (`EvaluationCriteria` with `Assertion` and `reward_basis`) | tau-bench `EvaluationCriteria` | Type-checked authoring tool input | Validation layer |
 
 Hand-authored YAML is converted to the JSON form (with assertions summing to 100 per category) before iter-3 runs. The Pydantic model validates the JSON at load time and is the source of truth for what `grader.py` consumes. Anthropic's flat `evals[].expectations[]` schema (per `skills/evaluating-skills/references/schemas.md:11-27`) is a *legacy* format for routing-test results; iter-3 does not use it.
@@ -522,7 +522,7 @@ The iter-3 design was originally N=1 trial per (eval, config) for cost reasons. 
 
 ## See also
 
-- `skills/evaluating-skills/references/behavioral-review.md` — the 5-dimension rubric and `material_difference` threshold used in iter-1 routing tests (now superseded by Tessl IF/GC for iter-3).
+- `skills/evaluating-skills/references/behavioral-review.md` — the 5-dimension rubric and `material_difference` threshold used in iter-1 routing tests (now superseded by Gorinova 2026 IF/GC for iter-3).
 - `skills/evaluating-skills/references/schemas.md` — the `behavioral_comparison.json` 5-dimension schema (iter-1 format); iter-3 uses the new `grading_iter3.json` schema documented in this design.
 
 ## Required infrastructure changes
@@ -577,7 +577,7 @@ Iteration-3 needs **four new scripts** + content authoring + schema work:
    `consultation` assertions are binary by design (the skill was read or
    wasn't) and are graded code-based, so "not_applicable" cannot arise.
 
-7. **A better signal baseline.** The Tessl paper noted that "When the pass rates are identical, make your test cases harder." Several of our 18 utterances are easy enough that the model can answer them without any skill. For iteration-3, the eval set should be rebalanced toward harder, more specific tasks where the skill actually changes the answer.
+7. **A better signal baseline.** The Gorinova 2026 paper noted that "When the pass rates are identical, make your test cases harder." Several of our 18 utterances are easy enough that the model can answer them without any skill. For iteration-3, the eval set should be rebalanced toward harder, more specific tasks where the skill actually changes the answer.
 
 ## Failure modes iteration-3 should catch that iteration-2 cannot
 
@@ -607,7 +607,7 @@ Not now. Iteration-2 (this batch) proves the harness scales and gives a coarse b
 
 ## Open question
 
-The Tessl paper measured both instruction-following and goal-completion but found that goal-completion saturates for almost all models. So in practice, **instruction-following is the only metric that varies across model tiers on this kind of task.** Should iteration-3 therefore weight instruction-following rubrics (e.g., "the agent followed the Compendium's prescribed frontmatter structure") heavily, and treat goal-completion rubrics as a sanity check (i.e., they should saturate to 100% — anything less is a real bug)? My take: yes for skills whose value is in workflow encoding (crafting-skills, plan-lifecycle, security), where the discriminator is whether the agent followed the right process. For skills whose value is in knowledge encoding (web-search, rust, engineering-mcp), the goal-completion rubric is the better primary metric. Different skills, different metrics, but within any single skill, pick one and stick to it. Defer to a per-skill decision when iteration-3 actually runs.
+The Gorinova 2026 paper measured both instruction-following and goal-completion but found that goal-completion saturates for almost all models. So in practice, **instruction-following is the only metric that varies across model tiers on this kind of task.** Should iteration-3 therefore weight instruction-following rubrics (e.g., "the agent followed the Compendium's prescribed frontmatter structure") heavily, and treat goal-completion rubrics as a sanity check (i.e., they should saturate to 100% — anything less is a real bug)? My take: yes for skills whose value is in workflow encoding (crafting-skills, plan-lifecycle, security), where the discriminator is whether the agent followed the right process. For skills whose value is in knowledge encoding (web-search, rust, engineering-mcp), the goal-completion rubric is the better primary metric. Different skills, different metrics, but within any single skill, pick one and stick to it. Defer to a per-skill decision when iteration-3 actually runs.
 
 ## Grader type selection (Anthropic methodology)
 
@@ -619,7 +619,7 @@ Per [Demystifying evals for AI agents](https://www.anthropic.com/engineering/dem
 | **Model-based** | rubric-based scoring, natural-language assertions, pairwise comparison, reference-based evaluation, multi-judge consensus | When the assertion is open-ended (compliance, quality). Flexible but non-deterministic. |
 | **Human graders** | SME review, crowdsourced judgment, A/B testing, inter-annotator agreement | Calibration only. Reserve for subjective/ambiguous tasks. |
 
-For each task, scoring is **weighted** (combined scores hit a threshold), **binary** (all must pass), or **hybrid**. Tessl uses weighted (per-category 0–100 sums); our iter-3 follows the same.
+For each task, scoring is **weighted** (combined scores hit a threshold), **binary** (all must pass), or **hybrid**. Gorinova 2026 uses weighted (per-category 0–100 sums); our iter-3 follows the same.
 
 ### Per-assertion grader recommendation
 
@@ -666,7 +666,7 @@ task:
       metrics: [time_to_first_token, time_to_last_token]
 ```
 
-Our 18-eval set's JSON form follows this structure (with `assertions[]` flat list + `points` + `category` from Tessl). The YAML form is for human authoring; JSON is for the harness.
+Our 18-eval set's JSON form follows this structure (with `assertions[]` flat list + `points` + `category` from Gorinova 2026). The YAML form is for human authoring; JSON is for the harness.
 
 ## Anti-patterns to avoid
 
@@ -676,10 +676,10 @@ Anthropic's "Demystifying evals" lists specific anti-patterns that have bitten e
    - **Exception for iter-3**: `consultation` assertions *do* check the path (was the skill read?). Justified because: (a) we want to measure skill *reach* — without a consultation check, a skill that's never consulted gets 100% goal_completion (since goal-completion saturates); (b) consultation is a yes/no fact, not a sequence.
 
 2. **0% pass rate across many trials = broken task.** "With frontier models, a 0% pass rate across many trials (i.e. 0% pass@100) is most often a signal of a broken task, not an incapable agent, and a sign to double-check your task specification and graders. For each task, it's useful to create a reference solution: a known working output that passes all graders."
-   - **For iter-3**: each of our 18 assertions needs a reference solution. Anthropic + Tessl agree.
+   - **For iter-3**: each of our 18 assertions needs a reference solution. Anthropic + Gorinova 2026 agree.
 
 3. **Build partial credit in.** "For tasks with multiple components, build in partial credit. A support agent that correctly identifies the problem and verifies the customer but fails to process a refund is meaningfully better than one that fails immediately."
-   - **For iter-3**: Tessl's per-category 0–100 scoring already gives partial credit; we don't need to add it.
+   - **For iter-3**: Gorinova 2026's per-category 0–100 scoring already gives partial credit; we don't need to add it.
 
 4. **Watch for eval saturation.** "An eval at 100% tracks regressions but provides no signal for improvement. Eval saturation occurs when an agent passes all of the solvable tasks, leaving no room for improvement."
    - **For iter-3**: if iter-3 returns 100% on a category across all 18 evals, the category has saturated. Harder tasks are needed.

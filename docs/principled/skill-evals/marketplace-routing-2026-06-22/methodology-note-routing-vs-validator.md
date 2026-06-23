@@ -39,5 +39,5 @@ The two methodologies could be unified in a future refactor — e.g., add a help
 
 ## See also
 
-- `iteration-3-design.md` — discusses the same instruction-following vs goal-completion distinction in the context of the Tessl framework.
+- `iteration-3-design.md` — discusses the same instruction-following vs goal-completion distinction in the context of the Gorinova et al. 2026.
 - `scripts/count_words.py` — the reproducible script that produces the empirical comparison table above.

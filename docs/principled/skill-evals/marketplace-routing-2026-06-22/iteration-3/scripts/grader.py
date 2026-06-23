@@ -281,7 +281,7 @@ def grade_with_judge(assertions: list[dict], transcript_excerpt: str,
 
 def compute_summary(expectations: list[dict], assertions: list[dict],
                    weight: dict[str, float]) -> dict:
-    """Compute per-category and overall scores via Tessl-style weighted average."""
+    """Compute per-category and overall scores via Gorinova-style weighted average."""
     by_category: dict[str, list[tuple[int, int]]] = {}
     for a in assertions:
         cat = a.get("category", "?")

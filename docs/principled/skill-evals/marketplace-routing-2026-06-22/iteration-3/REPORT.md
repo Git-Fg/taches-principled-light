@@ -4,7 +4,7 @@
 **Scope**: 17 of 18 evals (rust-clippy skipped — no iter-2 transcript)
 **Solver**: `haiku` chain via inference-gateway proxy (VPS port 3456)
 **Judge**: `haiku` for all 17 evals (homogeneous; corrected from initial mixed run)
-**Method**: Assertion-based grading per Tessl framework ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1))
+**Method**: Assertion-based grading per Gorinova et al. 2026 ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1))
 
 ## ⚠️ CAVEAT — stale plugin cache
 
@@ -235,7 +235,7 @@ Three HIGH-severity issues, all surfaced by self-critic and now fixed:
    all 17 evals.
 
 The corrected report does not change iter-3's design (assertion-based
-grading per Tessl); it fixes the implementation bug that corrupted the
+grading per Gorinova 2026); it fixes the implementation bug that corrupted the
 initial numbers.
 
 ## Methodology limitations
@@ -280,7 +280,7 @@ initial numbers.
 
 ## Files produced
 
-- `iteration-3-design.md` — design doc (Tessl, Anthropic skill-creator,
+- `iteration-3-design.md` — design doc (Gorinova 2026, Anthropic skill-creator,
   tau-bench, SkillsBench)
 - `iteration-3/scripts/grader.py` — LLM-as-judge runner (consultation
   bug fixed in commit `b45c40a`)
@@ -296,7 +296,7 @@ initial numbers.
 ## Citation
 
 Methodology drawn from:
-- Tessl framework, [arXiv 2606.17819v1](https://arxiv.org/html/2606.17819v1)
+- Gorinova et al. 2026, [arXiv 2606.17819v1](https://arxiv.org/html/2606.17819v1)
 - Anthropic skill-creator (Create/Eval/Improve/Benchmark modes)
 - Anthropic skill authoring best practices, [platform.claude.com](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
 - Microsoft Copilot Studio trigger phrases, [learn.microsoft.com](https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/trigger-phrases-best-practices)

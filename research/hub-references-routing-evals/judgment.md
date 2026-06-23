@@ -9,7 +9,7 @@
 - The user has just executed the hub + references split (claude-cli: 637 → 128 lines) and the immediate question is "is this the right way to do it?" — i.e., a survey of what the dominant marketplaces do, not a deep dive into one theory.
 - The user's marketplace is a multi-skill, cross-platform distribution (4 plugin manifests, 35+ skills). Their routing problem is closer to HeyGen's "many skills, same distribution channel" than to a single-skill author's question. So the empirical reference set should match.
 - The token-overlap benchmark is local, recent, and the user is the maintainer. They want to know whether to invest further in it (LLM-judge evals) or leave it as-is. A short verdict on that is more useful than a 3,000-word survey of LLM-judge methodology.
-- The SkillsBench paper is the obvious source of evidence for the "Skills are net-positive" claim but it is one paper, with a specific scope (86 tasks, deterministic verifiers). A more grounded answer notes the paper, anchors on the body-length findings, and moves on.
+- The SkillsBench paper is the obvious source of evidence for the "Skills are net-positive" claim but it is one paper, with a specific scope (87 tasks across 8 domains per the current v4 abstract, deterministic verifiers). A more grounded answer notes the paper, anchors on the body-length findings, and moves on.
 
 ## Hypothesis to validate or refute
 

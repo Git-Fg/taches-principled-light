@@ -56,7 +56,7 @@
 
 ## Methodology
 
-- Tessl-style per-category 0-100 scoring (IF + GC, weighted 50/50 by default)
+- Gorinova-style per-category 0-100 scoring (IF + GC, weighted 50/50 by default)
 - Two assertions per category minimum; some evals use weight overrides
 - Code-based checks (consultation, structure with compare_args) bypass the LLM
 - UNKNOWN verdicts (judge couldn't determine) are treated as FAIL for scoring

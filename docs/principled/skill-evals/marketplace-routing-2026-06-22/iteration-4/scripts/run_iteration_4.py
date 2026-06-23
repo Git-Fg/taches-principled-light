@@ -15,7 +15,7 @@ Pipeline:
        - save NDJSON transcripts to iteration-4/eval-<id>/{with,without}_skill.jsonl
        - on timeout: write timeout.json marker (no empty dir)
   3. for each eval: invoke iter-3 grader.py on each transcript
-  4. compute deltas (Tessl-style IF + GC + overall) per iter-3
+  4. compute deltas (Gorinova-style IF + GC + overall) per iter-3
   5. aggregate into iteration-4/benchmark.{json,md}
 
 Differences from iter-3:

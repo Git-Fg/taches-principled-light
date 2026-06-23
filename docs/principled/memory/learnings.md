@@ -27,7 +27,9 @@ Distilled from plan artifacts and session work. Each entry: category + confidenc
 **Source:** iter-8 design supplements; v0.0.6 release notes
 **Insight:** BerriAI/litellm (51,259 stars as of 2026-06-23) is the only A-grade gateway that combines native MCP gateway + A2A protocol + drop-in OpenAI compat + single-Docker self-host. Bifrost is B-grade (partial MCP/A2A support).
 **Evidence:** GitHub API: 51,259 stars. `mcp__mcp-coderepo__github_search` confirmed `litellm/a2a_protocol/{client,handler,exception_mapping_utils}.py` and `litellm/proxy/a2a/agent_card.py` and `litellm/proxy/agent_endpoints/a2a_endpoints.py` and dashboard `a2a_send_message.tsx`. Bifrost has only partial MCP/A2A support per the supplements table.
-**Action:** Use LiteLLM as the canonical self-host option when `100.80.231.128:3456`'s structural single-model limitation needs to be removed. Bifrost is fallback only.
+**Action:** Use LiteLLM as the canonical self-host option when
+`<private inference gateway>`'s structural single-family limitation
+needs to be removed. Bifrost is fallback only.
 
 ---
 
@@ -67,12 +69,19 @@ Distilled from plan artifacts and session work. Each entry: category + confidenc
 
 ---
 
-### [PROCESS] [conf 4] vendor-disjoint grading requires a multi-model proxy
+### [PROCESS] [conf 4] vendor-disjoint grading requires a multi-family proxy
 
 **Source:** iter-6 REPORT.md; iter-8 PLAN §8A
-**Insight:** iter-6 needed glm-5.2 (vendor-disjoint from haiku solver) for vendor-disjoint validation, but the inference proxy `100.80.231.128:3456` is a single-model gateway, so iter-6 returned 503 for all 12 grading cells. Without a multi-model proxy (LiteLLM), vendor-disjoint validation is structurally impossible.
+**Insight:** iter-6 needed an external judge vendor (vendor-disjoint
+from the configured solver) for vendor-disjoint validation, but the
+inference proxy `<private inference gateway>` is a single-family
+gateway, so iter-6 returned 503 for all 12 grading cells. Without a
+multi-family proxy (LiteLLM), vendor-disjoint validation is
+structurally impossible.
 **Evidence:** iter-6 REPORT.md; iter-8 PLAN §8A vendor-disjoint design. iter-6 mean lift of +7.5pp (code-only) is below iter-7's +21.88pp (LLM-judgment added) by +14.4pp.
-**Action:** For any future iter, the eval harness must either (a) target a multi-model proxy (LiteLLM), or (b) explicitly note vendor-disjoint is unvalidated in this iter's REPORT.md.
+**Action:** For any future iter, the eval harness must either (a) target
+a multi-family proxy (LiteLLM), or (b) explicitly note vendor-disjoint
+is unvalidated in this iter's REPORT.md.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: web-search
-description: "Load when finding or verifying information on the open web — search, fact-checking, or claim verification. Use when the user says 'find X' or 'verify this statement'. Do NOT use for reading the local codebase (use a subagent explorer) or evaluating competing design alternatives (use solving-competitively)."
+description: "Load when finding or verifying information on the open web — search, fact-checking, or claim verification. Use when the user says 'find X', 'look up Y', 'search for', 'is this claim true', 'verify this statement', 'fact-check', 'find documentation on', 'find the latest docs', or 'what does the official doc say'. Do NOT use for reading the local codebase (use a subagent explorer) or evaluating competing design alternatives (use solving-competitively)."
 when_to_use: |
   Use when the user asks to find, look up, verify, fact-check, or research
   on the open web, or doubts a factual claim. Tool-agnostic — teaches the

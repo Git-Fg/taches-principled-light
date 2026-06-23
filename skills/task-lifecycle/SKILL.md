@@ -1,6 +1,6 @@
 ---
 name: task-lifecycle
-description: "Load when adding a single small feature — capturing, refining the spec, implementing with verification, and updating docs. Use when the user says 'add a feature' or 'refine this spec'. Do NOT use for multi-phase projects (use plan-lifecycle), small bug fixes (do inline), or brainstorming (use generating-ideas)."
+description: "Load when adding a single small feature — capturing, refining the spec, implementing with verification, and updating docs. Use when the user says 'add a feature', 'refine this spec', 'implement this small change', 'draft a task', 'turn into a spec', 'add this with verification', 'small task with docs', or 'new requirement draft'. Do NOT use for multi-phase projects (use plan-lifecycle), small bug fixes (do inline), or brainstorming (use generating-ideas)."
 context: fork
 agent: general-purpose
 when_to_use: |

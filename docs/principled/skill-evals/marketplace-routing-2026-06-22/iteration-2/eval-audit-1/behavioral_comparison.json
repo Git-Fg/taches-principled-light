@@ -1,0 +1,29 @@
+{
+  "eval_id": "audit-1",
+  "utterance": "audit the marketplace and run the pre-release health check",
+  "expected_skill": "marketplace-health",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 193870,
+    "total_events": 34,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 71424,
+    "total_events": 22,
+    "skill_tool_invocations": [
+      "taches-principled-light:security"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

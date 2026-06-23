@@ -1,0 +1,89 @@
+[iter-2] running 18 evals x 2 configs = 36 runs
+[iter-2] target model: haiku via inference-gateway proxy (port 3456)
+[iter-2] timeout per run: 300s, total wall budget ~180 min
+[iter-2] workspace: /Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-2
+[iter-2] preflight: /Users/felix/.local/bin/claude --model haiku 'echo ok'
+[iter-2] preflight OK
+
+[1/18] lint-1 (expected=marketplace-validator)
+  utterance: lint the marketplace and check the frontmatter
+  with-skill: completed dur=145364ms events=30 reads=0
+  without-skill: completed dur=26933ms events=12 reads=0
+
+[2/18] lint-2 (expected=marketplace-validator)
+  utterance: is this skill valid before I commit
+  with-skill: completed dur=39369ms events=6 reads=0
+  without-skill: completed dur=51840ms events=15 reads=0
+
+[3/18] audit-1 (expected=marketplace-health)
+  utterance: audit the marketplace and run the pre-release health check
+  with-skill: completed dur=193870ms events=34 reads=0
+  without-skill: completed dur=71424ms events=22 reads=0
+
+[4/18] audit-2 (expected=marketplace-health)
+  utterance: is the marketplace healthy, check for drift
+  with-skill: completed dur=244620ms events=50 reads=0
+  without-skill: completed dur=19243ms events=10 reads=0
+
+[5/18] ingest-1 (expected=ingesting-skills)
+  utterance: port this skill from a github url into our collection
+  with-skill: completed dur=24738ms events=6 reads=0
+  without-skill: completed dur=78689ms events=11 reads=0
+
+[6/18] ingest-2 (expected=ingesting-skills)
+  utterance: add this skill to our marketplace, import it
+  with-skill: completed dur=80840ms events=16 reads=0
+  without-skill: completed dur=87801ms events=19 reads=0
+
+[7/18] release-1 (expected=releasing-marketplace)
+  utterance: cut a release and bump the version to 0.0.2
+  with-skill: truncated_timeout dur=300000ms events=73 reads=1
+  without-skill: completed dur=165095ms events=27 reads=0
+
+[8/18] release-2 (expected=releasing-marketplace)
+  utterance: tag and push the new version
+  with-skill: completed dur=60572ms events=15 reads=0
+  without-skill: completed dur=64437ms events=14 reads=0
+
+[9/18] critic (expected=general-critic)
+  utterance: review this PR and find the worst issues
+  with-skill: completed dur=235782ms events=39 reads=0
+  without-skill: completed dur=62953ms events=19 reads=0
+
+[10/18] research (expected=deep-research)
+  utterance: do deep research on agent skill evaluation methodology
+  with-skill: truncated_timeout dur=300000ms events=74 reads=0
+  without-skill: truncated_timeout dur=300000ms events=7 reads=0
+
+[11/18] craft-create (expected=crafting-skills)
+  utterance: create a new agent skill for my project
+  with-skill: completed dur=57818ms events=11 reads=0
+  without-skill: completed dur=18686ms events=10 reads=0
+
+[12/18] craft-review (expected=crafting-skills)
+  utterance: review this skill's description and frontmatter
+  with-skill: completed dur=24539ms events=6 reads=0
+  without-skill: completed dur=41140ms events=6 reads=0
+
+[13/18] eval-skill (expected=evaluating-skills)
+  utterance: write evals for this skill and grade the outputs
+  with-skill: truncated_timeout dur=300000ms events=63 reads=1
+  without-skill: exit_1 dur=198620ms events=15 reads=0
+
+[14/18] plan-multi (expected=plan-lifecycle)
+  utterance: plan this multi-phase project with critic checkpoints
+  with-skill: exit_1 dur=196505ms events=15 reads=0
+  without-skill: exit_1 dur=189769ms events=15 reads=0
+
+[15/18] task-small (expected=task-lifecycle)
+  utterance: add this small feature with verification and docs
+  with-skill: exit_1 dur=194501ms events=15 reads=0
+  without-skill: exit_1 dur=191653ms events=15 reads=0
+
+[16/18] web-rust (expected=web-search)
+  utterance: find documentation on the open web for Rust async traits
+  with-skill: exit_1 dur=203623ms events=15 reads=0
+  without-skill: exit_1 dur=193292ms events=15 reads=0
+
+[17/18] sec-audit (expected=security)
+  utterance: audit code for OWASP top 10 vulnerabilities and secrets

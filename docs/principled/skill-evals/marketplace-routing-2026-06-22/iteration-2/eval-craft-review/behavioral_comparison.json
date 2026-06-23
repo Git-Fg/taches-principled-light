@@ -1,0 +1,27 @@
+{
+  "eval_id": "craft-review",
+  "utterance": "review this skill's description and frontmatter",
+  "expected_skill": "crafting-skills",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 24539,
+    "total_events": 6,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 41140,
+    "total_events": 6,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

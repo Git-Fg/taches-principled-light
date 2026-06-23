@@ -1,0 +1,31 @@
+{
+  "eval_id": "eval-skill",
+  "utterance": "write evals for this skill and grade the outputs",
+  "expected_skill": "evaluating-skills",
+  "with_skill": {
+    "config": "with",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 63,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/evaluating-skills/SKILL.md"
+    ],
+    "marketplace_skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/evaluating-skills/SKILL.md"
+    ]
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "exit_1",
+    "duration_ms": 198620,
+    "total_events": 15,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 1
+  },
+  "material_difference": true
+}

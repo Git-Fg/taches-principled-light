@@ -1,0 +1,27 @@
+{
+  "eval_id": "task-small",
+  "utterance": "add this small feature with verification and docs",
+  "expected_skill": "task-lifecycle",
+  "with_skill": {
+    "config": "with",
+    "status": "exit_1",
+    "duration_ms": 194501,
+    "total_events": 15,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "exit_1",
+    "duration_ms": 191653,
+    "total_events": 15,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

@@ -1,0 +1,30 @@
+{
+  "eval_id": "ingest-2",
+  "utterance": "add this skill to our marketplace, import it",
+  "expected_skill": "ingesting-skills",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 80840,
+    "total_events": 16,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 87801,
+    "total_events": 19,
+    "skill_tool_invocations": [
+      "superpowers:writing-skills",
+      "taches-principled-light:skill-authoring"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

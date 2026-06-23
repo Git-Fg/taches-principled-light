@@ -1,0 +1,29 @@
+{
+  "eval_id": "lint-2",
+  "utterance": "is this skill valid before I commit",
+  "expected_skill": "marketplace-validator",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 39369,
+    "total_events": 6,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 51840,
+    "total_events": 15,
+    "skill_tool_invocations": [
+      "taches-principled-light:skill-authoring"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

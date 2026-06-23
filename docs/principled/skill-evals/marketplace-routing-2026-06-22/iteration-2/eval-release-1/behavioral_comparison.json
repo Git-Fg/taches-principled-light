@@ -1,0 +1,32 @@
+{
+  "eval_id": "release-1",
+  "utterance": "cut a release and bump the version to 0.0.2",
+  "expected_skill": "releasing-marketplace",
+  "with_skill": {
+    "config": "with",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 73,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/releasing-marketplace/SKILL.md",
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/releasing-marketplace/SKILL.md"
+    ],
+    "marketplace_skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/skills/releasing-marketplace/SKILL.md"
+    ]
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 165095,
+    "total_events": 27,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 1
+  },
+  "material_difference": true
+}

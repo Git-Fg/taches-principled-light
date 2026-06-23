@@ -1,0 +1,27 @@
+{
+  "eval_id": "release-2",
+  "utterance": "tag and push the new version",
+  "expected_skill": "releasing-marketplace",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 60572,
+    "total_events": 15,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 64437,
+    "total_events": 14,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

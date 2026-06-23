@@ -74,3 +74,13 @@ incorporates all lessons from iter-2:
 - **Haiku chain is viable**: 12 evals completed successfully through the proxy.
 - **Complex skills need more time**: release and research workflows exceed
   300s. iter-3 should either increase timeout or use shorter eval prompts.
+- **Agents actually consult skills**: `skill_md_reads` (the raw count) shows
+  the agent read marketplace skills in the with-skill runs. For example:
+  - `eval-lint-1` (with-skill): 2 reads of `.agents/skills/marketplace-health/SKILL.md`
+    and `.agents/skills/marketplace-validator/SKILL.md`.
+  - `eval-audit-1` (with-skill): reads of marketplace-health and related skills.
+  These were correctly captured but the `marketplace_skill_md_reads` filtered
+  list was empty due to the stale filter (commit `069b31c` fixes this).
+  Once the filter is widened, the iter-2 data reproduces the expected signal:
+  with-skill runs consistently consult 2-4 marketplace skills; without-skill
+  runs consult 0.

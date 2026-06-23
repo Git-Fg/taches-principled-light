@@ -1,0 +1,29 @@
+{
+  "eval_id": "ingest-1",
+  "utterance": "port this skill from a github url into our collection",
+  "expected_skill": "ingesting-skills",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 24738,
+    "total_events": 6,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 78689,
+    "total_events": 11,
+    "skill_tool_invocations": [
+      "superpowers:writing-skills"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

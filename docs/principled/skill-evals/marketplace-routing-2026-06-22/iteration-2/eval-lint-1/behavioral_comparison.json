@@ -1,0 +1,30 @@
+{
+  "eval_id": "lint-1",
+  "utterance": "lint the marketplace and check the frontmatter",
+  "expected_skill": "marketplace-validator",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 145364,
+    "total_events": 30,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-health/SKILL.md",
+      "/Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-validator/SKILL.md"
+    ],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 26933,
+    "total_events": 12,
+    "skill_tool_invocations": [],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

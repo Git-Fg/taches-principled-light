@@ -1,0 +1,31 @@
+{
+  "eval_id": "craft-create",
+  "utterance": "create a new agent skill for my project",
+  "expected_skill": "crafting-skills",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 57818,
+    "total_events": 11,
+    "skill_tool_invocations": [
+      "superpowers:writing-skills"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 18686,
+    "total_events": 10,
+    "skill_tool_invocations": [
+      "superpowers:writing-skills"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

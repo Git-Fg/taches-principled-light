@@ -1,0 +1,31 @@
+{
+  "eval_id": "research",
+  "utterance": "do deep research on agent skill evaluation methodology",
+  "expected_skill": "deep-research",
+  "with_skill": {
+    "config": "with",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 74,
+    "skill_tool_invocations": [
+      "deep-research"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 7,
+    "skill_tool_invocations": [
+      "deep-research"
+    ],
+    "skill_md_reads": [],
+    "marketplace_skill_md_reads": []
+  },
+  "delta": {
+    "marketplace_skill_md_reads_added": 0
+  },
+  "material_difference": false
+}

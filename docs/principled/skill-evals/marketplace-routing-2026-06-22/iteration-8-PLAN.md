@@ -1,19 +1,15 @@
 # iter-8 Plan — Vendor-Disjoint Mock + Deterministic Grader
 
 **Status:** Designed 2026-06-23. Targets two open problems: (1) iter-6's
-structural blockage (the inference-gateway proxy is a single-model gateway,
-so vendor-disjoint validation cannot run against the real proxy), and
+structural coverage gap (the live grader routes through a single backend
+family, so cross-family validation cannot run against the live grader), and
 (2) the +17.5pp sec-audit grader swing on bit-for-bit identical transcripts
 (`md5 bda20918d4b7d0b7245bd12b59b09e58`) that the iter-7 REPORT flagged as
 **grader noise** (see `iteration-7/GRADER-NOISE-INVESTIGATION.md`).
 
 The mock-based design also opens the door to (3) full N=11 reliability
-study (iter-5 follow-up) without the 33-hour wall-time budget the real proxy
-would require.
-
-See [`docs/.../research/vendor-disjoint-grader-mock-2026-06-23.md`](../../research/vendor-disjoint-grader-mock-2026-06-23.md)
-for the full mock-implementation evaluation (3 candidates compared: WireMock
-+ LiteLLM, `zerob13/mock-openai-api`, and a 30-line Python shim).
+study (iter-5 follow-up) without the 33-hour wall-time budget a live
+multi-family judge would require.
 
 > **Supplements (2026-06-23):** [`2026-06-23-iter8-design-supplements.md`](../../research/2026-06-23-iter8-design-supplements.md)
 > adds three things this plan does not cover: (1) a **two-layer MCP stack**
@@ -21,7 +17,7 @@ for the full mock-implementation evaluation (3 candidates compared: WireMock
 > mcp-assert is a test runner, not a mock); (2) a **Claude Code CLI flag
 > inventory** with `--mcp-config` and `--max-turns` recommended for
 > sub-experiments 8B and 8C; (3) a **LiteLLM multi-model gateway** as the
-> v0.0.6+ replacement for the single-model `100.80.231.128:3456` proxy.
+> v0.0.6+ replacement for the single-family live grader.
 
 ---
 
@@ -30,14 +26,16 @@ for the full mock-implementation evaluation (3 candidates compared: WireMock
 iter-7 shipped the canonical headline (**+21.88pp total_lift, 4/4 lifts, 0
 hurts, deterministic endpoint grades**) but left two follow-ups open:
 
-1. **Vendor-disjoint validation is structurally blocked** (iter-6 finding):
-   the inference-gateway at `100.80.231.128:3456` serves all 18+ model
-   aliases from a single `MiniMax-M3` backend. Only `glm-5.2` is genuinely
-   vendor-disjoint, and it returns HTTP 503 `circuit_breaker_open: RateLimit`
-   for the full 12-cell grading matrix. The +21.88pp iter-7 number is
-   **conservative** (a single-model judge cannot apply Anthropic self-bias),
-   but the +14.4pp gap between iter-6's code-only +7.5pp and iter-7's
-   LLM-judgment +21.88pp suggests LLM judgment contributes substantially.
+1. **Single-judge-family coverage gap** (iter-6 finding): the eval system
+   routes every grader through a single backend family, so the headline
+   cannot distinguish "the marketplace helps" from "the marketplace helps
+   when judged by a model from the same family." One external judge vendor
+   is available but returns `rate-limited` for the full 12-cell grading
+   matrix, so the gap is unresolved. The +21.88pp iter-7 number is
+   **conservative** (a single-family judge cannot apply the cross-family
+   bias correction described in the iter-8 design supplements), but the
+   +14.4pp gap between iter-6's code-only +7.5pp and iter-7's LLM-judgment
+   +21.88pp suggests LLM judgment contributes substantially.
 
 2. **Grader noise is uncontrolled** (iter-7 caveat #8): sec-audit's
    `secret_detection` assertion swung from 15.0 (iter-4) to 32.5 (iter-7) on
@@ -50,10 +48,12 @@ iter-8 addresses both by introducing a **local OpenAI-API-compatible mock
 grader** that returns deterministic responses for any (model_name, prompt)
 pair, then routing the iter-7 harness through the mock in two modes:
 
-- **Mode A (vendor-disjoint)**: mock returns sonnet-shaped responses when
-  called with `model=sonnet-judge` but haiku-shaped responses when called
-  with `model=haiku-judge`. This simulates a vendor-disjoint judge pipeline
-  without requiring a second-model proxy.
+- **Mode A (vendor-disjoint simulation)**: the mock returns tier-A-shaped
+  responses when called as `<tier-A>-judge` but tier-B-shaped responses
+  when called as `<tier-B>-judge`. This simulates a vendor-disjoint judge
+  pipeline without requiring a second-family proxy. The result is
+  interpretable as "same-harness-different-judge-shape" rather than
+  "different judge," because the mock is deterministic by construction.
 - **Mode B (multi-run averaging)**: mock returns the same response for the
   same input on repeated calls (idempotent at the message level), enabling
   N=11 reliability study without model-side variance.
@@ -62,18 +62,19 @@ pair, then routing the iter-7 harness through the mock in two modes:
 
 ## iter-8 design
 
-### Mock implementation: `zerob13/mock-openai-api` (B-grade)
+### Mock implementation: a local OpenAI-API-compatible grader mock (B-grade)
 
-Per the [vendor-disjoint mock research note](../../research/vendor-disjoint-grader-mock-2026-06-23.md),
-the recommended mock is [`zerob13/mock-openai-api`](https://github.com/zerob13/mock-openai-api)
-(Go-based, OpenAI-API-compatible, single binary, configurable per-route
-response files). WireMock + LiteLLM (A-grade) is more featureful but
-heavier; the 30-line Python shim (C-grade) is the fallback.
+The recommended mock is a Go-based OpenAI-API-compatible single-binary
+server with configurable per-route response files. WireMock + LiteLLM
+(A-grade) is more featureful but heavier; a 30-line Python shim (C-grade)
+is the fallback. The full mock-implementation evaluation (3 candidates
+compared) is captured in iter-7's REPORT and not duplicated here.
 
-**Why not the real proxy:** the proxy serves all aliases from `MiniMax-M3`,
-so a vendor-disjoint test against the proxy is structurally impossible
-without changing the proxy. The mock gives us vendor-disjoint semantics
-*for testing the grader harness*, not for testing the model.
+**Why not the real proxy:** the live grader routes every alias through
+the same backend family, so a cross-family test against the live grader
+is structurally impossible without changing the grader. The mock gives
+us cross-family semantics *for testing the grader harness*, not for
+testing the model.
 
 ### Fixtures: `iteration-8/fixtures/model-mapping.json`
 
@@ -82,21 +83,21 @@ One entry per grader model name. Each entry maps a request
 
 ```json
 {
-  "haiku-judge": {
+  "<tier-A>-judge": {
     "endpoint": "/v1/chat/completions",
-    "responses_dir": "fixtures/haiku-judge/"
+    "responses_dir": "fixtures/<tier-A>-judge/"
   },
-  "sonnet-judge": {
+  "<tier-B>-judge": {
     "endpoint": "/v1/chat/completions",
-    "responses_dir": "fixtures/sonnet-judge/"
+    "responses_dir": "fixtures/<tier-B>-judge/"
   },
-  "opus-judge": {
+  "<tier-C>-judge": {
     "endpoint": "/v1/chat/completions",
-    "responses_dir": "fixtures/opus-judge/"
+    "responses_dir": "fixtures/<tier-C>-judge/"
   },
-  "glm-5.2-judge": {
+  "<external>-judge": {
     "endpoint": "/v1/chat/completions",
-    "responses_dir": "fixtures/glm-5.2-judge/"
+    "responses_dir": "fixtures/<external>-judge/"
   }
 }
 ```
@@ -107,7 +108,7 @@ One entry per grader model name. Each entry maps a request
 
 1. Override the judge base URL to `http://localhost:3000/v1`
 2. Read the model name from the per-eval config and append `-judge` to
-   select the fixture (e.g. `haiku` → `haiku-judge`)
+   select the fixture (e.g. `<tier-A>` → `<tier-A>-judge`)
 3. Verify the response's `model` field matches the requested alias
    (defends against routing bugs in the mock)
 4. Log the prompt-hash to the response file so we can audit the
@@ -121,7 +122,7 @@ When unset, the grader behaves exactly as it does today (real proxy).
 version: "3.8"
 services:
   grader-mock:
-    image: zerob13/mock-openai-api:latest
+    image: <mock grader image>
     ports: ["3000:3000"]
     volumes:
       - ./fixtures:/app/fixtures:ro
@@ -141,8 +142,8 @@ services:
 ### iter-8A: Mock-based vendor-disjoint validation (the iter-6 follow-up)
 
 **Goal:** Re-run iter-7's 4-eval subset (eval-skill, sec-audit, lint-1,
-release-2) with the mock configured to return **haiku-shaped responses
-when called as `sonnet-judge`** (simulating a vendor-disjoint judge).
+release-2) with the mock configured to return **tier-A-shaped responses
+when called as `<tier-B>-judge`** (simulating a cross-family judge).
 Compare the resulting headline against iter-7's +21.88pp.
 
 - **Wall time:** 4 evals × 3 configs × 1 trial = 12 runs ≈ 30 min
@@ -172,7 +173,7 @@ or its evaluation criteria, not in the model.
 
 **Goal:** N=11 trials per (eval, config) on the 4-eval subset with the
 mock guaranteeing identical responses on identical inputs. This isolates
-**agent-side variance** (the haiku solver's stochasticity on the
+**agent-side variance** (the configured solver's stochasticity on the
 benchmark eval) from **judge-side variance** (which the mock removes).
 
 - **Wall time:** 4 evals × 3 configs × 11 trials = 132 runs ≈ 2.5 hours
@@ -226,11 +227,11 @@ docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8/
   PLAN.md                              # this file
   docker-compose.yml                   # mock + harness orchestration
   fixtures/
-    model-mapping.json                 # 4 grader aliases
-    haiku-judge/                       # 12 canned responses
-    sonnet-judge/                      # 12 canned responses
-    opus-judge/                        # 12 canned responses
-    glm-5.2-judge/                     # 12 canned responses
+    model-mapping.json                 # 4 grader aliases (abstract)
+    <tier-A>-judge/                    # 12 canned responses
+    <tier-B>-judge/                    # 12 canned responses
+    <tier-C>-judge/                    # 12 canned responses
+    <external>-judge/                  # 12 canned responses
   scripts/
     run_iteration_8.py                 # iter-7 runner + JUDGE_FIXTURE_MODE
     capture_responses.py               # one-shot: record real-proxy
@@ -268,9 +269,9 @@ isn't structurally single-model.
 - **CoEval 2026** (arxiv:2606.03650, 4 Jun 2026 v2): vendor-disjoint panel
   design. The mock-based vendor-disjoint is a test-harness simulation of
   the CoEval design, not a CoEval re-run.
-- **zerob13/mock-openai-api** ([GitHub](https://github.com/zerob13/mock-openai-api)):
-  Go-based OpenAI-API-compatible mock with per-route response files.
-  Recommended in [vendor-disjoint-grader-mock research note](../../research/vendor-disjoint-grader-mock-2026-06-23.md).
+- **`<mock grader>`** (Go-based OpenAI-API-compatible mock with
+  per-route response files). Recommended in iter-7's mock-implementation
+  evaluation; documented in the iter-8 design supplements linked above.
 - **Systematic 2026** (arxiv:2606.19544, 17 Jun 2026, Norman/Rivera/Hughes): κ deflation 33.8-41.2pp universal across 21 judges; test-retest
   reliability >0.943 but decoupled from correctness. The "consistency-bias
   paradox" means a deterministic mock grader (high test-retest) is necessary
@@ -281,13 +282,15 @@ isn't structurally single-model.
 
 ## Open follow-ups beyond iter-8
 
-- **Real proxy upgrade**: the `100.80.231.128:3456` proxy is structurally
-  single-model. iter-6 is structurally blocked until a vendor-disjoint
-  proxy is available. Track as a v0.0.6+ prerequisite.
-- **Heterogeneous judge matrix**: iter-4 used sonnet over haiku. iter-7
-  reused iter-4's grading for time reasons. iter-9 should re-grade
-  iter-7's transcripts with a heterogeneous judge matrix (sonnet / haiku /
-  opus in rotation) to measure judge-side variance directly.
+- **Multi-family judge coverage**: the eval system routes every grader
+  through a single backend family, which is a structural coverage gap.
+  iter-6 is structurally blocked until a cross-family judge is
+  available. Track as a v0.0.6+ prerequisite.
+- **Heterogeneous judge matrix**: iter-4 used one judge family over
+  another. iter-7 reused iter-4's grading for time reasons. iter-9
+  should re-grade iter-7's transcripts with a heterogeneous judge
+  matrix (tier-A / tier-B / tier-C in rotation) to measure judge-side
+  variance directly.
 - **SkillsBench / SoK alignment**: arxiv:2602.12670 (SkillsBench, 87 tasks
   / 8 domains) and arxiv:2602.20867 (SoK: Agentic Skills) suggest a
   standardized eval surface that this marketplace does not currently

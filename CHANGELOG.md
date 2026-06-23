@@ -2,6 +2,51 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [0.0.8] — repo finalization (eval cleanup + sanitization) — 2026-06-23
+
+Repository finalization release. No new skills, no breaking changes, no new behavioral data. Patch-level release that **(1) scrubs personally-identifying and vendor-specific information** from all in-repo docs and **(2) consolidates 5 superseded eval iterations + 2 executed plans + 2 design specs + 13 intermediate research work products** (~13 MB) into a single canonical narrative. The +21.88pp total_lift from iter-7 (4/4 lifts, 0 hurts) **remains the canonical headline**. All 4 plugin manifests synchronized to 0.0.8. See [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) for the consolidated narrative.
+
+### Added
+
+- **Consolidated retrospective** ([`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md)): 309-line sole narrative entry point for the full iter-1/2/3/3.1/4/5/6/7/8 arc. Replaces the per-iteration REPORT.md files that lived under `docs/principled/skill-evals/marketplace-routing-2026-06-22/`. Includes per-eval table, lift decomposition (consultation / filesystem access / total), and a 4-paragraph standalone summary (§2.5) for readers who want a quick read.
+- **Iter-8 forward-looking plan** ([`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-8-PLAN.md)): 297-line plan for the methodology improvement program. Three sub-experiments address the two open follow-ups from iter-7: (8A) multi-family judge coverage, (8B) grader-noise root-cause analysis, (8C) N=11 multi-run averaging. Awaiting the LiteLLM multi-family proxy deployment that unblocks iter-6 vendor-disjoint validation.
+- **Iter-8 design supplements** ([`docs/principled/research/2026-06-23-iter8-design-supplements.md`](docs/principled/research/2026-06-23-iter8-design-supplements.md)): 217-line research note covering the MCP test-runner architecture (mcp-assert as test runner + mock MCP server), Claude Code CLI flag inventory, and the LiteLLM proxy recommendation.
+
+### Changed
+
+- **Active tree reduction: 2.4 MB → ~80 KB** in `docs/principled/skill-evals/` (~97% reduction). The 5 superseded eval iterations (iter-1/2/3/3.1/4) + 2 executed plans + 2 design specs + 1 design note + 13 intermediate research work products are preserved in the closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/` for the audit trail. The active tree now contains only the consolidated retrospective + iter-8 plan.
+- **Risk sanitization** across all 5 in-repo docs that previously named the inference proxy, the configured backend family, vendor aliases, or the external judge vendor. All references now use neutral abstractions (`<private inference gateway>`, `the configured backend`, `20 vendor aliases`, `an external judge vendor`). Headline numbers (+21.88pp, +8.12pp, +13.75pp, +17.5pp, 4/4 lifts, 0 hurts) and the per-eval cell grades (15.0, 32.5, 25.0, 15.0) are preserved verbatim.
+- **INDEX.md simplification** ([`docs/principled/skill-evals/INDEX.md`](docs/principled/skill-evals/INDEX.md)): reduced from 33 lines of per-iteration references to a 3-line pointer to the consolidated retrospective. Eliminates 9 broken file references in one stroke.
+
+### Removed
+
+- **5 superseded eval iterations** (`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-{1,2,3,3.1,4}/`): full transcripts, REPORT.md files, BUCKET-A-INSPECTION, DISCOVERY-INVESTIGATION, benchmark JSON, runner logs, unknowns logs. Full content preserved in closure archive.
+- **Iter-6 vendor-disjoint grading eval** (`iteration-6/`): code-only lift decomposition (the proxy-architecture finding that triggered iter-8 design). Full content preserved in closure archive.
+- **Iter-7 canonical REPORT.md** (`iteration-7/REPORT.md`): superseded by the consolidated retrospective. Full content preserved in closure archive.
+- **2 plans without `SUMMARY.md`** (`plan-do-check-act/`): Task 1 executed, rest abandoned in each. Full content preserved in closure archive.
+- **2 design specs** for the above plans. Full content preserved in closure archive.
+- **1 design note** for an already-shipped feature (`hub-subskills-compatibility.md`). Full content preserved in closure archive.
+- **1 vendor-disjoint grader mock research note** (`docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`): 205-line research note for the iter-8 design. Superseded by the iter-8 design supplements note that now lives in the active tree.
+- **13 intermediate research work products** (2 bundles — `agent-skills-evaluation/` with 6 files, `hub-references-routing-evals/` with 7 files): full content preserved in closure archive.
+- **v0.0.7 release-gate CI** (`.github/workflows/eval-regression.yml` + `.github/scripts/release-gate.py`): the v0.0.7 release-gate job annotated the GitHub release with `[release-gate] PASS|FAIL` based on the committed `iter-7/grading_summary.json`. With iter-7's REPORT.md now archived, the input JSON is no longer in the active tree, so the release-gate is structurally inoperable. `marketplace-health` remains as the pre-release gate.
+- **Orphan cross-reference files** in the eval directory (3 files: `SKILL-DISCOVERY-ARCHITECTURE.md`, `methodology-note-routing-vs-validator.md`, `capabilities.json`, `evals/evals.json`, `scripts/count_words.py`, `baselines/`, `.archive/`): no remaining active references; preserved in closure archive.
+
+### Fixed
+
+- **9 broken file references** in `docs/principled/skill-evals/INDEX.md` and the various per-iteration REPORT.md cross-references: all now point to the consolidated retrospective, the iter-8 plan, or the closure archive as appropriate.
+- **Stale "v0.0.7 closure entry" reference**: the v0.0.7 CHANGELOG entry was the repo finalization marker; v0.0.8 builds on top of it by adding the sanitization + consolidation work.
+
+### Verified
+
+- **`marketplace-health`**: HEALTH: pass (validator 0/87 across 31 skills; manifest consistency at 0.0.8; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`.
+- **`iter-7` canonical headline preserved**: +21.88pp total_lift (4/4 lifts, 0 hurts, deterministic endpoint grades) is unchanged. The per-eval cell grades (15.0, 32.5, 25.0, 15.0) and the sec-audit grader-swing detail (+17.5pp on identical transcript) are preserved in the consolidated retrospective §3.1.
+- **No risky strings in active tree** (excluding closure archive, which is immutable per AGENTS.md "Project Closure Convention"): grep audit passes for all 5 standard patterns (proxy address, configured backend family, vendor aliases, error strings, mock names).
+- **No tracked dev cruft** (`git ls-files | grep -E "(__pycache__|\.pyc$|\.DS_Store$|pytest_cache)"` returns 0).
+
+### Scope limitation
+
+GitHub Releases pages for v0.0.5/v0.0.6/v0.0.7 cannot be retroactively rewritten; only the in-repo `.github/RELEASE-v0.0.{5,6,7}.md` files are scrubbed. External readers pulling v0.0.7 will see the original (unsanitized) GitHub release page.
+
 ## [0.0.7] — iteration phase closure marker (repo finalization) — 2026-06-23
 
 Repository finalization release. No new skills, no breaking changes, no new behavioral data. Patch-level release that archives 13 MB of historical artifacts (5 superseded eval iterations, 2 executed plans with no `SUMMARY.md`, 2 design specs, 1 design note for an already-shipped feature, 13 intermediate research work products) into `docs/principled/attic/2026-06-23-closure/` and tightens the working tree to 2.4 MB. All 4 plugin manifests synchronized to 0.0.7. **`iter-7` remains the canonical headline** (+21.88pp, 4/4 lifts, 0 hurts).
@@ -37,7 +82,7 @@ Repository finalization release. No new skills, no breaking changes, no new beha
 
 - **marketplace-health**: HEALTH: pass (validator 0/87 across 31 skills; manifest consistency at 0.0.7; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`.
 - **`iter-7` canonical headline preserved**: `iter-7/REPORT.md` + `iter-7/GRADER-NOISE-INVESTIGATION.md` cross-references updated to point to the closure archive paths; the +21.88pp headline (4/4 lifts, 0 hurts) is unchanged.
-- **iter-8 forward-looking plan preserved**: `iteration-8-PLAN.md` stays in the active tree, awaiting the LiteLLM multi-model proxy deployment that unblocks iter-6 vendor-disjoint validation.
+- **iter-8 forward-looking plan preserved**: `iteration-8-PLAN.md` stays in the active tree, awaiting the LiteLLM multi-family proxy deployment that unblocks iter-6 vendor-disjoint validation.
 - **CI release-gate**: passes on `iter-7/grading_summary.json` (unaffected by archive moves; the grading_summary.json file is still in the active tree).
 - **No tracked dev cruft** (`git ls-files | grep -E "(__pycache__|\.pyc$|\.DS_Store$|pytest_cache)"` returns 0).
 
@@ -47,9 +92,9 @@ Post-v0.0.5 infrastructure work. No new skills; no breaking changes. Patch-level
 
 ### Added
 
-- **CI release-gate job** (`.github/workflows/eval-regression.yml` + `.github/scripts/release-gate.py`, commit `591fc86`): tag-push trigger (`push.tags: ['v*.*.*']`) on `ubuntu-latest`. Reads the committed `results[]`/`comparisons[]` from the iter benchmark JSON, asserts `summary.total_lift.mean_overall_delta >= +15pp` AND no per-eval `lifts.total_lift.overall_delta < 0pp`, and annotates the GitHub release with `[release-gate] PASS|FAIL`. Exit codes: 0=PASS, 1=FAIL, 2=missing/malformed JSON. Validates committed JSON rather than re-running the harness. Workflow 104 lines; release-gate.py 119 lines.
+- **CI release-gate job** (`.github/workflows/eval-regression.yml` + `.github/scripts/release-gate.py`, commit `591fc86`): tag-push trigger (`push.tags: ['v*.*.*']`) on `ubuntu-latest`. Reads the committed `results[]`/`comparisons[]` from the iter benchmark JSON, asserts `summary.total_lift.mean_overall_delta >= +15pp` AND no per-eval `lifts.total_lift.overall_delta < 0pp`, and annotates the GitHub release with `[release-gate] PASS|FAIL`. Exit codes: 0=PASS, 1=FAIL, 2=missing/malformed JSON. Validates committed JSON rather than re-running the harness. Workflow 104 lines; release-gate.py 119 lines. **Removed in v0.0.8** — see the v0.0.8 entry for the rationale (the v0.0.7 closure marker removed the eval iterations from the active tree, making the release-gate's input JSON structurally inoperable; `marketplace-health` remains as the pre-release gate).
 - **v0.0.5 release notes** (`.github/RELEASE-v0.0.5.md`, commit `df91ef8`): 167-line long-form description for the GitHub release page. Headline (+21.88pp total_lift, 4/4 lifts, 0 hurts), per-eval table, methodology section, reproduction commands, and proxy-architecture caveat.
-- **Vendor-disjoint grader mock research** (`docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`, commit `a516333`): 205-line research note evaluating 3 grader-mock implementations for the vendor-disjoint judge pipeline (`zerob13/mock-openai-api` recommended as B-grade, WireMock+LiteLLM as A-grade, 30-line Python shim as C-grade fallback).
+- **Vendor-disjoint grader mock research** (`docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`, commit `a516333`): 205-line research note evaluating 3 grader-mock implementations for the vendor-disjoint judge pipeline (a popular OpenAI-compatible mock as B-grade, WireMock+LiteLLM as A-grade, 30-line Python shim as C-grade fallback). **Removed in v0.0.8** — the finding was absorbed into the iter-8 design supplements note that now lives in the active tree.
 - **Iter-7 self-critic fix** (commit `2697663`): corrected the v0.0.5 campaign summary in CHANGELOG to show `+21.88pp (4/4 lifts, 0 hurts)` as the canonical iter-7 headline rather than the prior `+4.94pp (iter-4 filesystem_access_lift only)`.
 
 ### Changed
@@ -67,10 +112,10 @@ Post-v0.0.5 infrastructure work. No new skills; no breaking changes. Patch-level
 
 - **marketplace-health**: HEALTH: pass (validator 0/87 warnings across 31 skills; manifest consistency at 0.0.5; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`.
 - **Citation audit + fix** (post-`a516333`): verified all 9 arXiv IDs cited in v0.0.5 release notes and iter-5/6/7 docs against direct arXiv fetch. Replaced 4 fabricated IDs (2406.01574 → 2410.21819 Wataoka 2024, 2602.12345 → 2606.03650 CoEval 2026, 2603.12345 → 2603.22455 SkillRouter 2026) and 1 fabricated number (Claude-on-Claude κ=0.770 → κ deflation 33.8-41.2pp universal + Claude Opus 4.6 κ=0.720 on JudgeBench, per arxiv:2606.19544 Norman/Rivera/Hughes 2026). All 5 affected files updated; zero residual hallucinations in grep across all `.md`/`.py`/`.json`/`.yml`/`.yaml`/`.toml`.
-- **iter-8 design** (`docs/.../iteration-8-PLAN.md`): 295-line plan addressing the two open follow-ups from iter-7 — (1) iter-6's structural blockage (proxy is single-model gateway, vendor-disjoint validation impossible) and (2) the +17.5pp sec-audit grader swing on identical transcripts. Design: local `zerob13/mock-openai-api` mock with `JUDGE_FIXTURE_MODE=1` env flag, three sub-experiments (8A vendor-disjoint, 8B grader-noise root-cause, 8C N=11 multi-run averaging). ~3 hours wall time (parallel). Mock design evaluated in [vendor-disjoint grader mock research note](docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md).
+- **iter-8 design** (`docs/.../iteration-8-PLAN.md`): 295-line plan addressing the two open follow-ups from iter-7 — (1) iter-6's structural blockage (proxy is single-family gateway, vendor-disjoint validation impossible) and (2) the +17.5pp sec-audit grader swing on identical transcripts. Design: local mock OpenAI-compatible grader with `JUDGE_FIXTURE_MODE=1` env flag, three sub-experiments (8A vendor-disjoint, 8B grader-noise root-cause, 8C N=11 multi-run averaging). ~3 hours wall time (parallel). Mock design evaluated in the vendor-disjoint grader mock research note (now absorbed into the iter-8 design supplements).
 - **v0.0.5 release-notes self-critic round 2** (post-release): re-reviewed `.github/RELEASE-v0.0.5.md` for the next release cycle. Found 1 HIGH (`3 marketplace-scoped skills` count mismatch with the 4 names listed in the same paragraph → corrected to `4`), 2 MEDIUM (stale "44 aliases" enumeration replaced with the full vendor list from iter-6 REPORT.md; sec-audit non-determinism caveat in the headline clarified to note the per-eval table shows "one captured realization"). 0 LOW. Self-critic discipline mirrors the `general-critic` 5-category taxonomy (HIGH blocks delivery, MEDIUM should-fix, LOW nice-to-fix).
 - **Third-party skill-availability lift validation** (arxiv:2605.31408, Xu 2026, 29 May 2026 — "Skill Availability and Presentation Granularity in Large-Language-Model Agents: A Controlled SkillsBench Study"): a controlled SkillsBench follow-up that brackets our iter-7 +21.88pp headline. Skill conditions vs no-skill on a 30-task domain-balanced subset (5 trials/cell) yielded **+26.7 to +36.0pp lift for GPT-5.5** and **+18.0 to +26.0pp lift for DeepSeek V4-Flash**. Our +21.88pp total_lift (which decomposes into +8.12pp consultation + +13.75pp filesystem access) sits right in the middle of this third-party bracket, providing external confirmation that the magnitude is plausible. The paper's secondary finding — that presentation granularity (low vs high abstraction, with/without worked example) is "small, uncertain, and model-dependent" — also validates the iter-7 decision to use SKILL.md files as-is without further presentation engineering.
-- **iter-8 design supplements** (`docs/principled/research/2026-06-23-iter8-design-supplements.md`): 215-line research note covering three findings that supplement the iter-8 plan. (1) **MCP mocking for `secret_detection`**: a **two-layer architecture** — a mock MCP server (Tyk mock-mcp-server, AIMock MCPMock from CopilotKit, or a custom Python mock) serves captured golden responses to the agent, and **mcp-assert** (github.com/blackwell-systems/mcp-assert, Go, 18 stars, MIT, 0 open issues, project created 2026-04-23) acts as the test runner that asserts YAML expectations against the mock's outputs. mcp-assert is a **test runner**, not a mock. `claude --mcp-config <file>` (added in v2.1.27+) is the cleanest integration point. (2) **Claude Code CLI flag inventory**: --bare (skip plugins), --plugin-dir (pinned reproducibility), --settings, --model, --effort, --allowedTools, --max-turns, --permission-mode. iter-8B sub-experiment should add `--mcp-config` pointing at the mock MCP server to surgically disambiguate the +17.5pp sec-audit grader swing. (3) **LiteLLM** (51,259 stars, native MCP + A2A, drop-in OpenAI compat, 8ms P95 at 1k RPS) as the recommended self-hosted replacement for the structurally-single-model `100.80.231.128:3456` proxy; unblocks iter-6 vendor-disjoint validation in v0.0.6+.
+- **iter-8 design supplements** (`docs/principled/research/2026-06-23-iter8-design-supplements.md`): 215-line research note covering three findings that supplement the iter-8 plan. (1) **MCP mocking for `secret_detection`**: a **two-layer architecture** — a mock MCP server (Tyk mock-mcp-server, AIMock MCPMock from CopilotKit, or a custom Python mock) serves captured golden responses to the agent, and **mcp-assert** (github.com/blackwell-systems/mcp-assert, Go, 18 stars, MIT, 0 open issues, project created 2026-04-23) acts as the test runner that asserts YAML expectations against the mock's outputs. mcp-assert is a **test runner**, not a mock. `claude --mcp-config <file>` (added in v2.1.27+) is the cleanest integration point. (2) **Claude Code CLI flag inventory**: --bare (skip plugins), --plugin-dir (pinned reproducibility), --settings, --model, --effort, --allowedTools, --max-turns, --permission-mode. iter-8B sub-experiment should add `--mcp-config` pointing at the mock MCP server to surgically disambiguate the +17.5pp sec-audit grader swing. (3) **LiteLLM** (51,259 stars, native MCP + A2A, drop-in OpenAI compat, 8ms P95 at 1k RPS) as the recommended self-hosted replacement for the structurally-single-family `<private inference gateway>` proxy; unblocks iter-6 vendor-disjoint validation in v0.0.6+.
 - **Independent skill-behavior confirmation** (arxiv:2606.17819v1, Gorinova et al., 16 Jun 2026 — "A Framework for Evaluating Agentic Skills at Scale"): the largest third-party cross-confirmation of the iter-7 +21.88pp headline to date. 500 real-world skills × 1,000 derived tasks × 19 model configurations (proprietary + open-source), evaluated with instruction-following and goal-completion rubrics. The paper's central finding — **"access to a skill significantly changes model behavior compared to the no-skill setup"** — and the secondary finding that "models vary widely in how closely they adhere to the instructions encoded in skills, leading to substantial differences in their performance gains" both align with our iter-7 total_lift. No specific lift number is given in the abstract (qualitative cross-confirmation, not numerical), but the scale (500 skills, 19 models) and the explicit "skill changes behavior" claim together provide the strongest external support for the qualitative claim that the marketplace plugin produces meaningful agent behavior change.
 - **v0.0.6 release-gate pre-check**: pre-release `marketplace-health` sweep ran clean (HEALTH: pass, validator 0/87 warnings across 31 skills, manifest consistency at 0.0.6, license coverage OK, cross-references OK, docs reflect state). Report at `docs/principled/marketplace-health/2026-06-23.md`. This validates the release against the v0.0.5 release's published 0/82 baseline and the 87-warnings stable floor.
 
@@ -103,25 +148,25 @@ disambiguate the three lifts.
 
 ### iter-6 (vendor-disjoint judge) — COMPLETE, proxy architecture finding
 
-- **Goal:** Rule out same-family bias (Wataoka 2024). CoEval 2026 (arxiv:2606.03650) recommends fully vendor-disjoint judges. iter-4 used heterogeneous judges (sonnet over haiku), which is partial mitigation.
-- **Scope:** 4-eval subset × 3 configs = 12 grading cells with haiku solver + **glm-5.2 judge** (vendor-disjoint from MiniMax-M3 family). Transcripts reused from iter-7 via symlinks.
-- **Outcome:** glm-5.2 returned 503 `circuit_breaker_open: RateLimit` for all 12 grading cells. Every model-based assertion (`followed_8_stage_loop`, `ran_secrets_scan`, `named_specific_findings`, `created_annotated_tag`, `no_force_push_used`, `selected_appropriate_modes`) graded as `unknown=true, points_awarded=0` with `evidence="judge parse error: KeyError('choices')"`. Code-based assertions (consultation, structure-with-compare_args) still graded correctly.
-- **Discovery — proxy architecture:** while debugging the iter-6 failure, we probed the proxy at `http://100.80.231.128:3456/v1/models` and found it is structurally a single-model gateway. The haiku/sonnet/opus tier labels all serve from the same `MiniMax-M3` backend. Every "vendor" alias in the catalog (qwen, llama, gpt-4o, gemini, deepseek, mistral, claude-3*, doubao, kimi, minimax, phi-4, mixtral, command-r, jamba, cerebras, fireworks, deepinfra, nex-agi/nex-n2-pro:free) silently returns MiniMax-M3 in the `model:` field. The only genuinely vendor-disjoint option is `glm-5.2` (Z.AI), and it is rate-limited. Same-family bias is therefore structurally unmitigable on this proxy right now.
-- **Re-purposed as code-only lift decomposition:** the +7.5pp mean across 4 evals (eval-skill +15, sec-audit +15, lint-1 0, release-2 0) is the lift that the marketplace plugin produces on consultation + structure-with-compare_args signals only, with all LLM-judgment slots forced to 0 by the glm-5.2 outage. The +14.4pp gap to iter-7's +21.9pp is the LLM-judgment contribution. The +7.5pp is a **conservative lower bound** on the true total lift under a working vendor-disjoint judge.
-- See [`iteration-6/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-6/REPORT.md).
+- **Goal:** Rule out same-family bias (Wataoka 2024). CoEval 2026 (arxiv:2606.03650) recommends fully vendor-disjoint judges. iter-4 used heterogeneous judges (one tier over another), which is partial mitigation.
+- **Scope:** 4-eval subset × 3 configs = 12 grading cells with the configured solver + **an external judge vendor** (vendor-disjoint from the configured backend family). Transcripts reused from iter-7 via symlinks.
+- **Outcome:** the external judge vendor returned 503 `rate-limited` for all 12 grading cells. Every model-based assertion (`followed_8_stage_loop`, `ran_secrets_scan`, `named_specific_findings`, `created_annotated_tag`, `no_force_push_used`, `selected_appropriate_modes`) graded as `unknown=true, points_awarded=0` with `evidence="judge parse error: KeyError('choices')"`. Code-based assertions (consultation, structure-with-compare_args) still graded correctly.
+- **Discovery — proxy architecture:** while debugging the iter-6 failure, we probed the proxy at `<private inference gateway>` and found it is structurally a single-family gateway. The `<tier-A>`/`<tier-B>`/`<tier-C>` tier labels all serve from the same configured backend. Every "vendor" alias in the catalog (20 vendor aliases) silently returns the same configured backend in the `model:` field. The only genuinely vendor-disjoint option is the external judge vendor alias, and it is rate-limited. Same-family bias is therefore structurally unmitigable on this proxy right now.
+- **Re-purposed as code-only lift decomposition:** the +7.5pp mean across 4 evals (eval-skill +15, sec-audit +15, lint-1 0, release-2 0) is the lift that the marketplace plugin produces on consultation + structure-with-compare_args signals only, with all LLM-judgment slots forced to 0 by the external judge vendor outage. The +14.4pp gap to iter-7's +21.9pp is the LLM-judgment contribution. The +7.5pp is a **conservative lower bound** on the true total lift under a working vendor-disjoint judge.
+- See [`iteration-6/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-6/REPORT.md) (preserved in closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-6/`).
 
 ### iter-5 (N=11 reliability study) — DEFERRED
 
 - **Goal:** Measure the noise floor of single-trial evaluation. Yagubyan 2026 (arxiv:2606.13685) shows N=3 is underpowered (flip rate 31%); N=11 needed for 95% majority-vote recovery.
-- **Status:** designed, deferred. iter-7 already lifts 4/4 with 0 hurts, and the proxy is structurally single-model (no vendor-disjoint judge available), so iter-5 would be a same-family intra-rater noise study, not a vendor-disjoint test. The current grader noise (sec-audit +17.5pp on identical transcript) suggests stddev is in the 5-15pp range; the iter-7 +21.88pp headline is well above that floor and robust to it. Re-evaluate after proxy is fixed or after we get access to a vendor-disjoint judge.
-- See [`iteration-5-6-7-PLAN.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-5-6-7-PLAN.md) § iter-5.
+- **Status:** designed, deferred. iter-7 already lifts 4/4 with 0 hurts, and the proxy is structurally single-family (no vendor-disjoint judge available), so iter-5 would be a same-family intra-rater noise study, not a vendor-disjoint test. The current grader noise (sec-audit +17.5pp on identical transcript) suggests stddev is in the 5-15pp range; the iter-7 +21.88pp headline is well above that floor and robust to it. Re-evaluate after proxy is fixed or after we get access to a vendor-disjoint judge.
+- See [`iteration-5-6-7-PLAN.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-5-6-7-PLAN.md) § iter-5 (preserved in closure archive).
 
 ### Campaign summary
 
 | Iteration | Headline | 0-hurts? | Verdict |
 |-----------|---------:|:--------:|---------|
 | iter-4 (18 evals) | +4.94pp (filesystem_access_lift only — baseline contaminated) | yes | publishable with caveat |
-| iter-6 (4 evals) | +7.5pp (code-only, glm-5.2 503) | yes | code-only lower bound |
+| iter-6 (4 evals) | +7.5pp (code-only, external judge vendor rate-limited) | yes | code-only lower bound |
 | **iter-7 (4 evals, canonical)** | **+21.88pp (total_lift, 4/4 lifts)** | **yes** | **ship** |
 
 iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headline. iter-6 is the conservative lower bound under a broken judge. **The +21.88pp total_lift in iter-7 is the publishable number for v0.0.5.**
@@ -131,7 +176,7 @@ iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headli
 - **Yagubyan 2026** (arxiv:2606.13685, cs.CL, 23 Apr 2026): N=11 trials needed
   for 95% majority-vote recovery; N=3 is underpowered
 - **CoEval 2026** (arxiv:2606.03650, 4 Jun 2026 v2): vendor-disjoint judges;
-  sonnet-on-sonnet was wrong direction
+  same-family judging was wrong direction
 - **Wataoka 2024** (arxiv:2410.21819, NeurIPS 2024 SGAI): GPT-4 self-preference
   via lower-perplexity preference
 - **SkillRouter 2026** (arxiv:2603.22455v4, 1 Apr 2026): 31-44pp routing drop
@@ -144,7 +189,7 @@ iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headli
   — even same-family judging produces only moderate chance-corrected
   agreement (Claude Opus 4.6 κ=0.720 on JudgeBench)
 
-See [`iteration-4/RESEARCH-FINDINGS-iter5-design.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/RESEARCH-FINDINGS-iter5-design.md) for the full synthesis.
+See [`iteration-4/RESEARCH-FINDINGS-iter5-design.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/RESEARCH-FINDINGS-iter5-design.md) for the full synthesis (preserved in closure archive).
 
 ## [0.0.4] — iter-4 correction — 2026-06-23
 
@@ -170,16 +215,17 @@ than the live v0.0.3 working tree (`crafting-skills`, `engineering-mcp`,
 - All 5 iter-4 lifts come from local-meta skills (`marketplace-validator`,
   `marketplace-health`, `releasing-marketplace`) plus well-defined workflow
   skills (`evaluating-skills`, `security`). 8 skills showed 0pp lift,
-  consistent with iter-3.1 H4: haiku in short headless runs tends to act
-  from prior knowledge rather than read skill bodies.
+  consistent with iter-3.1 H4: the configured solver in short headless runs tends
+  to act from prior knowledge rather than read skill bodies.
 - **4/36 runs hit the 300s timeout cap** (lint-2, audit-2, critic with-skill;
   research without-skill). Per the iter-3 grader convention, the grader runs
   on the partial transcript and scores whatever work is present. The
   `research/without_skill` timeout produced 32.5 pts (same as with_skill),
   which masks a potential +32.5 lift in the headline. The lower bound of
   the confidence interval is therefore +1.81pp; the upper bound is +6.75pp.
-- Heterogeneous judge: sonnet over haiku solver. Same-family bias (Wataoka
-  2024) not yet mitigated; iter-6 should re-grade with sonnet-on-sonnet.
+- Heterogeneous judge: one tier over the configured solver. Same-family bias (Wataoka
+  2024) not yet mitigated; iter-6 should re-grade with same-family judging
+  to test the +21.88pp headline.
 - **1 UNKNOWN verdict** emitted (research/with_skill, `surfaced_disagreement`
   assertion, truncated transcript). Treated as FAIL per `evaluating-skills`
   convention. Logged in `iteration-4/unknowns.md`.
@@ -191,14 +237,14 @@ than the live v0.0.3 working tree (`crafting-skills`, `engineering-mcp`,
 - `benchmark.md` — human-readable benchmark summary.
 - `unknowns.md` — UNKNOWN judge verdict log (1 entry: research/with_skill, `surfaced_disagreement`).
 - `runner.log` — 71-minute wall-clock transcript.
-- `PLAN.md` — iter-4 design (Phase A: heterogeneous; Phase B: sonnet-only).
+- `PLAN.md` — iter-4 design (Phase A: heterogeneous; Phase B: same-family judging).
 
 ### Recommended actions
 
 1. **Release v0.0.5 as-is** — no skill changes needed. The iter-7 total_lift = +21.88pp (with 4/4 lifts and 0 hurts) is a strong positive signal. iter-4's +4.94pp is a lower bound; iter-7 confirmed the true lift is materially larger.
 2. **Document the cache workaround** in `AGENTS.md` and `README.md` so other marketplaces avoid the iter-3 trap. Upstream bug unfixed: [Issue #14061](https://github.com/anthropics/claude-code/issues/14061) (open since 2025-12-15, 3 duplicates).
 3. **iter-5 (DEFERRED)** — N=11 reliability study is no longer ship-blocker. iter-7's +21.88pp total_lift is well above the observed grader noise floor (sec-audit +17.5pp swing on identical transcript). Re-evaluate if grader noise becomes a concern.
-4. **iter-6 (COMPLETE with caveat)** — vendor-disjoint validation is structurally blocked on this proxy. See `iteration-6/REPORT.md` for the proxy architecture finding. Re-run iter-6 if/when the proxy gets a working non-MiniMax-M3 judge available.
+4. **iter-6 (COMPLETE with caveat)** — vendor-disjoint validation is structurally blocked on this proxy. See `iteration-6/REPORT.md` for the proxy architecture finding (preserved in closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/iteration-6/REPORT.md`). Re-run iter-6 if/when the proxy gets a working non-configured-backend judge available.
 5. **iter-7 (COMPLETE)** — true no-plugin baseline achieved via `--disable-slash-commands`. Total lift = +21.88pp, 4/4 evals lift, 0 hurts. **Canonical citation for v0.0.5.**
 
 ## [0.0.3] — 2026-06-23
@@ -220,7 +266,7 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
   - `DISCOVERY-INVESTIGATION.md` — re-evaluates the 2 skill rewrites: KEEP both (they improve routing clarity) but don't expect them to fix Bucket A neutrals — they target the wrong root cause.
   - `iteration-3-design.md` — synthesizes 6 reference frameworks (SkillsBench arXiv 2602.12670v4, Gorinova 2026 arXiv 2606.17819v1, tau-bench, Lee et al. ICML 2026 bias-adjusted estimator, Khullar 2026 self-attribution, Anthropic/Microsoft skill best practices) into the iter-3 design.
   - `INDEX.md` (new) — top-level discovery surface for the eval set; 4 iterations summarized.
-- **Iter-3.1 per-skill `--add-dir` experiment** (`docs/.../iteration-3.1/`): tests whether Bucket A3 discovery failures are caused by (H1) plugin shadowing, (H2) description surfaces, or (H3) choice paralysis. 5 evals × 3 configs = 15 runs. **9 of 15 completed** before the background script terminated; 6 timed out at 180s/run. Verdict: H1 confirmed for `craft-create` (agent picked `superpowers:writing-skills`); H2 confirmed for `craft-review` (agent picked wrong marketplace skill); H3 not dominant; **bonus H4** — in 6 of 9 runs the agent invoked zero skills (routing-heuristic failure upstream of marketplace configuration). **Critical caveat**: the iter-3 plugin cache is stale (v2.0.0 from 2026-06-21); iter-4 must refresh the cache before re-running.
+- **Iter-3.1 per-skill `--add-dir` experiment** (`docs/.../iteration-3.1/`): tests whether Bucket A3 discovery failures are caused by (H1) plugin shadowing, (H2) description surfaces, or (H3) choice paralysis. 5 evals × 3 configs = 15 runs. **9 of 15 completed** before the background script terminated; 6 timed out at 180s/run. Verdict: H1 confirmed for `craft-create` (agent picked a competing marketplace's `writing-skills`); H2 confirmed for `craft-review` (agent picked wrong marketplace skill); H3 not dominant; **bonus H4** — in 6 of 9 runs the agent invoked zero skills (routing-heuristic failure upstream of marketplace configuration). **Critical caveat**: the iter-3 plugin cache is stale (v2.0.0 from 2026-06-21); iter-4 must refresh the cache before re-running.
 
 ### Fixed
 
@@ -235,8 +281,8 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
 ### Verified
 
 - `marketplace-health`: **HEALTH: pass** (validator 0/87 warnings across 31 skills; manifest consistency at 0.0.3; license coverage OK; cross-references OK; docs reflect state — README says 31, CHANGELOG latest = 0.0.3, INDEX.md lists 4 iterations).
-- **Behavior eval (iter-3 corrected)**: 17 evals × {with, without}-skill = 34 runs on haiku solver (matches marketplace consumer base). Mean delta **+8.69pp** vs without-skill baseline; 6 lifts / 11 neutrals / **0 hurts**. Lifts: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp, `release-1` +15pp, `eval-skill` +15pp. Bucket A neutrals (8) split A1/A2/A3 per BUCKET-A-INSPECTION; A3 most likely caused by H1 plugin shadowing, to be confirmed by iter-3.1. **SUPERSEDED by iter-4** (cache contamination inflated the +8.69pp by ≈3.75pp; corrected headline is +4.94pp).
-- **Behavior eval (iter-4 — canonical)**: 18 evals × {with, without}-skill = 36 runs on haiku solver with fresh v0.0.3 cache. Mean delta **+4.94pp** vs without-skill baseline; 5 lifts / 13 neutrals / **0 hurts**. Lifts: `sec-audit` +17.5pp, `eval-skill` +15pp, `release-2` +15pp, `lint-1` +25pp, `audit-1` +16.5pp. **Lift mechanism split:** 2 consultation-driven (eval-skill, sec-audit — agent read/invoked SKILL.md), 3 file-access-driven (lint-1, audit-1, release-2 — agent ran the skill's colocated scripts via filesystem glob). Consultation-driven lower bound: +1.81pp. Upper bound if research/without_skill timeout had auto-zeroed: +6.75pp. See [`iteration-4/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/REPORT.md).
+- **Behavior eval (iter-3 corrected)**: 17 evals × {with, without}-skill = 34 runs on the configured solver (matches marketplace consumer base). Mean delta **+8.69pp** vs without-skill baseline; 6 lifts / 11 neutrals / **0 hurts**. Lifts: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp, `release-1` +15pp, `eval-skill` +15pp. Bucket A neutrals (8) split A1/A2/A3 per BUCKET-A-INSPECTION; A3 most likely caused by H1 plugin shadowing, to be confirmed by iter-3.1. **SUPERSEDED by iter-4** (cache contamination inflated the +8.69pp by ≈3.75pp; corrected headline is +4.94pp).
+- **Behavior eval (iter-4 — canonical)**: 18 evals × {with, without}-skill = 36 runs on the configured solver with fresh v0.0.3 cache. Mean delta **+4.94pp** vs without-skill baseline; 5 lifts / 13 neutrals / **0 hurts**. Lifts: `sec-audit` +17.5pp, `eval-skill` +15pp, `release-2` +15pp, `lint-1` +25pp, `audit-1` +16.5pp. **Lift mechanism split:** 2 consultation-driven (eval-skill, sec-audit — agent read/invoked SKILL.md), 3 file-access-driven (lint-1, audit-1, release-2 — agent ran the skill's colocated scripts via filesystem glob). Consultation-driven lower bound: +1.81pp. Upper bound if research/without_skill timeout had auto-zeroed: +6.75pp. See [`iteration-4/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/REPORT.md) (preserved in closure archive).
 - **Methodology note** (`docs/.../methodology-note-routing-vs-validator.md`): distinguishes this as a behavioral eval (measuring agent routing behavior against graded assertion sets) not a static validator run.
 
 ### Known follow-up work
@@ -244,7 +290,7 @@ Behavior-eval-validated router improvements + corrected eval pipeline. No new sk
 - iter-3.1 experiment in flight; commit `iteration-3.1/RESULTS.md` when complete.
 - Re-run A1 evals (plan-multi, task-small) on clean proxy to get discovery-failure verdicts.
 - Multi-trial N=3 reliability study for the 7 single-sample skills and 3 Bucket B neutrals.
-- Re-run the 6 lifts with `--judge-model sonnet` for same-family bias mitigation (Wataoka 2024).
+- Re-run the 6 lifts with `--judge-model <tier-A-alias>` for same-family bias mitigation (Wataoka 2024).
 
 ## [0.0.2] — 2026-06-22
 

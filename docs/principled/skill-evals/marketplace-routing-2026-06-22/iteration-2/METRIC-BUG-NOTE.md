@@ -68,3 +68,15 @@ Two changes:
 - Document (this file) — done.
 - Don't fix iter-2 mid-run (would waste 3/18 progress).
 - Iter-3 fix lands when `iteration-3-design.md` is implemented.
+
+## Real-world example: audit-2 with-skill regression
+
+A live signal from the iter-2 sweep itself (eval-audit-2, expected=marketplace-health, utterance="is the marketplace healthy, check for drift"):
+
+- **with-skill**: 50 events, 244s. The agent went on a tangent reading the eval infrastructure (`run_iteration_2.py`, `evals.json`, `benchmark.json`, the `API-OVERLOAD-INCIDENT.md` from the prior failed iter-2 attempt). Its final response was about the eval itself, not the marketplace health. **It never ran `python3 .agents/skills/marketplace-health/scripts/health.py`.** The user asked for a health check and got meta-commentary about the eval pipeline.
+
+- **without-skill**: 10 events, 19s. The agent gave a short answer based on its training-data priors about marketplaces (no actual check performed either, but at least it didn't mislead the user).
+
+Both runs reported `material_difference: false` (zero reads after the broken filter). **This is exactly the kind of behavioral regression that read-counting cannot detect.** An assertion-based grader would mark both runs as FAIL on the `consultation` assertion (no marketplace-health skill invoked) and FAIL on the `goal_completion` assertion (no actual health check performed), with the `material_difference` becoming `pass_rate: 0/2 vs 0/2` — still equivalent, but at least the assertions would show that the agent didn't do the work.
+
+This is the strongest argument for iter-3's assertion-based grading: read-counting rewards activity, not correctness.

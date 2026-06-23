@@ -129,6 +129,9 @@ The fix is not in the skill descriptions — it's in the agent's general routing
 - Settings (skill scopes): <https://code.claude.com/docs/en/settings>
 - Plugin marketplaces: <https://code.claude.com/docs/en/plugin-marketplaces>
 - Model-Harness-Fit (Bustamante 2026): <https://www.nicolasbustamante.com/blog/model-harness-fit> — independent analysis of how harness conventions become part of the model's behavior
+- **SkillRouter (Zheng et al. 2026, [arxiv 2603.22455](https://arxiv.org/abs/2603.22455))**: at 80K-skill scale, hiding the skill body causes a 31-44pp drop in routing accuracy. Validates iter-3.1 H4 (descriptions alone are insufficient for routing). SkillRouter's solution is a 1.2B retrieve-and-rerank pipeline that uses full skill text. Our iter-4 measures the description-only routing regime that SkillRouter identifies as the bottleneck.
+- **Agent Skills Survey (Du et al. 2026, [arxiv 2605.07358](https://arxiv.org/abs/2605.07358))**: 4-stage lifecycle (representation, acquisition, **retrieval**, evolution). Frames our iter-4 as measuring the retrieval stage.
+- **Skill Evaluation Survey (Ding et al. 2026, [arxiv 2606.11435](https://arxiv.org/abs/2606.11435))**: 6 benchmark categories for skill evaluation, 4 evolution paradigms. Identifies structural gaps in benchmark coverage.
 
 ## Plugin cache is stale — additional v1.2 finding (2026-06-23)
 
@@ -156,6 +159,7 @@ The eval harness should add a cache-refresh step before each run, or install the
 
 ## Changelog
 
+- **v1.3 (2026-06-23)**: web research confirmed upstream cache invalidation bug remains unfixed as of Claude Code 2.1.186 (2026-06-22). Issue [#14061](https://github.com/anthropics/claude-code/issues/14061) open since 2025-12-15, last updated 2026-05-26 with 23 comments; three duplicate issues (#15621, #17361, #28492). [DEV Community article](https://dev.to/wkusnierczyk/claude-code-plugin-cache-1dn) (2026-02-25) documents the same `rm -rf ~/.claude/plugins/cache/{plugin}/` workaround. 2.1.186 added `display-name`, `default-enabled`, `fallback`, and `metadata.*` frontmatter keys for display aliasing — these do NOT trigger cache rebuild. Two recent arxiv surveys frame skill routing as the "retrieval" stage of the agent skill lifecycle: Du et al. 2026 ([arxiv 2605.07358](https://arxiv.org/abs/2605.07358)) proposes a 4-stage lifecycle (representation, acquisition, retrieval, evolution); Ding et al. 2026 ([arxiv 2606.11435](https://arxiv.org/abs/2606.11435)) categorizes skill evaluation into 6 benchmark categories. Our iter-4 measures the retrieval stage specifically.
 - **v1.2 (2026-06-23)**: identified stale plugin cache (`v2.0.0` from 2026-06-21) as the source of mismatched slash_commands. iter-3 and iter-3.1 results reflect v2.0.0 marketplace behavior, not v0.0.3. Cache refresh required for iter-4.
 - **v1.1 (2026-06-23)**: corrected after iter-3.1 partial transcript inspection. H1 (plugin shadowing) IS active because all installed plugins load into slash_commands globally. Without_skill baseline is contaminated — it has the same slash_commands as with_skill. iter-3 measures marginal lift of Read-driven discovery given listing-driven discovery is already in scope.
 - **v1 (2026-06-23)**: initial draft. Incorrectly claimed H1 was N/A.

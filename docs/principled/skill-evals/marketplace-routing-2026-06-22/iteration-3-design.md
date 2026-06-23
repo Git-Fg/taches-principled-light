@@ -59,7 +59,7 @@ Note: `instruction_following` assertions sum to 30 + 40 + 30 = **100**. `goal_co
 Tessl rules (apply directly to our schema):
 
 - **`points` sum to 100 per category** — `instruction_following` and `goal_completion` are scored independently, each on a 0–100 scale.
-- **Each assertion is one of 4 types** — `consultation` (did the agent read/invoke the right skill?), `compliance` (did the agent follow the skill's specific guidance?), `structure` (does the output have the right structural form?), `quality` (qualitative judgment — typically requires LLM-as-judge).
+- **Each assertion is one of 4 types** — `consultation` (did the agent read/invoke the right skill?), `compliance` (did the agent follow the skill's specific guidance?), `structure` (does the output have the right structural form?), `quality` (qualitative judgment — typically requires LLM-as-judge). The 4-type taxonomy is **our extension** of Tessl's 2-axis IF/GC split (Tessl itself uses natural-language assertions scored 1–10 per dimension, without naming type variants). The 4 types map to Anthropic's "triggering / functional / comparison" testing areas and to grader type recommendations (consultation/structure = code-based; compliance/quality = model-based).
 - **`category` is one of `instruction_following` or `goal_completion`** — Tessl's two-axis split. Per Tessl Table 4, `instruction_following` is the discriminating metric for skill lift (5.5–22 point delta on the overall score, driven primarily by IF); `goal_completion` saturates near 90% for almost all models.
 - **Assertions are hidden from the solver agent** and used only by the judge agent.
 
@@ -133,13 +133,14 @@ For each eval, computes (per Tessl's with-skill vs without-skill methodology and
 - `overall_delta` = weighted average delta (Tessl uses equal weighting; we may choose instruction-following-heavy for workflow-encoding skills)
 
 And classifies each eval as one of:
-- `skill_lifts_quality` (overall_delta > 5 points per Tessl Table 4 norms; with-skill substantially better)
+
+- `skill_lifts_quality` (overall_delta > 5 points per Tessl Table 4 norms; with-skill substantially better). The 5-point threshold is borrowed from our marketplace's own `material_difference` rule in `skills/evaluating-skills/references/behavioral-review.md:73` (≥2 points on ≥2 dimensions OR ≥1.5 on the mean — the 5pp rule is the simpler single-number version used here for clarity). Alternative: use the median `Overall Δ` across all 18 evals as the threshold.
 - `skill_neutral` (|overall_delta| ≤ 5 points, similar)
 - `skill_hurts` (overall_delta < -5 points, with-skill worse)
 - `skill_redundant` (instruction_following_delta ≈ 0; the model already captures the skill's behavior — per Tessl "Implications for skill authors": "the skill can be removed")
 - `inconclusive` (transcript truncated, sample too small, etc.)
 
-Per Tessl Table 4 (with-skill vs without-skill on real skills across 19 models), the typical delta is **5.5–22 points** on the overall score, driven primarily by `instruction_following`. `goal_completion` deltas are smaller and saturate near 90% for frontier models.
+Per Tessl Table 4 (with-skill vs without-skill across 19 model-harness configurations), the typical delta is **5.5–22 points on the overall score** (e.g., +19.7 for Haiku 4.5, +25.7 for the highest config GLM 5.1 OpenHands), driven primarily by `instruction_following` (Tessl §5.1: *"driven primarily by the instruction-following component"*). The same range applied to IF-only deltas (e.g., Haiku's +31.7 IF delta sits above the 5.5–22 range, indicating Haiku is an unusually strong IF responder). `goal_completion` deltas are smaller (+7.7 for Haiku 4.5) and saturate near 90% for frontier models.
 
 ### 4. Analyzer
 
@@ -151,13 +152,18 @@ Aggregates across all evals. Computes:
 - **Failure pattern clustering** (which assertion `text` patterns fail most often?)
 - **Recommended description edits** (for any eval where delta < 0)
 
-Per Tessl Table 5, the uplift varies dramatically by skill domain:
-- **Media & File Processing: +38.1** (highest — skills encode strict workflows)
-- **Security & Compliance: +30.3**
-- **Testing, QA & Code Quality: +16.7** (lowest — skills describe principles not procedures)
-- **API Development & Integration: +25.9**
+Tessl Table 5's full domain list (not just the 4 cherry-picked rows in the earlier draft — the doc now carries all domains for transparency):
 
-Heuristic from Tessl: "when knowledge can be captured as a workflow, it is a strong candidate for a skill." Marketplace skills that fit this pattern (pdf-design-guide, releasing-marketplace, ingesting-skills, marketplace-validator, marketplace-health, security) should expect **+20–35 point uplift** in iter-3. Methodology-heavy skills (crafting-skills, evaluating-skills, general-critic) may show smaller uplift because they encode principles rather than procedures.
+| Tessl domain | Uplift |
+|---|---|
+| Media & File Processing | +38.1 |
+| Productivity & Communication | +32.5 |
+| Security & Compliance | +30.3 |
+| Content & Documentation | +30.3 |
+| Scientific & Domain Computing | +17.0 |
+| Testing, QA & Code Quality | +16.7 |
+
+Anthropic's 3 categories (Document & Asset Creation / Workflow Automation / MCP Enhancement) **do not map cleanly** to Tessl's domains — they are different axes. Our marketplace spans all 3 Anthropic categories; predicted lift is best characterized by Tessl's domain data above. The most analogous mappings: `pdf-design-guide` + design-hub ≈ Media & File Processing (+38); `crafting-skills` + `plan-lifecycle` + `task-lifecycle` ≈ Workflow Automation (no direct equivalent in Tessl Table 5; closest is Productivity & Communication at +32.5); `rust` + `security` + `engineering-mcp` ≈ Security & Compliance or Scientific & Domain Computing. Predicted lift for our marketplace: **+15 to +38 points** depending on which skill.
 
 Per Anthropic's pattern, also surface patterns the aggregate stats might hide: assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
 
@@ -230,7 +236,19 @@ With default `weight = {"instruction_following": 1.0, "goal_completion": 1.0}` a
 
 ### `compare_args` pattern (specification match, not verbatim)
 
+The design document presents three schema forms for assertions. Their canonical resolution:
+
+| Form | Source | When used | Status |
+|---|---|---|---|
+| **YAML** (`task.graders[]` with `deterministic_tests`/`llm_rubric`/`state_check` entries) | Anthropic Demystifying Evals | Human authoring of new evals | Authoring format |
+| **JSON** (`assertions[]` flat list with `points` + `category` + `type`) | Tessl rubric schema | Runtime harness input | **Canonical runtime format** |
+| **Pydantic** (`EvaluationCriteria` with `Assertion` and `reward_basis`) | tau-bench `EvaluationCriteria` | Type-checked authoring tool input | Validation layer |
+
+The hand-authored YAML is converted to the JSON form (with assertions summing to 100 per category) before iter-3 runs. The Pydantic model validates the JSON at load time and is the source of truth for what the grader.py harness consumes. Anthropic's flat `evals[].expectations[]` schema (per `skills/evaluating-skills/references/schemas.md:11-27`) is a *legacy* format for routing-test results; iter-3 does not use it.
+
 Tau-bench's `Action.compare_with_tool_call` only checks the args in `compare_args[]`, ignoring others. Iter-3 adopts this for `structure` assertions on tool calls: a skill that says "call `release_marketplace(version='0.0.2')`" can be checked with `compare_args=['version']` — the agent's exact tool name spelling or other args don't matter. This is the "grade the outcome, not the path" principle from Anthropic applied to specific-arg inspection.
+
+**How the grader uses `compare_args`**: the grader's structure-check code parses the agent's transcript for `Bash` tool calls (or `Skill` invocations), extracts the args the agent passed, and verifies only the keys listed in `compare_args` match the assertion's expected values. For example, if the assertion is `compare_args=['version']` and the agent calls `release_marketplace(version='0.0.2', dry_run=true)`, the check passes because `version` matches; `dry_run` is ignored. If `compare_args` is None, **all** args are checked (strict verbatim match — only use when the skill dictates exact arg shape).
 
 ### LLM-as-judge prompt (synthesized from tau-bench + Anthropic)
 
@@ -262,13 +280,13 @@ The model is fixed (Haiku 4.5, same chain as the solver) per Tessl's "fixed judg
 
 ## SkillsBench: the canonical reference for skill evaluation
 
-[SkillsBench](https://skillsbench.ai) (paper arXiv [2602.12670](https://arxiv.org/abs/2602.12670), v1.2, June 2026) is the first published benchmark measuring how well AI agents use skills. It is **direct prior art** for iter-3 and we should treat its task-package format, verifier design, and lift numbers as the canonical reference.
+[SkillsBench](https://skillsbench.ai) (paper arXiv [2602.12670v4](https://arxiv.org/abs/2602.12670v4), June 2026) is the first published benchmark measuring how well AI agents use skills. It is **direct prior art** for iter-3 and we should treat its task-package format, verifier design, and lift numbers as the canonical reference. The current public release is v4 of the paper (latest revision 14 June 2026); the benchmark version on the website is `skillsbench@1.1` (87 tasks, 8 domains).
 
 ### Headline numbers (SkillsBench v1.1, 87 tasks, 8 domains)
 
-- **Aggregate lift**: 33.9% → 50.5% with curated skills (+16.6 pp; +25.5% normalized gain)
-- **Per-config range**: +4.1 to +25.7 pp across 18 model-harness configs
-- **Haiku 4.5 Claude Code**: 8.8% → 30.1% with skills (Δ +21.3 pp; +23.4% normalized)
+- **Aggregate lift**: 33.9% → 50.5% with curated skills (+16.6 pp; **+25.5% normalized gain** = `Δ / (100 − baseline) = 16.6 / (100 − 33.9) ≈ 25.5%`)
+- **Per-config range**: +4.1 to +25.7 pp across **18 model-harness configurations** (not 18 distinct models — some configs reuse the same model under different harnesses, e.g., Haiku 4.5 in Claude Code vs OpenHands)
+- **Haiku 4.5 Claude Code**: 8.8% → 30.1% with skills (Δ +21.3 pp; +23.4% normalized = `21.3 / (100 − 8.8) ≈ 23.4%`)
 
 This is our target configuration. If our 18 marketplace evals are well-calibrated, we should expect similar lift when an agent consults the right skill vs doesn't. Lift below +10 pp would be a red flag — either the skills are too weak, or the evals are too easy.
 
@@ -377,7 +395,7 @@ Specific anti-patterns (SkillsBench rejects PRs that have these):
 1. **Focused skills (≤3 modules) outperform larger bundles.** Our design-hub with 5 sub-skills is in the "borderline" zone; we should monitor whether the hub routing + subskills combo outperforms a flat skill with all 5 modules.
 2. **Smaller models with skills can match larger models without them.** On SkillsBench, Haiku 4.5 with skills ≈ Sonnet 4.5 without skills on several domains. This validates the value of skills as model-level leverage.
 3. **8 controlled categories** (office-white-collar, software-eng, scientific, infrastructure, multimodal, research, finance, robotics). Our existing evals are already classified; no retrofit needed.
-4. **3 trials per task** for confidence intervals. Our iter-3 should consider this — current iter-2/3 design is single-trial per (eval, config), which gives noisier lift estimates.
+4. **3 trials per task** for confidence intervals. SkillsBench's 3-trial methodology enables confidence intervals and pass^k statistics. **Iter-3 design conflict**: our current plan is single-trial per `(eval, config)`, which means the published `benchmark.json` from evaluating-skills schemas expects `mean ± stddev`, which is undefined for N=1. **Decision (deferred)**: run iter-3 with N=1 first to establish baseline; upgrade to N=3 in a follow-up iter-3.1 if the noise dominates the signal. For iter-3 N=1, all lift claims should be qualified with "single-trial; needs replication."
 
 ### Comparison: iter-3 vs SkillsBench
 
@@ -431,6 +449,18 @@ For each marketplace skill, the iteration signals are:
 - **Execution issues** (inconsistent results, errors): `compliance` assertion fails randomly across trials. Solution: improve SKILL.md body, add error handling.
 
 Iter-3 per-eval results can be classified by these three signals to produce actionable description/skill edits.
+
+## Schema reconciliation: which form is canonical?
+
+The design document presents three schema forms for assertions. Their canonical resolution:
+
+| Form | Source | When used | Status |
+|---|---|---|---|
+| **YAML** (`task.graders[]` with `deterministic_tests` / `llm_rubric` / `state_check` entries) | Anthropic Demystying Evals | Human authoring of new evals | Authoring format |
+| **JSON** (`assertions[]` flat list with `points` + `category` + `type`) | Tessl rubric schema | Runtime harness input | **Canonical runtime format** |
+| **Pydantic** (`EvaluationCriteria` with `Assertion` and `reward_basis`) | tau-bench `EvaluationCriteria` | Type-checked authoring tool input | Validation layer |
+
+Hand-authored YAML is converted to the JSON form (with assertions summing to 100 per category) before iter-3 runs. The Pydantic model validates the JSON at load time and is the source of truth for what `grader.py` consumes. Anthropic's flat `evals[].expectations[]` schema (per `skills/evaluating-skills/references/schemas.md:11-27`) is a *legacy* format for routing-test results; iter-3 does not use it.
 
 ## See also
 

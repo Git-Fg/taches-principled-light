@@ -52,10 +52,12 @@ sits on top of it.
 
 ```bash
 # 1. One-time capture phase: point mcp-assert at the REAL secret_detection
-#    MCP server and snapshot the responses. The default snapshot file
-#    location is <suite-dir>/fixtures/<suite-name>.json; --update writes
-#    (or overwrites) that file. Replace <secret-detection-server-cmd>
-#    with the actual command that launches the real server.
+#    MCP server and snapshot the responses. --update writes (or overwrites)
+#    the golden snapshot file; see mcp-assert docs for the default file
+#    location (the pytest config shows the convention is a `fixtures/`
+#    directory under the suite, but the CLI may use a different default).
+#    Replace <secret-detection-server-cmd> with the actual command that
+#    launches the real server.
 mcp-assert snapshot --suite evals/secret-detection/ \
   --server "<secret-detection-server-cmd>" \
   --update

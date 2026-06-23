@@ -6,7 +6,7 @@ The marketplace has one hub-and-spokes pattern: `skills/design-hub/SKILL.md` (hu
 
 ## Answer (TL;DR)
 
-The current design **already is** optimally compatible with the [Agent Skills open standard](https://agentskills.io/) (agentskills.io, supported by 27+ AI agents including Claude Code, Cursor, Codex, Gemini CLI, VS Code Copilot). The hub+subskills pattern is a routing aid, not a syntactic requirement — each subskill is a self-contained skill from the agent's perspective.
+The current design **already is** optimally compatible with the [Agent Skills open standard](https://agentskills.io/) (agentskills.io, supported by 27+ AI agents including Claude Code, Cursor, Codex, Gemini CLI, VS Code). The hub+subskills pattern is a routing aid, not a syntactic requirement — each subskill is a self-contained skill from the agent's perspective.
 
 ## Why this works
 
@@ -16,7 +16,7 @@ Per the Agent Skills standard:
 
 The standard defines a **folder structure**, not a routing hierarchy. From the agent's discovery perspective:
 
-1. **At startup, the agent scans all `SKILL.md` files** (recursive by default in Claude Code, Gemini CLI, Cursor, Codex, VS Code Copilot, etc., per the standard).
+1. **At startup, the agent scans all `SKILL.md` files** (recursive by default in Claude Code, Gemini CLI, Cursor, Codex, VS Code, etc., per the standard).
 2. **The agent reads each skill's frontmatter** (`name` + `description`) into a discoverable index.
 3. **The agent decides which skill to invoke** based on natural-language matching of the user's request against the descriptions.
 
@@ -29,7 +29,7 @@ In our marketplace:
 | `skills/design-hub/typography-guide/SKILL.md` | Skill `typography-guide`, description: "Apply professional typography — font pairing, type scale..." |
 | ... 3 more subskills | ... |
 
-**All 6 skills (1 hub + 5 subskills) are independently discoverable.** An agent doesn't need to "navigate" the hub to find a subskill. If the user asks "what color should this be?", the agent matches against the descriptions and likely picks `pdf-design-guide` directly. If the user says "I need design help", the agent matches `design-hub` and the hub body says "for palette, read `pdf-design-guide`" — at which point the agent reads the subskill.
+All 6 skills (1 hub + 5 subskills) are independently discoverable. An agent doesn't need to "navigate" the hub to find a subskill. If the user asks "what color should this be?", the agent matches against the descriptions and likely picks `pdf-design-guide` directly. If the user says "I need design help", the agent matches `design-hub` and the hub body says "for palette, read `pdf-design-guide`" — at which point the agent reads the subskill.
 
 ## Why this is BETTER than a flat structure
 
@@ -76,11 +76,12 @@ What we should NOT add: a flat mirror directory at the top level (e.g., `skills/
 - [Agent Skills open standard](https://agentskills.io/) — folder structure, progressive disclosure, 27+ agent support
 - [Claude Code skills docs](https://code.claude.com/docs/en/skills) — `Automatic discovery from parent and nested directories`
 - [Claude Agent Skills: A First Principles Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/) — prompt-based meta-tool architecture; "There is no algorithmic skill selection or AI-powered intent detection at the code level"
-- [SKILL.md: The Agent Skills Format](https://www.mdskills.ai/specs/skill-md) — schema and client compatibility list
+- [SKILL.md: The Agent Skills Format](https://www.mdskills.ai/specs/skill-md) — schema and client compatibility list (cited as "27+ AI agents including Claude Code, Cursor, Codex, Gemini CLI, and VS Code")
 - [Agent Skills: The Open Standard for AI Capabilities](https://inference.sh/blog/skills/agent-skills-overview) — "skills.sh lists compatibility with Claude Code, Cursor, ... agentskills/agentskills welcomes input from platform vendors"
+- [agentskills.io Client Showcase](https://agentskills.io/clients) — canonical list of compatible agents; names use the vendor's product naming (e.g. "VS Code" not "VS Code Copilot")
 
-## Action items (small)
+## Action items
 
-1. Add a "Hub contract" paragraph to `skills/design-hub/SKILL.md` clarifying the hub-as-router design.
-2. Optionally add a `references/leaves.md` file listing every subskill with its description and path, for agents that prefer a flat reference over the body-internal Routing Table.
+1. ✅ **DONE in commit `baf4367`**: Add a "Hub Contract" paragraph to `skills/design-hub/SKILL.md` clarifying the hub-as-router design.
+2. Optional: add a `references/leaves.md` file listing every subskill with its description and path, for agents that prefer a flat reference over the body-internal Routing Table.
 3. Verify the existing `evaluating-skills` skill follows the same pattern (it has no subskills currently — confirm it stays flat).

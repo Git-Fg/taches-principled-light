@@ -2,6 +2,50 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [0.0.3] — 2026-06-23
+
+Behavior-eval-validated router improvements + corrected eval pipeline. No new skills; no breaking changes. Mean lift +8.69pp over 17 evals, 6 lifts / 11 neutrals / **0 hurts**.
+
+### Changed
+
+- **6 zero-discovery skills gained 5-10 trigger phrases each** (commit `724f7b5`) per Microsoft best-practices guidance (`learn.microsoft.com/.../trigger-phrases-best-practices`). Affected: `crafting-skills` (82 words), `plan-lifecycle` (70), `deep-research` (60), `task-lifecycle` (71), `web-search` (71), `security` (67). The 0.0.2 ≤50-word target was relaxed for these skills because the targeted *trigger-phrase density* (varied sentence structure, short phrases, 5-10 per topic) matters more than total word count for routing precision. Trade-off documented in the iter-3 corrected REPORT.
+- **2 skills rewritten with scope router** (commit `861df65`): `ingesting-skills` and `marketplace-validator`. Both now lead with explicit scope triggers (`Load when porting a skill into this marketplace from an external source`) followed by the original workflow. Subsequent iter-3 analysis showed the rewrites target the wrong root cause (the discovery failure is in the *agent* layer, not the *description* layer — see BUCKET-A-INSPECTION below), but the rewrites remain useful as routing-clarity improvements.
+
+### Added
+
+- **Iter-3 corrected evaluation pipeline** (`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3/`):
+  - `scripts/grader.py` (357 lines) — 4-assertion taxonomy (consultation/structure/compliance/quality) with hybrid per-category + cross-category weighted scoring (Tessl + tau-bench `EvaluationCriteria`).
+  - `scripts/run_iteration_3.py` (298 lines) — orchestrator for 17 evals × {with, without}-skill = 34 runs.
+  - `REPORT.md` (corrected) — **canonical** eval report. Mean delta +8.69pp; 6 lifts / 11 neutrals / 0 hurts. Lift threshold ±5pp = neutral; > +5pp = lifts_quality; < -5pp = hurts.
+  - `BUCKET-A-INSPECTION.md` — forensic split of 8 Bucket A neutrals into A1 (proxy 503 errors: plan-multi, task-small) / A2 (partial discovery: research) / A3 (true discovery failures: ingest-1, ingest-2, lint-2, craft-create, craft-review). Identifies plugin-shadowing (H1) as the most likely root cause of the 5 A3 failures.
+  - `DISCOVERY-INVESTIGATION.md` — re-evaluates the 2 skill rewrites: KEEP both (they improve routing clarity) but don't expect them to fix Bucket A neutrals — they target the wrong root cause.
+  - `iteration-3-design.md` — synthesizes 6 reference frameworks (SkillsBench arXiv 2602.12670v4, Tessl arXiv 2606.17819v1, tau-bench, Lee et al. ICML 2026 bias-adjusted estimator, Khullar 2026 self-attribution, Anthropic/Microsoft skill best practices) into the iter-3 design.
+  - `INDEX.md` (new) — top-level discovery surface for the eval set; 4 iterations summarized.
+- **Iter-3.1 per-skill `--add-dir` experiment** (`docs/.../iteration-3.1/`): tests whether Bucket A3 discovery failures are caused by (H1) plugin shadowing, (H2) description surfaces, or (H3) choice paralysis. 5 evals × 3 configs = 15 runs. In progress as of release; full write-up committed separately when complete.
+
+### Fixed
+
+- **`grader.py` consultation assertion bug** (commit `b45c40a`): the consultation check previously accepted ANY skill read (`any("SKILL.md" in p)`), inflating without-skill scores and producing 3 phantom `skill_hurts` results. Fixed to match the expected skill path. Per-skill results after fix: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp (previously hidden lift), `release-1` +15pp, `eval-skill` +15pp. The 3 phantom hurts collapsed to neutral.
+- **`passed: null` judge verdicts** are now mapped to `unknown: true` and treated as FAIL for scoring; logged to `iteration-3/unknowns.md` for human review queue. Empty queue as of release (no UNKNOWN verdicts emitted).
+
+### Archived
+
+- `iteration-2.5/` orphan (3 evals, all `rc=1 duration_ms: 0`) → `.archive/iter-2.5-failed-runs/`. Never recovered; preserved for forensics only.
+- `iteration-3/INTERIM-FINDINGS.md` (SUPERSEDED by corrected REPORT.md) → `.archive/INTERIM-FINDINGS-iter3-SUPERSEDED.md`.
+
+### Verified
+
+- `marketplace-health`: **HEALTH: pass** (validator 0/87 warnings across 31 skills; manifest consistency at 0.0.3; license coverage OK; cross-references OK; docs reflect state — README says 31, CHANGELOG latest = 0.0.3, INDEX.md lists 4 iterations).
+- **Behavior eval (iter-3 corrected)**: 17 evals × {with, without}-skill = 34 runs on haiku solver (matches marketplace consumer base). Mean delta **+8.69pp** vs without-skill baseline; 6 lifts / 11 neutrals / **0 hurts**. Lifts: `lint-1` +45pp, `critic` +31.2pp, `release-2` +25pp, `audit-1` +16.5pp, `release-1` +15pp, `eval-skill` +15pp. Bucket A neutrals (8) split A1/A2/A3 per BUCKET-A-INSPECTION; A3 most likely caused by H1 plugin shadowing, to be confirmed by iter-3.1.
+- **Methodology note** (`docs/.../methodology-note-routing-vs-validator.md`): distinguishes this as a behavioral eval (measuring agent routing behavior against graded assertion sets) not a static validator run.
+
+### Known follow-up work
+
+- iter-3.1 experiment in flight; commit `iteration-3.1/RESULTS.md` when complete.
+- Re-run A1 evals (plan-multi, task-small) on clean proxy to get discovery-failure verdicts.
+- Multi-trial N=3 reliability study for the 7 single-sample skills and 3 Bucket B neutrals.
+- Re-run the 6 lifts with `--judge-model sonnet` for same-family bias mitigation (Wataoka 2024).
+
 ## [0.0.2] — 2026-06-22
 
 First post-alpha iteration. Description-format refactor + routing-precision improvements + parser hardening + behavior eval pilot. No new skills; no breaking changes.

@@ -1,0 +1,17 @@
+{
+  "eval_id": "ingest-1",
+  "utterance": "port this skill from a github url into our collection",
+  "expected_skill": "ingesting-skills",
+  "with_skill": {
+    "status": "rc=1",
+    "duration_ms": 0,
+    "total_events": 2,
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "status": "rc=1",
+    "duration_ms": 0,
+    "total_events": 2,
+    "marketplace_skill_md_reads": []
+  }
+}

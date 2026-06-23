@@ -1,0 +1,17 @@
+{
+  "eval_id": "lint-2",
+  "utterance": "is this skill valid before I commit",
+  "expected_skill": "marketplace-validator",
+  "with_skill": {
+    "status": "rc=1",
+    "duration_ms": 0,
+    "total_events": 2,
+    "marketplace_skill_md_reads": []
+  },
+  "without_skill": {
+    "status": "rc=1",
+    "duration_ms": 0,
+    "total_events": 2,
+    "marketplace_skill_md_reads": []
+  }
+}

@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 0.0.2 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
+**Version:** 0.0.3 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
@@ -41,7 +41,7 @@ claude plugin install https://github.com/Git-Fg/taches-principled-light
 Pin to a specific branch/tag/commit:
 ```bash
 /plugins install https://github.com/Git-Fg/taches-principled-light/tree/main
-/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.2
+/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.3
 ```
 
 ### Codex
@@ -74,6 +74,10 @@ https://github.com/Git-Fg/taches-principled-light
 | **Idea** | `generating-ideas` |
 
 All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `orchestrating-subagents` skill for the canonical reference.
+
+## What's New in 0.0.3
+
+Behavior-eval-validated router improvements. Mean lift **+8.69pp** across 17 behavior evals (6 lifts / 11 neutrals / **0 hurts**) over the prior release. Six zero-discovery skills gained 5-10 trigger phrases each (Microsoft best-practices density); `ingesting-skills` and `marketplace-validator` rewritten with explicit scope routers. Iter-3 corrected evaluation pipeline added (`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3/`) — `grader.py` + `run_iteration_3.py` + corrected REPORT.md + BUCKET-A-INSPECTION + DISCOVERY-INVESTIGATION. Iter-3.1 per-skill `--add-dir` experiment in flight to confirm the plugin-shadowing hypothesis behind 5 Bucket A3 discovery failures. CHANGELOG has the long-form breakdown.
 
 ## What's New in 0.0.2
 

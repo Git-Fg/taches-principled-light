@@ -160,7 +160,7 @@ However, the iter-4 number is **not pure skill-body lift**. Of 5 lifts, only 2 r
 2. An eval where the marketplace skill has no colocated scripts and the body is the only source of behavior.
 
 Recommended actions:
-1. **Release v0.0.3 as-is** — no skill changes needed.
+1. **Release v0.0.4 + v0.0.5 as-is** — no skill changes needed. v0.0.4 was tagged at `4ce99e1` (iter-4 infrastructure commit). v0.0.5 is the iter-7 follow-up: canonical headline is **+21.88pp total_lift** (4 lifts / 0 neutrals / 0 hurts) on the 4-eval subset. iter-4's +4.94pp is the filesystem_access_lift only; iter-7 confirmed the true total lift is materially larger.
 2. **Document the cache workaround** in `AGENTS.md` and `README.md` so other marketplaces avoid the iter-3 trap.
 3. **Plan iter-5 (REQUIRED, not optional)** — N=3 reliability study to measure the noise floor and confirm the +1.81pp consultation-driven lower bound is stable. Yagubyan 2026 shows ±13.6% flip rate for single trials; a 3-trial mean would tighten the CI enough to claim a publishable magnitude.
 4. **Plan iter-6 (COMPLETE with proxy caveat)** — vendor-disjoint validation via glm-5.2 judge. **Outcome:** blocked by proxy architecture (haiku/sonnet/opus/nex-agi all silently map to MiniMax-M3; only glm-5.2 is vendor-disjoint and is rate-limited). Re-purposed as code-only lift decomposition (+7.5pp mean across 4 evals). See [`../iteration-6/REPORT.md`](../iteration-6/REPORT.md).

@@ -152,7 +152,7 @@ disambiguate the three lifts.
 | iter-6 (4 evals) | +7.5pp (code-only, glm-5.2 503) | yes | code-only lower bound |
 | **iter-7 (4 evals, canonical)** | **+21.88pp (total_lift, 4/4 lifts)** | **yes** | **ship** |
 
-iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headline. iter-6 is the conservative lower bound under a broken judge. **The +21.88pp total_lift in iter-7 is the publishable number for v0.0.3.**
+iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headline. iter-6 is the conservative lower bound under a broken judge. **The +21.88pp total_lift in iter-7 is the publishable number for v0.0.5.**
 
 ### Research grounding
 

@@ -6,9 +6,9 @@
     {
       "id": "consulted_crafting_skills",
       "text": "the agent should read skills/crafting-skills/SKILL.md OR invoke the Skill tool on crafting-skills before drafting the new skill's frontmatter",
-      "passed": true,
-      "evidence": "agent read ; Skill tool: superpowers:writing-skills",
-      "points_awarded": 30,
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'crafting-skills' (paths=['.agents/skills/crafting-skills/SKILL.md', 'skills/crafting-skills/SKILL.md'], observed_reads=[], observed_skills=['superpowers:writing-skills'])",
+      "points_awarded": 0,
       "unknown": false
     },
     {
@@ -31,7 +31,7 @@
       "id": "applied_routing_pattern",
       "text": "the new skill's frontmatter description should follow the Compendium's 'Load when\u2026 / Use when\u2026 / Do NOT use for\u2026 (use Y)' structure with concrete trigger phrases, not a generic capability statement",
       "passed": false,
-      "evidence": "No new skill was created; the agent only initiated a writing-skills prompt and did not produce any frontmatter description.",
+      "evidence": "The agent's transcript ends with a preliminary question before drafting any SKILL.md file, so no frontmatter following the required routing structure was produced.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,17 +39,17 @@
       "id": "no_recipe_overfit",
       "text": "the new skill should not be a verbatim recipe copy of an existing skill (e.g. 'follow the PDF parsing tutorial'); it should encode project-specific guidance the base agent lacks",
       "passed": false,
-      "evidence": "No new skill was written; the transcript shows no evidence of any skill file creation, thus the requirement to encode project-specific guidance is not met.",
+      "evidence": "The agent did not generate any skill content in the provided transcript, making it impossible to have created original project-specific guidance.",
       "points_awarded": 0,
       "unknown": false
     }
   ],
   "summary": {
-    "instruction_following_score": 30.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 15.0,
-    "passed": 1,
-    "failed": 4,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
     "unknown": 0,
     "total": 5
   },

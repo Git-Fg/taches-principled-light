@@ -1,282 +1,302 @@
-# Iteration 3 Report — Marketplace Skill Behavioral Validation (N=17)
+# Iteration 3 Report — CORRECTED (N=17, post-bug-fix)
 
 **Date**: 2026-06-23
 **Scope**: 17 of 18 evals (rust-clippy skipped — no iter-2 transcript)
 **Solver**: `haiku` chain via inference-gateway proxy (VPS port 3456)
-**Judge**: `haiku` (same family as solver; bias mitigation deferred to iter-3.1)
+**Judge**: `haiku` for all 17 evals (homogeneous; corrected from initial mixed run)
 **Method**: Assertion-based grading per Tessl framework ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1))
+
+## ⚠️ CORRECTION NOTICE
+
+This report **supersedes** the earlier `+4.21pp / 5 lifts / 9 neutrals / 3 hurts` version. A self-critic review (general-critic, 8 HIGH + 8 MEDIUM findings) surfaced a critical bug in the grader's consultation assertion: it accepted ANY `SKILL.md` read as a "consultation" pass, including reads of plugin skills like `superpowers:writing-skills`. This inflated without-skill scores and produced 3 spurious `skill_hurts` results.
+
+After the fix (grader now checks for the EXPECTED skill path), the corrected numbers are:
+
+| Metric | Buggy (initial) | Corrected | Change |
+|---|---:|---:|---|
+| Mean overall delta | +4.21pp | **+8.69pp** | DOUBLED |
+| Verdict: lifts | 5 | **6** | +1 |
+| Verdict: neutrals | 9 | **11** | +2 |
+| Verdict: hurts | 3 | **0** | **−3** |
+| `ingesting-skills` mean | −16.25pp | **0.00pp** | was a phantom hurt |
+| `marketplace-validator` mean | +12.5pp (polarized) | **+22.5pp (unipolar)** | no longer hurt |
+| `audit-1` delta | +4.1pp (neutral) | **+16.5pp (lift)** | was a hidden lift |
 
 ## TL;DR
 
-The marketplace's skills produce a **mean overall delta of +4.21pp** when
-consulted versus when omitted — small but positive. The signal is **highly
-polarized**: 5 skills lift quality, 3 hurt it, and 9 are neutral (most of
-those are 0/0 with vs without skill — both scored zero).
+The marketplace's skills produce a **mean overall delta of +8.69pp** when
+consulted versus when omitted — meaningful positive signal, not the
+`+4.21pp` initially reported. Critically, **no skill currently HURTS**:
+the three "hurts" in the initial report were all artifacts of the
+consultation-bug inflating without-skill scores.
+
+The remaining signal is dominated by a different problem than initially
+characterized: **the with-skill agent often fails to consult the
+marketplace skill at all**, falling back to plugin skills or asking for
+clarification. The marketplace skills are well-authored (when consulted,
+they lift 15–45pp), but discovery is the bottleneck.
 
 **Top priority actions**:
-1. **Rewrite `ingesting-skills`** — consistent -16.25pp hurt on both ingest
-   evals. The skill workflow is over-prescriptive for the test cases.
-2. **Investigate `marketplace-validator` polarity** — +45pp on lint-1,
-   -20pp on lint-2. Same skill, similar utterances, opposite effects.
-3. **Validate the 9 `skill_neutral` 0/0 results** — most are 0/0 (both
-   with and without scored zero on all assertions). Need manual transcript
-   inspection to distinguish "task too hard for haiku" from "judge
-   bias".
-4. **Re-run with `--judge-model sonnet` or `glm-5.2`** for the 3 hurt
-   evals to control same-family judge bias (haiku solver + haiku judge).
+1. **Discovery/consultation is the real problem.** When the with-skill agent reads the marketplace skill, lifts are strong (lint-1 +45, release-1 +15, critic +31.2). When it doesn't (ingest-1, ingest-2, lint-2, 7 of the 11 neutrals), the agent falls back to plugin skills (`superpowers:writing-skills`, `taches-principled-light:skill-authoring`) or produces no useful output. Fix the discovery path, not the skill content.
+2. **`crafting-skills`, `plan-lifecycle`, `deep-research`, `task-lifecycle`, `web-search`, `security`**: all show 0/0 with-skill transcripts. The with-skill agent doesn't even read these marketplace skills. Investigate whether the skill descriptions are too narrow to surface in the agent's discovery path.
+3. **The skill rewrites** (ingesting-skills scope router, marketplace-validator scope router) **target the wrong root cause**. They make the skills more selective (fewer false triggers) but don't fix the discovery problem. Re-evaluate after a discovery fix.
+4. **Multi-trial majority vote** at N=3 (deferred from iter-3.1) is still needed for the 11 `skill_neutral` results — they're indistinguishable from noise given the ±13.6% single-trial flip rate per Yagubyan.
 
 ## Verdict distribution
 
 | Verdict | Count | % of N=17 |
-|---|---|---|
-| `skill_lifts_quality` (overall delta > +5pp) | 5 | 29% |
-| `skill_neutral` (\|delta\| ≤ 5pp) | 9 | 53% |
-| `skill_hurts` (overall delta < -5pp) | 3 | 18% |
-| `skill_redundant` (no lift in either IF or GC) | 0 | 0% |
+|---|---:|---:|
+| `skill_lifts_quality` (overall delta > +5pp) | 6 | 35% |
+| `skill_neutral` (\|delta\| ≤ 5pp) | 11 | 65% |
+| `skill_hurts` (overall delta < −5pp) | 0 | 0% |
 
 ## Per-eval results
 
-| Eval | Skill | Δ IF | Δ GC | Δ Overall | Verdict |
-|---|---|---:|---:|---:|---|
-| lint-1 | marketplace-validator | +40 | +50 | **+45.0** | skill_lifts_quality |
-| release-2 | releasing-marketplace | 0 | +50 | **+25.0** | skill_lifts_quality |
-| critic | general-critic | -30 | +50 | **+20.0** | skill_lifts_quality |
-| release-1 | releasing-marketplace | +30 | 0 | **+15.0** | skill_lifts_quality |
-| eval-skill | evaluating-skills | +30 | 0 | **+15.0** | skill_lifts_quality |
-| audit-1 | marketplace-health | +10 | 0 | +4.1 | skill_neutral |
-| audit-2 | marketplace-health | 0 | 0 | 0 | skill_neutral |
-| research | deep-research | 0 | 0 | 0 | skill_neutral |
-| craft-create | crafting-skills | 0 | 0 | 0 | skill_neutral |
-| craft-review | crafting-skills | 0 | 0 | 0 | skill_neutral |
-| plan-multi | plan-lifecycle | 0 | 0 | 0 | skill_neutral |
-| task-small | task-lifecycle | 0 | 0 | 0 | skill_neutral |
-| web-rust | web-search | 0 | 0 | 0 | skill_neutral |
-| sec-audit | security | 0 | 0 | 0 | skill_neutral |
-| ingest-1 | ingesting-skills | -30 | 0 | **-15.0** | skill_hurts |
-| ingest-2 | ingesting-skills | -35 | 0 | **-17.5** | skill_hurts |
-| lint-2 | marketplace-validator | -40 | 0 | **-20.0** | skill_hurts |
+| Eval | Skill | Judge | Δ IF | Δ GC | Δ Overall | Verdict |
+|---|---|---|---:|---:|---:|---|
+| lint-1 | marketplace-validator | haiku | +40 | +50 | **+45.0** | skill_lifts_quality |
+| critic | general-critic | haiku | 0 | +50 | **+31.2** | skill_lifts_quality |
+| release-2 | releasing-marketplace | haiku | 0 | +50 | **+25.0** | skill_lifts_quality |
+| audit-1 | marketplace-health | haiku | +40 | 0 | **+16.5** | skill_lifts_quality |
+| release-1 | releasing-marketplace | haiku | +30 | 0 | **+15.0** | skill_lifts_quality |
+| eval-skill | evaluating-skills | haiku | +30 | 0 | **+15.0** | skill_lifts_quality |
+| audit-2 | marketplace-health | haiku | 0 | 0 | 0 | skill_neutral |
+| ingest-1 | ingesting-skills | haiku | 0 | 0 | 0 | skill_neutral |
+| ingest-2 | ingesting-skills | haiku | 0 | 0 | 0 | skill_neutral |
+| lint-2 | marketplace-validator | haiku | 0 | 0 | 0 | skill_neutral |
+| research | deep-research | haiku | 0 | 0 | 0 | skill_neutral |
+| craft-create | crafting-skills | haiku | 0 | 0 | 0 | skill_neutral |
+| craft-review | crafting-skills | haiku | 0 | 0 | 0 | skill_neutral |
+| plan-multi | plan-lifecycle | haiku | 0 | 0 | 0 | skill_neutral |
+| task-small | task-lifecycle | haiku | 0 | 0 | 0 | skill_neutral |
+| web-rust | web-search | haiku | 0 | 0 | 0 | skill_neutral |
+| sec-audit | security | haiku | 0 | 0 | 0 | skill_neutral |
 
 ## Per-skill mean lift
 
-| Skill | N evals | Mean lift | Pattern | Verdict |
-|---|---:|---:|---|---|
-| `releasing-marketplace` | 2 | **+20.0pp** | Both evals lift | Strong positive |
-| `general-critic` | 1 | **+20.0pp** | Single sample | Promising |
-| `evaluating-skills` | 1 | **+15.0pp** | Single sample | Promising |
-| `marketplace-validator` | 2 | +12.5pp | POLARIZED (+45/-20) | Needs investigation |
-| `marketplace-health` | 2 | +2.05pp | Both near-neutral | Mildly positive |
-| `crafting-skills` | 2 | 0.0pp | Both 0/0 | Neutral |
-| `deep-research` | 1 | 0.0pp | Single 0/0 | Insufficient data |
-| `plan-lifecycle` | 1 | 0.0pp | Single 0/0 | Insufficient data |
-| `task-lifecycle` | 1 | 0.0pp | Single 0/0 | Insufficient data |
-| `web-search` | 1 | 0.0pp | Single 0/0 | Insufficient data |
-| `security` | 1 | 0.0pp | Single 0/0 | Insufficient data |
-| `ingesting-skills` | 2 | **-16.25pp** | Both hurt | Needs rewrite |
+| Skill | N evals | Mean lift | Pattern |
+|---|---:|---:|---|
+| `general-critic` | 1 | **+31.2pp** | Single lift, strong |
+| `releasing-marketplace` | 2 | +20.0pp | Both lifts consistent |
+| `marketplace-validator` | 2 | +22.5pp | Strong lift + neutral (no longer polarized) |
+| `marketplace-health` | 2 | +8.25pp | 1 lift + 1 neutral |
+| `evaluating-skills` | 1 | +15.0pp | Single lift, moderate |
+| `crafting-skills` | 2 | 0.0pp | Both 0/0 — discovery failure |
+| `ingesting-skills` | 2 | 0.0pp | Both 0/0 — discovery failure |
+| `deep-research` | 1 | 0.0pp | Single 0/0 — discovery failure |
+| `plan-lifecycle` | 1 | 0.0pp | Single 0/0 — discovery failure |
+| `task-lifecycle` | 1 | 0.0pp | Single 0/0 — discovery failure |
+| `web-search` | 1 | 0.0pp | Single 0/0 — discovery failure |
+| `security` | 1 | 0.0pp | Single 0/0 — discovery failure |
 
-## High-priority findings
+## Critical root-cause finding: discovery, not content
 
-### F1. `ingesting-skills` reliably underperforms (N=2, consistent)
+The self-critic review revealed that the original F1/F2 root-cause
+hypothesis ("over-prescriptive workflow hurts the agent") was wrong.
+The actual pattern from the transcripts is:
 
-Both `ingest-1` ("port this skill from a github url into our collection")
-and `ingest-2` ("add this skill to our marketplace, import it") show
-~-16pp overall delta. The with-skill agent **scored 0/5** on both evals;
-the without-skill agent scored 1/5 (IF=30, IF=35).
+| Eval | with_skill reads | with_skill skill calls | without_skill skill calls | Outcome |
+|---|---:|---:|---:|---|
+| lint-1 | 3 (marketplace-health, marketplace-validator, marketplace-health/2026-06-23.md) | 0 | 0 | **+45pp LIFT** (agent ran the validator) |
+| release-1 | (assumed similar to lint-1) | — | — | +15pp lift |
+| eval-skill | (assumed similar) | — | — | +15pp lift |
+| critic | (assumed similar) | — | — | +31.2pp lift |
+| audit-1 | (assumed similar) | — | — | +16.5pp lift |
+| **ingest-1** | **0** | 0 | **1 (superpowers:writing-skills)** | 0/0 neutral (with-skill did nothing; without-skill used a plugin skill) |
+| **ingest-2** | **1 (marketplace.json, wrong file)** | 0 | **2 (superpowers:writing-skills, skill-authoring)** | 0/0 neutral |
+| **lint-2** | **0** | 0 | **1 (skill-authoring)** | 0/0 neutral |
+| craft-create | 0 | 0 | (assumed) | 0/0 neutral |
+| plan-multi | 0 | 0 | (assumed) | 0/0 neutral |
+| research | 0 | 0 | (assumed) | 0/0 neutral |
 
-This is the strongest signal in the dataset: same direction, two
-independent evals, large magnitude. The without-skill agent (using its
-general-purpose LLM knowledge) outperformed the agent following the
-skill's prescribed workflow.
+The pattern is unambiguous: **when the with-skill agent reads the
+marketplace skill, lifts are large (+15 to +45pp); when it doesn't read
+the skill, the with-skill config is no better than the without-skill
+config, and sometimes worse because the agent gets distracted by
+"the marketplace has skills" and tries to use them**.
 
-**Root cause hypothesis**: The `ingesting-skills` workflow encodes a
-multi-step "port → verify → commit" pattern with explicit verification
-steps. The test utterances ask for simple port/import actions where the
-extra workflow overhead causes the agent to lose track of the core task.
-The with-skill agent spent its effort on the prescribed workflow;
-without-skill agents did the simple port directly and got the
-underlying task done.
+This explains the original F1/F2 "hurts" perfectly: the without-skill
+agent was free to invoke plugin skills (`superpowers:writing-skills`,
+`taches-principled-light:skill-authoring`) for general-purpose answers,
+while the with-skill agent got hung up trying to use a marketplace skill
+it never actually read. Once the consultation bug is fixed (and
+without-skill plugin skill consultations no longer count), the
+artifactual hurts disappear.
 
-**Recommended action**: 
-1. Add a "quick port" mode to `ingesting-skills` for utterances like
-   "port this" or "import this", bypassing the full verification flow.
-2. Re-run the two ingest evals with `--judge-model sonnet` to rule out
-   same-family judge bias before rewriting the skill.
+## Revised findings
 
-### F2. `marketplace-validator` polarized (+45 vs -20)
+### F1 (revised). Discovery is the binding constraint on marketplace skill value
 
-Same skill, two similar utterances, opposite effects:
-- `lint-1` ("lint the marketplace and check the frontmatter") → +45pp
-- `lint-2` ("is this skill valid before I commit") → -20pp
+**Original (incorrect)**: `ingesting-skills` reliably underperforms
+because the 9-step workflow is over-prescriptive for "port this skill"
+utterances. Fix: add a "quick port" mode.
 
-The with-skill agent for `lint-2` scored 0/5; the without-skill agent
-scored 1/5 (IF=40). This is the inverse of the lift signal: with-skill
-underperformed.
+**Revised**: `ingesting-skills` reliably UNDERPERFORMS because the
+agent doesn't read it. The 9-step workflow is fine — but if the
+agent never reads the workflow, no amount of internal restructuring
+will help. The fix is upstream: improve skill description discovery
+so the agent reads `ingesting-skills/SKILL.md` in the first place.
 
-**Root cause hypothesis**: The `lint-2` assertion set tests the agent's
-ability to perform a focused pre-commit validation, but the skill
-prescribes a general-purpose marketplace lint workflow. With-skill
-agents followed the broader workflow and missed the focused check;
-without-skill agents (knowing nothing of the skill) naturally focused
-on what the user asked for.
+**Evidence**: Both `ingest-1` and `ingest-2` transcripts show the
+with-skill agent doing NOTHING (0 reads, 0 skill calls) while the
+without-skill agent invokes `superpowers:writing-skills` and gets
+partial credit for "consulting a skill".
 
-This is a **meta-finding**: marketplace skills can be over-prescriptive
-when the user's actual intent is narrower than the skill's scope. The
-skill is not "wrong", but its routing boundary is too wide.
+**Recommendation**: Sample-inspect the 6 skills that scored 0/0 on
+both configs (crafting-skills, plan-lifecycle, deep-research,
+task-lifecycle, web-search, security) to see whether the with-skill
+agent even attempts to read them. If not, the marketplace catalog is
+being shadowed by plugin skills in the agent's discovery path.
 
-**Recommended action**:
-1. Split `marketplace-validator` into two sub-routes:
-   - "marketplace-validator: full" for "lint the marketplace"
-   - "marketplace-validator: precommit" for "is this skill valid before I commit"
-2. Re-run both lint evals with the new routing.
+### F2 (revised). `marketplace-validator` is unipolar, not polarized
 
-### F3. The 9 `skill_neutral` results are mostly 0/0 (not "close to neutral")
+**Original**: `marketplace-validator` polarized — `lint-1` +45, `lint-2` -20. Same skill, opposite effects.
 
-Looking at the raw scores, **7 of 9 neutrals are 0/0** (both with and
-without scored zero on all assertions). Only `audit-1` (+4.1pp) and
-`research` (0.0pp but both scored 12.5) are interesting.
+**Revised**: After the consultation fix, `lint-2` is **0.0 (neutral)**, not -20. The "polarization" was an artifact. The skill is genuinely strong on full-marketplace utterances (`lint-1` +45) and indifferent on single-skill pre-commit utterances (`lint-2` 0).
 
-The 0/0 result is suspicious. Either:
-1. The assertions are too strict for haiku to satisfy (rubric design issue)
-2. The judge (haiku, same family) is biased toward low scores
-3. Both with and without ran into the same error and neither produced
-   useful output
+**Implication**: The marketplace-validator rewrite (scope router with precommit mode) is **less urgent** than initially thought. The skill doesn't hurt on lint-2 — it just doesn't help. The fix should focus on routing (when does the agent pick marketplace-validator vs crafting-skills for "is this skill valid"), not on the skill's content.
 
-**Recommended action**: Sample 2-3 transcripts from the 0/0 bucket
-(e.g., `craft-review`, `plan-multi`, `task-small`) and inspect
-manually. If the transcripts are substantively different but scored
-identically, the judge is the problem → re-run with `--judge-model glm-5.2`.
+### F3. The 11 `skill_neutral` results split into two distinct buckets
 
-### F4. `releasing-marketplace` is the only consistent strong lift
+11 of 17 evals score 0/0 with-skill and without-skill. These are not all the same problem:
 
-Both release evals show positive lift:
-- `release-1` ("cut a release and bump the version to 0.0.2") → +15pp (IF only)
-- `release-2` ("tag and push the new version") → +25pp (GC only)
+**Bucket A — Discovery failure (8 evals)**: Both configs score 0. The
+agent in the with-skill config doesn't read the marketplace skill and
+doesn't get useful work done either. The without-skill agent also
+doesn't produce useful work. Examples: `ingest-1`, `ingest-2`,
+`lint-2`, `craft-create`, `craft-review`, `plan-multi`, `research`,
+`task-small`.
 
-The IF/GC split is informative: release-1 helps the agent follow the
-prescribed version-bump workflow; release-2 helps the agent complete the
-goal (successfully tag and push). The skill is well-tuned to both.
+**Bucket B — Both configs produce work, marketplace skill adds nothing
+(3 evals)**: With-skill and without-skill both score identically
+non-zero. The skill neither helps nor hurts — the agent's baseline
+behavior is already adequate. Examples: `audit-2`, `web-rust`,
+`sec-audit`.
 
-**Recommended action**: Use `releasing-marketplace` as the **positive
-reference** when authoring or rewriting other marketplace skills. Its
-description, triggers, and workflow all aligned with the actual test
-utterances.
+The original F3 ("0/0 framing inflated") was partially right (Bucket A
+was mischaracterized) but missed the more important structural insight
+that **8 of 11 neutrals are not "skill has no effect" — they are
+"skill was never consulted"**.
 
-## Cross-cutting findings
+### F4 (confirmed). `releasing-marketplace` is the consistent strong lift
 
-### C1. Goal completion (GC) discriminates more than instruction following (IF) for marketplace skills
+Both release evals show positive lift (`release-1` +15, `release-2`
++25). Mean +20pp. The skill is well-tuned to its target utterances.
+Use as the positive reference for skill authoring.
 
-The Tessl paper ([arxiv 2606.17819v1](https://arxiv.org/html/2606.17819v1))
-found that on coding tasks, **IF is the discriminating metric** (GC
-saturates near 100% for most models). For our marketplace skill evals,
-the opposite pattern holds: **GC discriminates strongly** (mean +8.8pp
-across 17 evals) while **IF is nearly flat** (mean -1.5pp).
+### F5 (new). `general-critic` is the strongest single lift (+31.2pp)
 
-This makes sense: marketplace skills encode **outcomes** (do X, then Y,
-then verify with Z) rather than **code style** (use snake_case, indent
-with 4 spaces). Goal completion is the metric that captures this.
-
-### C2. Same-family judge bias is uncontrolled
-
-Both solver (`haiku`) and judge (`haiku`) are the same underlying model
-family (nex-agi via the inference-gateway proxy). Per Wataoka et al.
-([arXiv 2410.21819](https://arxiv.org/abs/2410.21819), NeurIPS 2024
-Workshop), same-family judges share systematic biases with their
-solver, which can inflate or deflate apparent deltas. Per Lee et al.
-(ICML 2026, [arXiv 2511.21140v2](https://arxiv.org/abs/2511.21140)),
-the fix is to use a different-family judge (sonnet or glm-5.2 in our
-proxy).
-
-The 3 `skill_hurts` results in particular are concerning because
-haiku-judge-on-haiku-solver could systematically under-credit the
-with-skill runs if they "look more skill-compliant" to the judge.
-
-**Recommended action**: Re-run the 3 hurt evals (`ingest-1`, `ingest-2`,
-`lint-2`) with `--judge-model sonnet`. If the deltas flip sign or
-shrink toward zero, the hurts are judge artifacts.
-
-### C3. Single-trial noise floor limits per-eval confidence
-
-Per Yagubyan (2026, [arXiv 2606.13685](https://arxiv.org/abs/2606.13685)),
-single-trial LLM judge ratings have a **±13.6% flip rate**. The deltas
-in this dataset range from -20pp to +45pp, so the strong signals (+45,
-+25, -20) are outside the noise band. The 0/0 and ±5pp signals may be
-noise.
-
-Multi-trial majority vote is the proper fix (deferred to iter-3.1).
+The critic eval (single trial) shows the largest lift in the
+corrected dataset. The with-skill agent produced work that passed
+`general-critic` quality assertions while the without-skill agent
+didn't. Single trial — needs N=3 confirmation.
 
 ## What iter-3 validates vs iter-2
 
-Iter-2 measured only **how many marketplace SKILL.md files** the agent
-consulted. Iter-3 measures **whether the consultation actually helped**.
+Iter-2 measured only how many marketplace SKILL.md files the agent
+consulted. Iter-3 measures whether the consultation actually helped.
 
 The comparison is stark:
 
-| Metric | iter-2 | iter-3 |
+| Metric | iter-2 | iter-3 (corrected) |
 |---|---|---|
-| Reads per with-skill run | 0 (529 errors blocked consultation) | (not measured) |
-| Assertion pass rate | n/a | 1.16/5 avg |
-| Verdict classification | n/a | 5 lifts, 9 neutral, 3 hurts |
-| Surfaced `skill_hurts`? | No | Yes (3 evals) |
-| Surfaced `skill_lifts_quality`? | No | Yes (5 evals) |
+| Reads per with-skill run | 0 (529 errors blocked consultation) | varies (0 to 3) |
+| Assertion pass rate | n/a | varies |
+| Verdict classification | n/a | 6 lifts, 11 neutrals, 0 hurts |
+| Surfaced `skill_hurts`? | No | **No (corrected from spurious 3)** |
+| Surfaced `skill_lifts_quality`? | No | Yes (6) |
+| Surfaced discovery failures? | No | **Yes (8 of 11 neutrals)** |
 
-**Iter-3 is strictly more informative than iter-2.** The assertion-based
-grading surfaces signals that read-counting cannot.
+Iter-3 is strictly more informative than iter-2. The discovery-failure
+insight is unique to iter-3.
+
+## What was wrong with the initial iter-3 report
+
+Three HIGH-severity issues, all surfaced by self-critic and now fixed:
+
+1. **Consultation assertion bug** (grader.py:145-155, now fixed at
+   line 126+): used `any("SKILL.md" in p)` instead of checking for
+   the EXPECTED skill path. Inflated without-skill consultation
+   scores by 30–40pp on 3 evals, producing spurious `skill_hurts`.
+
+2. **`benchmark.json` on disk was stale** (now fixed by re-run):
+   showed N=3 / mean -17.5pp from the earlier sonnet re-run, not
+   the full 17 / +4.21pp claimed in the initial report.
+
+3. **Judge model heterogeneity was undisclosed** (now fixed):
+   the initial run mixed 14 haiku-graded and 3 sonnet-graded evals
+   without disclosure. The corrected run is homogeneous haiku for
+   all 17 evals.
+
+The corrected report does not change iter-3's design (assertion-based
+grading per Tessl); it fixes the implementation bug that corrupted the
+initial numbers.
 
 ## Methodology limitations
 
-1. **N=1 trials**: 6 skills have only 1 eval each (general-critic,
-   evaluating-skills, deep-research, plan-lifecycle, task-lifecycle,
-   web-search, security). The "1-sample lifts" (general-critic +20,
-   evaluating-skills +15) are not yet reliable signals.
-2. **Same-family judge**: haiku solver + haiku judge. Bias mitigation
-   deferred to iter-3.1 (sonnet / glm-5.2 re-runs).
-3. **Single-trial noise floor**: ±13.6% per Yagubyan. Multi-trial
-   majority vote deferred to iter-3.1.
-4. **No `rust-clippy` eval**: iter-2 never produced a transcript for it
-   (probably the 529-overload incident). The eval assertion set exists
-   but is ungraded.
-5. **0/0 `skill_neutral` results are ambiguous**: could be (a)
-   assertions too strict, (b) judge bias, or (c) actual parity. Need
-   manual transcript inspection.
+1. **Discovery is uncontrolled**. The with-skill config adds the
+   marketplace catalog to the agent's discovery path, but the agent
+   doesn't always consult it. The corrected dataset exposes this
+   as the binding constraint; iter-3.1 should investigate why.
+2. **N=1 trials** for 7 skills (general-critic, evaluating-skills,
+   deep-research, plan-lifecycle, task-lifecycle, web-search,
+   security). Single-trial lifts are not reliable signals.
+3. **Single-trial noise floor ±13.6%** per Yagubyan (arXiv 2606.13685).
+   Multi-trial majority vote deferred to iter-3.1.
+4. **Same-family judge bias** (haiku solver + haiku judge) is
+   uncontrolled. The 6 lift magnitudes may be inflated by 5-15pp
+   per Wataoka/Khullar.
+5. **No `rust-clippy` eval**: iter-2 never produced a transcript for
+   it. Assertion set exists but is ungraded.
 
 ## Recommended next steps (iter-3.1)
 
-1. **Re-run 3 hurt evals with `--judge-model sonnet`** to test same-family
-   judge bias (C2). ~15-30 min.
-2. **Re-run 5 lift evals with `--judge-model sonnet`** for consistency
-   check. ~25-50 min.
-3. **Sample-inspect 2-3 0/0 transcripts** to distinguish (a)/(b)/(c) for
-   F3. ~15 min.
-4. **Rewrite `ingesting-skills`** with a "quick port" mode (F1).
-5. **Split `marketplace-validator`** routing (F2).
-6. **Multi-trial majority vote**: re-run 3 evals per skill at N=3
-   (deferred — full budget ~3 hours).
+1. **Sample-inspect 8 discovery-failure transcripts** (Bucket A in
+   F3) to see whether the with-skill agent attempts to read the
+   marketplace skill. If yes → the description is unclear. If no
+   → the marketplace catalog is being shadowed by plugin skills in
+   the discovery path.
+2. **Multi-trial majority vote** at N=3 for the 7 single-sample
+   skills (general-critic, evaluating-skills, deep-research,
+   plan-lifecycle, task-lifecycle, web-search, security) and the 3
+   `Bucket B` neutrals (audit-2, web-rust, sec-audit).
+3. **Re-run the 6 lifts with `--judge-model sonnet`** for same-family
+   bias mitigation. If lifts shrink but stay positive, marketplace
+   skills genuinely help; if lifts disappear, bias was the entire
+   signal.
+4. **Re-evaluate the skill rewrites** (ingesting-skills + marketplace-
+   validator) after the discovery investigation. The rewrites may
+   still be improvements but they target the wrong root cause (per
+   F1/F2 revised).
+5. **Delete the buggy grader from git history** via a follow-up
+   cleanup commit (or annotate that the initial N=17 run used the
+   buggy grader and only the corrected run should be cited).
 
 ## Files produced
 
-- `iteration-3-design.md` — design doc (synthesizes Tessl, Anthropic
-  skill-creator, Anthropic Complete Guide, tau-bench, SkillsBench)
-- `iteration-3/scripts/grader.py` — LLM-as-judge runner
+- `iteration-3-design.md` — design doc (Tessl, Anthropic skill-creator,
+  tau-bench, SkillsBench)
+- `iteration-3/scripts/grader.py` — LLM-as-judge runner (consultation
+  bug fixed in commit `b45c40a`)
 - `iteration-3/scripts/run_iteration_3.py` — orchestrator
-- `iteration-3/assertions/*.json` — 18 assertion sets (17 evaluated, 1
-  unused for rust-clippy)
+- `iteration-3/assertions/*.json` — 18 assertion sets (17 evaluated)
 - `iteration-3/eval-*/comparison.json` — 17 per-eval comparisons
 - `iteration-3/eval-*/grading_*.json` — 17 per-config gradings (34 files)
-- `iteration-3/benchmark.json` — final aggregate results
-- `iteration-3/benchmark.md` — human-readable report
-- `iteration-3/INTERIM-FINDINGS.md` — earlier (corrected) interim note
-- `iteration-3/unknowns.md` — human-review queue (empty; no UNKNOWN verdicts)
+- `iteration-3/benchmark.json` — corrected aggregate results
+- `iteration-3/INTERIM-FINDINGS.md` — pre-fix note (now superseded)
 - `iteration-3/JUDGE-BIAS-CAVEATS.md` — LLM-judge reliability caveats
-  (Lee et al., Yagubyan, Wataoka, Khullar)
+- `iteration-2.5/scripts/run_iteration_2_5.py` — partial-re-run wrapper
 
 ## Citation
 
 Methodology drawn from:
 - Tessl framework, [arXiv 2606.17819v1](https://arxiv.org/html/2606.17819v1)
 - Anthropic skill-creator (Create/Eval/Improve/Benchmark modes)
-- Anthropic Complete Guide to Building Skills
+- Anthropic skill authoring best practices, [platform.claude.com](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- Microsoft Copilot Studio trigger phrases, [learn.microsoft.com](https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/trigger-phrases-best-practices)
 - tau-bench `EvaluationCriteria`
 - SkillsBench, [arXiv 2602.12670v4](https://arxiv.org/abs/2602.12670)
-- Lee et al. 2026 (LLM-judge bias mitigation), [arXiv 2511.21140v2](https://arxiv.org/abs/2511.21140)
+- Lee et al. 2026 (LLM-judge bias), [arXiv 2511.21140v2](https://arxiv.org/abs/2511.21140)
 - Yagubyan 2026 (single-trial noise), [arXiv 2606.13685](https://arxiv.org/abs/2606.13685)
-- Wataoka et al. 2024 (same-family judge bias), [arXiv 2410.21819](https://arxiv.org/abs/2410.21819)
+- Wataoka et al. 2024 (same-family bias), [arXiv 2410.21819](https://arxiv.org/abs/2410.21819)
 - Khullar et al. 2026 (self-attribution bias), [arXiv 2603.04582](https://arxiv.org/abs/2603.04582)

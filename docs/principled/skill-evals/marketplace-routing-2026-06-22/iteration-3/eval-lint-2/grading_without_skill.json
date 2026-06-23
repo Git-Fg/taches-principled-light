@@ -6,9 +6,9 @@
     {
       "id": "consulted_marketplace_validator",
       "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before answering, since the validator encodes the canonical frontmatter schema and required-field list",
-      "passed": true,
-      "evidence": "agent read ; Skill tool: taches-principled-light:skill-authoring",
-      "points_awarded": 40,
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'marketplace-validator' (paths=['.agents/skills/marketplace-validator/SKILL.md', 'skills/marketplace-validator/SKILL.md'], observed_reads=[], observed_skills=['taches-principled-light:skill-authoring'])",
+      "points_awarded": 0,
       "unknown": false
     },
     {
@@ -31,7 +31,7 @@
       "id": "applied_skill_specific_path",
       "text": "the agent should run the validator on the specific skill path (python scripts/validate.py skills/<name>) rather than the whole marketplace, per the SKILL.md Decision Router 'IF the user wants to check a single skill \u2192 pass the path' branch",
       "passed": false,
-      "evidence": "The agent never executed the validator; instead it asked for clarification and checked for files, but did not run the specific path command.",
+      "evidence": "The agent did not run any validator on a specific skill path; instead it searched for files and asked clarifying questions without executing the validation command.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,17 +39,17 @@
       "id": "named_specific_issues",
       "text": "the response should name any specific issues (line numbers, exact fields, suggested fix), not a generic 'looks good' or 'you should check the schema'",
       "passed": false,
-      "evidence": "The agent did not produce any validation output; it only asked which skill to validate, thus no specific issues were named.",
+      "evidence": "The agent never validated a skill, so the response contains no specific issues, line numbers, fields, or suggested fixes\u2014only inquiries about the skill file.",
       "points_awarded": 0,
       "unknown": false
     }
   ],
   "summary": {
-    "instruction_following_score": 40.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 20.0,
-    "passed": 1,
-    "failed": 4,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
     "unknown": 0,
     "total": 5
   },

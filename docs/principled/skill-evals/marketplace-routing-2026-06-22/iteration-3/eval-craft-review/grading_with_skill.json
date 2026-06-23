@@ -7,7 +7,7 @@
       "id": "consulted_crafting_skills",
       "text": "the agent should read skills/crafting-skills/SKILL.md before reviewing; the skill encodes the description-quality rubric",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'crafting-skills' (paths=['.agents/skills/crafting-skills/SKILL.md', 'skills/crafting-skills/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "applied_routing_checklist",
       "text": "the agent should apply the routing-quality checklist (Load when / Use when / Do NOT use for / concrete trigger phrases / negative scope) to the reviewed skill's description",
       "passed": false,
-      "evidence": "The agent only asked which skill to review and did not apply any routing-quality checklist.",
+      "evidence": "Agent only asked for specification of skill; no application of routing checklist evident.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "routing_improvement_actionable",
       "text": "the suggested description rewrite should be measurably better for routing \u2014 i.e., include trigger phrases the user would actually type, and explicit negative scope to prevent over-triggering",
       "passed": false,
-      "evidence": "No description rewrite was provided, so cannot be measurably better.",
+      "evidence": "Agent did not provide any suggested description rewrite.",
       "points_awarded": 0,
       "unknown": false
     }

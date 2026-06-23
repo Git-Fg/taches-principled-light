@@ -7,7 +7,7 @@
       "id": "consulted_ingesting_skills",
       "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before importing, since the skill encodes local-convention adapters",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'ingesting-skills' (paths=['.agents/skills/ingesting-skills/SKILL.md', 'skills/ingesting-skills/SKILL.md'], observed_reads=['/Users/felix/Documents/AutoPluginClaw/taches-principled-light/.claude-plugin/marketplace.json'], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "applied_local_adapters",
       "text": "the agent should adapt the imported skill's frontmatter to marketplace conventions (add when_to_use if missing, normalize description to single-line YAML) \u2014 not just copy verbatim",
       "passed": false,
-      "evidence": "Agent only asked for clarification and did not adapt any frontmatter; transcript shows no evidence of frontmatter modification.",
+      "evidence": "The agent only asked clarifying questions and did not proceed to import or adapt any skill frontmatter.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "no_duplicate_added",
       "text": "the agent should detect and refuse to add a skill that's a near-duplicate of an existing marketplace skill (or explicitly call out the overlap as a feature, not a bug)",
       "passed": false,
-      "evidence": "Agent did not proceed to add a skill or check for duplicates; transcript shows no detection or refusal.",
+      "evidence": "The agent only asked clarifying questions and did not perform any duplicate detection or skill addition.",
       "points_awarded": 0,
       "unknown": false
     }

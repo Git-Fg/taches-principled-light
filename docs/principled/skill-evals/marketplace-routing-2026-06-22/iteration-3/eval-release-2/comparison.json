@@ -17,8 +17,8 @@
     "goal_completion_score": 0.0,
     "overall_score": 0.0,
     "passed": 0,
-    "failed": 5,
-    "unknown": 0,
+    "failed": 3,
+    "unknown": 2,
     "total": 5
   },
   "delta": {

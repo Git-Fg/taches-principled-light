@@ -7,7 +7,7 @@
       "id": "consulted_general_critic",
       "text": "the agent should read skills/general-critic/SKILL.md before reviewing; the skill defines the HIGH/MEDIUM/LOW severity taxonomy",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'general-critic' (paths=['.agents/skills/general-critic/SKILL.md', 'skills/general-critic/SKILL.md'], observed_reads=['/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3-design.md', '/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-2/METRIC-BUG-NOTE.md', '/Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/scripts/run_iteration_2.py'], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -23,7 +23,7 @@
       "id": "applied_severity_taxonomy",
       "text": "the agent should classify findings by HIGH/MEDIUM/LOW severity per the skill, with explicit thresholds (HIGH = blocker; MEDIUM = should-fix; LOW = nice-to-have)",
       "passed": false,
-      "evidence": "Agent's final response labels the issue as 'Critical' rather than using the HIGH/MEDIUM/LOW taxonomy with explicit thresholds as required.",
+      "evidence": "Agent labeled the only issue as 'Critical' rather than using the required HIGH/MEDIUM/LOW severity scheme, and no thresholds or references to the skill's taxonomy appear in the transcript.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "found_real_issues",
       "text": "the review should surface \u22651 substantive issue (correctness, security, performance, or design flaw), not just style nits",
       "passed": true,
-      "evidence": "Agent identifies a critical metric bug in run_iteration_2.py, a substantive correctness/design flaw in the evaluation scripts.",
+      "evidence": "Agent uncovered a metric bug where run_iteration_2.py filtered only 'skills/' and missed four marketplace skills under '.agents/skills/', a substantive correctness flaw impacting all 18 evals.",
       "points_awarded": 50,
       "unknown": false
     }

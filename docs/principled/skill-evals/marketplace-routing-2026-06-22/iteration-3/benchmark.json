@@ -48,20 +48,20 @@
         "total": 5
       },
       "without_skill": {
-        "instruction_following_score": 40.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 20.0,
-        "passed": 1,
-        "failed": 4,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 5,
         "unknown": 0,
         "total": 5
       },
       "delta": {
-        "instruction_following_delta": -40.0,
+        "instruction_following_delta": 0.0,
         "goal_completion_delta": 0.0,
-        "overall_delta": -20.0
+        "overall_delta": 0.0
       },
-      "verdict": "skill_hurts"
+      "verdict": "skill_neutral"
     },
     {
       "eval_id": "audit-1",
@@ -78,20 +78,20 @@
         "total": 5
       },
       "without_skill": {
-        "instruction_following_score": 30.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 12.4,
-        "passed": 1,
-        "failed": 4,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 5,
         "unknown": 0,
         "total": 5
       },
       "delta": {
-        "instruction_following_delta": 10.0,
+        "instruction_following_delta": 40.0,
         "goal_completion_delta": 0.0,
-        "overall_delta": 4.1
+        "overall_delta": 16.5
       },
-      "verdict": "skill_neutral"
+      "verdict": "skill_lifts_quality"
     },
     {
       "eval_id": "audit-2",
@@ -138,20 +138,20 @@
         "total": 5
       },
       "without_skill": {
-        "instruction_following_score": 30.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 15.0,
-        "passed": 1,
-        "failed": 4,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 5,
         "unknown": 0,
         "total": 5
       },
       "delta": {
-        "instruction_following_delta": -30.0,
+        "instruction_following_delta": 0.0,
         "goal_completion_delta": 0.0,
-        "overall_delta": -15.0
+        "overall_delta": 0.0
       },
-      "verdict": "skill_hurts"
+      "verdict": "skill_neutral"
     },
     {
       "eval_id": "ingest-2",
@@ -168,20 +168,20 @@
         "total": 5
       },
       "without_skill": {
-        "instruction_following_score": 35.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 17.5,
-        "passed": 1,
-        "failed": 4,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 5,
         "unknown": 0,
         "total": 5
       },
       "delta": {
-        "instruction_following_delta": -35.0,
+        "instruction_following_delta": 0.0,
         "goal_completion_delta": 0.0,
-        "overall_delta": -17.5
+        "overall_delta": 0.0
       },
-      "verdict": "skill_hurts"
+      "verdict": "skill_neutral"
     },
     {
       "eval_id": "release-1",
@@ -232,8 +232,8 @@
         "goal_completion_score": 0.0,
         "overall_score": 0.0,
         "passed": 0,
-        "failed": 5,
-        "unknown": 0,
+        "failed": 3,
+        "unknown": 2,
         "total": 5
       },
       "delta": {
@@ -258,18 +258,18 @@
         "total": 4
       },
       "without_skill": {
-        "instruction_following_score": 30.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 11.2,
-        "passed": 1,
-        "failed": 3,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 4,
         "unknown": 0,
         "total": 4
       },
       "delta": {
-        "instruction_following_delta": -30.0,
+        "instruction_following_delta": 0.0,
         "goal_completion_delta": 50.0,
-        "overall_delta": 20.0
+        "overall_delta": 31.2
       },
       "verdict": "skill_lifts_quality"
     },
@@ -309,20 +309,20 @@
       "expected_skill": "crafting-skills",
       "category_class": "marketplace",
       "with_skill": {
-        "instruction_following_score": 30.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 15.0,
-        "passed": 1,
-        "failed": 4,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 5,
         "unknown": 0,
         "total": 5
       },
       "without_skill": {
-        "instruction_following_score": 30.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 15.0,
-        "passed": 1,
-        "failed": 4,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 5,
         "unknown": 0,
         "total": 5
       },
@@ -489,21 +489,21 @@
       "expected_skill": "security",
       "category_class": "marketplace",
       "with_skill": {
-        "instruction_following_score": 35.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 17.5,
-        "passed": 1,
-        "failed": 4,
-        "unknown": 0,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 3,
+        "unknown": 2,
         "total": 5
       },
       "without_skill": {
-        "instruction_following_score": 35.0,
+        "instruction_following_score": 0.0,
         "goal_completion_score": 0.0,
-        "overall_score": 17.5,
-        "passed": 1,
-        "failed": 4,
-        "unknown": 0,
+        "overall_score": 0.0,
+        "passed": 0,
+        "failed": 3,
+        "unknown": 2,
         "total": 5
       },
       "delta": {
@@ -516,20 +516,19 @@
   ],
   "summary": {
     "total_evals": 17,
-    "mean_instruction_following_delta": -1.47,
+    "mean_instruction_following_delta": 8.24,
     "mean_goal_completion_delta": 8.82,
-    "mean_overall_delta": 4.21,
+    "mean_overall_delta": 8.69,
     "verdict_distribution": {
-      "skill_lifts_quality": 5,
-      "skill_hurts": 3,
-      "skill_neutral": 9
+      "skill_lifts_quality": 6,
+      "skill_neutral": 11
     },
     "per_skill_lift": {
-      "marketplace-validator": 12.5,
-      "marketplace-health": 2.05,
-      "ingesting-skills": -16.25,
+      "marketplace-validator": 22.5,
+      "marketplace-health": 8.25,
+      "ingesting-skills": 0.0,
       "releasing-marketplace": 20.0,
-      "general-critic": 20.0,
+      "general-critic": 31.2,
       "deep-research": 0.0,
       "crafting-skills": 0.0,
       "evaluating-skills": 15.0,

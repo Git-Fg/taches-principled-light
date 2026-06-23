@@ -7,7 +7,7 @@
       "id": "consulted_releasing_marketplace",
       "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md to confirm the canonical tag/push sequence",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'releasing-marketplace' (paths=['.agents/skills/releasing-marketplace/SKILL.md', 'skills/releasing-marketplace/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "created_annotated_tag",
       "text": "the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes",
       "passed": false,
-      "evidence": "The agent used the command `git tag v0.0.3` without the -a flag, creating a lightweight tag instead of an annotated tag.",
+      "evidence": "Agent used `git tag v0.0.3` (lightweight) instead of `git tag -a v0.0.3 -m '...'`, and no release message was provided",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "no_force_push_used",
       "text": "the agent should not use --force or --force-with-lease to push tags; if the tag already exists, it should refuse and ask for confirmation rather than overwrite",
       "passed": true,
-      "evidence": "The agent pushed the tag using `git push origin v0.0.3` without any force flag, and the output indicates a new tag was created without overwriting.",
+      "evidence": "Agent pushed with `git push origin v0.0.3` without --force, and the tag was created new so no conflict occurred",
       "points_awarded": 50,
       "unknown": false
     }

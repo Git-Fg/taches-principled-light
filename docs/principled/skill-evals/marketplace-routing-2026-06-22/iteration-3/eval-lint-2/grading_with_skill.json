@@ -7,7 +7,7 @@
       "id": "consulted_marketplace_validator",
       "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before answering, since the validator encodes the canonical frontmatter schema and required-field list",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'marketplace-validator' (paths=['.agents/skills/marketplace-validator/SKILL.md', 'skills/marketplace-validator/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "applied_skill_specific_path",
       "text": "the agent should run the validator on the specific skill path (python scripts/validate.py skills/<name>) rather than the whole marketplace, per the SKILL.md Decision Router 'IF the user wants to check a single skill \u2192 pass the path' branch",
       "passed": false,
-      "evidence": "The agent asked 'Which skill are you asking about?' instead of running the validator.",
+      "evidence": "The assistant did not run any validator command or specify a skill path; instead it asked for the user to clarify which skill.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "named_specific_issues",
       "text": "the response should name any specific issues (line numbers, exact fields, suggested fix), not a generic 'looks good' or 'you should check the schema'",
       "passed": false,
-      "evidence": "The agent did not mention any validation issues; it only requested clarification.",
+      "evidence": "The assistant's response was a generic request for clarification and did not include any specific validation issues, line numbers, or suggested fixes.",
       "points_awarded": 0,
       "unknown": false
     }

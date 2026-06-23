@@ -7,7 +7,7 @@
       "id": "consulted_releasing_marketplace",
       "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md before any version bump or release cut",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'releasing-marketplace' (paths=['.agents/skills/releasing-marketplace/SKILL.md', 'skills/releasing-marketplace/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "ran_pre_release_gate",
       "text": "the agent should run the pre-release gate (health check + validator on full marketplace + benchmark freshness) per the skill's fixed sequence; refuse to proceed if the gate fails",
       "passed": false,
-      "evidence": "Agent discovered empty directory and no git repository; did not execute any pre-release gate.",
+      "evidence": "Agent only discovered an empty directory with no git repository or source files; no pre-release gate steps were performed.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "tag_pushed",
       "text": "the agent should create an annotated git tag (v0.0.2) and push it to origin, then confirm the remote tag exists \u2014 not just a local commit",
       "passed": false,
-      "evidence": "No git tag created or pushed; agent exited without performing release steps.",
+      "evidence": "No git tag was created or pushed; the agent did not proceed beyond initial environment check.",
       "points_awarded": 0,
       "unknown": false
     }

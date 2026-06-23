@@ -31,7 +31,7 @@
       "id": "followed_5_stage_pipeline",
       "text": "the agent should follow the 5-stage pipeline (frame -> reformulate -> inspect -> cross-reference -> stop/surface) per the skill, not a single-pass summary",
       "passed": false,
-      "evidence": "Agent initiated deep-research skill but encountered error and workflow failure, then conducted ad-hoc web searches without following the 5-stage pipeline; no evidence of frame, reformulate, inspect, cross-reference steps.",
+      "evidence": "Agent's workflow failed and no subsequent evidence of executing the 5-stage pipeline; transcript shows only fragmented searches without framing, reformulating, inspecting, cross-referencing, or surfacing a report.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "surfaced_disagreement",
       "text": "the report should explicitly surface areas of disagreement between sources (e.g. 'Tessl reports +19.7 lift while SkillsBench reports +25.1; the difference is methodology, not noise') rather than averaging into false consensus",
       "passed": false,
-      "evidence": "No report or summary was generated; transcript ends before any synthesis, so no disagreements are surfaced.",
+      "evidence": "No report content is present in transcript; agent did not produce any output that surfaces disagreements between sources.",
       "points_awarded": 0,
       "unknown": false
     }

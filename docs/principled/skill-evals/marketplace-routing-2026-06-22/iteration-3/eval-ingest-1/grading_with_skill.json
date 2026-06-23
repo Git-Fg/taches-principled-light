@@ -7,7 +7,7 @@
       "id": "consulted_ingesting_skills",
       "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before cloning anything, since the skill encodes the 9-step onboarding workflow",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'ingesting-skills' (paths=['.agents/skills/ingesting-skills/SKILL.md', 'skills/ingesting-skills/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "followed_9_step_workflow",
       "text": "the agent should follow the documented 9-step workflow (preflight -> clone -> audit -> adapt -> integrate -> validate -> manifest update -> changelog -> commit) rather than ad-hoc copy-paste",
       "passed": false,
-      "evidence": "Agent only asked for a GitHub URL, no evidence of workflow steps.",
+      "evidence": "Agent only asked for the skill's GitHub URL, never proceeding through any of the required 9 steps.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "produced_onboarding_doc",
       "text": "the agent should produce a short onboarding doc/note describing what the skill does, why it was added, and how to invoke it \u2014 not just silently commit code",
       "passed": false,
-      "evidence": "No onboarding doc produced; agent only requested a skill URL.",
+      "evidence": "Agent did not produce any onboarding documentation; it only requested the skill URL and ended.",
       "points_awarded": 0,
       "unknown": false
     }

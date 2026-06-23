@@ -13,18 +13,18 @@
     "total": 5
   },
   "without_skill": {
-    "instruction_following_score": 30.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 12.4,
-    "passed": 1,
-    "failed": 4,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
     "unknown": 0,
     "total": 5
   },
   "delta": {
-    "instruction_following_delta": 10.0,
+    "instruction_following_delta": 40.0,
     "goal_completion_delta": 0.0,
-    "overall_delta": 4.1
+    "overall_delta": 16.5
   },
-  "verdict": "skill_neutral"
+  "verdict": "skill_lifts_quality"
 }

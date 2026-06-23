@@ -6,9 +6,9 @@
     {
       "id": "consulted_ingesting_skills",
       "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before importing, since the skill encodes local-convention adapters",
-      "passed": true,
-      "evidence": "agent read ; Skill tool: superpowers:writing-skills, taches-principled-light:skill-authoring",
-      "points_awarded": 35,
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'ingesting-skills' (paths=['.agents/skills/ingesting-skills/SKILL.md', 'skills/ingesting-skills/SKILL.md'], observed_reads=[], observed_skills=['superpowers:writing-skills', 'taches-principled-light:skill-authoring'])",
+      "points_awarded": 0,
       "unknown": false
     },
     {
@@ -31,7 +31,7 @@
       "id": "applied_local_adapters",
       "text": "the agent should adapt the imported skill's frontmatter to marketplace conventions (add when_to_use if missing, normalize description to single-line YAML) \u2014 not just copy verbatim",
       "passed": false,
-      "evidence": "Transcript ends before any adaptation of frontmatter is performed; agent only asked preliminary questions.",
+      "evidence": "The agent only asked clarifying questions and never performed any frontmatter adaptation or modification.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,17 +39,17 @@
       "id": "no_duplicate_added",
       "text": "the agent should detect and refuse to add a skill that's a near-duplicate of an existing marketplace skill (or explicitly call out the overlap as a feature, not a bug)",
       "passed": false,
-      "evidence": "No duplicate detection or refusal observed in transcript; agent only reviewed existing skills and posed clarifying questions.",
+      "evidence": "The agent did not perform any duplicate detection or address duplication; it only asked questions without completing the import process.",
       "points_awarded": 0,
       "unknown": false
     }
   ],
   "summary": {
-    "instruction_following_score": 35.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 17.5,
-    "passed": 1,
-    "failed": 4,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
     "unknown": 0,
     "total": 5
   },

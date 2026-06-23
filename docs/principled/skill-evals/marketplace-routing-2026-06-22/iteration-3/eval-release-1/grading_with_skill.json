@@ -31,7 +31,7 @@
       "id": "ran_pre_release_gate",
       "text": "the agent should run the pre-release gate (health check + validator on full marketplace + benchmark freshness) per the skill's fixed sequence; refuse to proceed if the gate fails",
       "passed": false,
-      "evidence": "No pre-release gate steps (health check, validator, benchmark freshness) are observed; agent only reads files and lists tags.",
+      "evidence": "No execution of health check or validator observed; agent only read SKILL.md and inspected files, never ran any gate step.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "tag_pushed",
       "text": "the agent should create an annotated git tag (v0.0.2) and push it to origin, then confirm the remote tag exists \u2014 not just a local commit",
       "passed": false,
-      "evidence": "No annotated tag creation or push to origin observed; local tag v0.0.2 existed prior, but agent did not create or push it.",
+      "evidence": "No git push or annotated tag creation observed; tag v0.0.2 already existed locally but agent did not push it or confirm remote tag.",
       "points_awarded": 0,
       "unknown": false
     }

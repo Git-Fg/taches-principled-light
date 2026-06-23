@@ -7,7 +7,7 @@
       "id": "consulted_releasing_marketplace",
       "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md to confirm the canonical tag/push sequence",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'releasing-marketplace' (paths=['.agents/skills/releasing-marketplace/SKILL.md', 'skills/releasing-marketplace/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,17 +31,17 @@
       "id": "created_annotated_tag",
       "text": "the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes",
       "passed": false,
-      "evidence": "The agent never executed any git tag command; the run did not proceed beyond verifying the directory was not a git repository.",
+      "evidence": "judge returned non-JSON: '{\\n  \"expectations\": [\\n    {\\n      \"id\": \"created_annotated_tag\",\\n      \"text\": \"the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes\",\\n'",
       "points_awarded": 0,
-      "unknown": false
+      "unknown": true
     },
     {
       "id": "no_force_push_used",
       "text": "the agent should not use --force or --force-with-lease to push tags; if the tag already exists, it should refuse and ask for confirmation rather than overwrite",
       "passed": false,
-      "evidence": "The agent never executed any git push command; therefore, it did not perform the required tag push operation.",
+      "evidence": "judge returned non-JSON: '{\\n  \"expectations\": [\\n    {\\n      \"id\": \"created_annotated_tag\",\\n      \"text\": \"the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes\",\\n'",
       "points_awarded": 0,
-      "unknown": false
+      "unknown": true
     }
   ],
   "summary": {
@@ -49,8 +49,8 @@
     "goal_completion_score": 0.0,
     "overall_score": 0.0,
     "passed": 0,
-    "failed": 5,
-    "unknown": 0,
+    "failed": 3,
+    "unknown": 2,
     "total": 5
   },
   "weight": {

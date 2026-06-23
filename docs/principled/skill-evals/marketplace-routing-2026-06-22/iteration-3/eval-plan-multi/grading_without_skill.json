@@ -7,7 +7,7 @@
       "id": "consulted_plan_lifecycle",
       "text": "the agent should read skills/plan-lifecycle/SKILL.md before planning; the skill defines the ROADMAP.md + per-phase PLAN.md structure",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'plan-lifecycle' (paths=['.agents/skills/plan-lifecycle/SKILL.md', 'skills/plan-lifecycle/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "created_roadmap_plus_phase_plans",
       "text": "the agent should produce both ROADMAP.md (high-level phase breakdown) and per-phase PLAN.md files with critic checkpoints per the skill's contract",
       "passed": false,
-      "evidence": "Agent only returned a 503 error; no ROADMAP.md or per-phase PLAN.md files were produced.",
+      "evidence": "No ROADMAP.md or PLAN.md files were produced; agent only returned a 503 service error.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "critic_checkpoints_meaningful",
       "text": "the critic checkpoints between phases should be substantive review gates (e.g. 'verify acceptance criteria + run adversarial critic'), not generic 'review the work' placeholders",
       "passed": false,
-      "evidence": "Agent did not produce any phase plans or critic checkpoints; the run ended prematurely with a server error.",
+      "evidence": "No critic checkpoints were defined because the agent failed to execute the plan due to server error.",
       "points_awarded": 0,
       "unknown": false
     }

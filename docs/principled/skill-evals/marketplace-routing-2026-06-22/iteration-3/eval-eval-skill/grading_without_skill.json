@@ -7,7 +7,7 @@
       "id": "consulted_evaluating_skills",
       "text": "the agent should read skills/evaluating-skills/SKILL.md before authoring evals; the skill defines the 8-stage loop",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'evaluating-skills' (paths=['.agents/skills/evaluating-skills/SKILL.md', 'skills/evaluating-skills/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "followed_8_stage_loop",
       "text": "the agent should follow the 8-stage loop (capture intent -> write evals.json -> run with+without -> grade -> aggregate -> review -> iterate -> optimize) per the skill, not a single-pass sketch",
       "passed": false,
-      "evidence": "Transcript only shows API error 503, no evidence of following 8-stage loop.",
+      "evidence": "Agent transcript shows only an API error; no evidence of following the 8-stage loop.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "both_runs_graded",
       "text": "the agent should produce both with-skill and without-skill grades for each eval, enabling delta calculation per the Tessl/SkillsBench methodology",
       "passed": false,
-      "evidence": "Transcript shows no evals or grades, only an API error.",
+      "evidence": "Agent transcript shows only an API error; no evidence of producing with-skill and without-skill grades.",
       "points_awarded": 0,
       "unknown": false
     }

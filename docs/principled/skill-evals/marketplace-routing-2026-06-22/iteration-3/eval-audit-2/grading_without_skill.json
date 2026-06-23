@@ -7,7 +7,7 @@
       "id": "consulted_marketplace_health",
       "text": "the agent should read .agents/skills/marketplace-health/SKILL.md before answering the drift check, since the skill defines the 4 audit dimensions",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'marketplace-health' (paths=['.agents/skills/marketplace-health/SKILL.md', 'skills/marketplace-health/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -23,7 +23,7 @@
       "id": "checked_drift_dimension",
       "text": "the agent should specifically check the cross-reference-integrity and docs-reflect-state dimensions (the 'drift' framing maps to those two dimensions per the skill)",
       "passed": false,
-      "evidence": "The agent did not proceed to check any drift dimensions; it asked for clarification due to an empty directory.",
+      "evidence": "Agent did not run any drift check; it only found an empty directory and asked for clarification.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "ran_health_script",
       "text": "the agent should run python .agents/skills/marketplace-health/scripts/health_check.py (or equivalent) rather than improvising its own drift check",
       "passed": false,
-      "evidence": "The agent did not run any health script; it stopped after finding an empty directory.",
+      "evidence": "Agent did not execute any script; it aborted after finding no files.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "listed_drift_findings",
       "text": "the response should list any MEDIUM/LOW drift findings (stale doc refs, missing CHANGELOG entries) with file paths and remediation",
       "passed": false,
-      "evidence": "No drift findings were listed because the agent did not perform any drift analysis.",
+      "evidence": "No drift findings were listed as the agent did not complete the check.",
       "points_awarded": 0,
       "unknown": false
     }

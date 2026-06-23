@@ -7,7 +7,7 @@
       "id": "consulted_task_lifecycle",
       "text": "the agent should read skills/task-lifecycle/SKILL.md before implementing; the skill defines the draft -> spec -> implement-verify -> docs lifecycle",
       "passed": false,
-      "evidence": "agent did not read or invoke any skill",
+      "evidence": "agent did not read or invoke expected skill 'task-lifecycle' (paths=['.agents/skills/task-lifecycle/SKILL.md', 'skills/task-lifecycle/SKILL.md'], observed_reads=[], observed_skills=[])",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "followed_lifecycle_stages",
       "text": "the agent should follow all 4 stages (draft capture -> spec refine -> implement+verify -> docs update) rather than jumping straight to code",
       "passed": false,
-      "evidence": "Agent encountered an API error (503) and did not perform any lifecycle stages.",
+      "evidence": "Agent transcript only shows an API error; no lifecycle stages were performed.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "small_scope_preserved",
       "text": "the agent should resist scope creep \u2014 the feature should match the original spec, not balloon into a multi-file refactor unless explicitly justified",
       "passed": false,
-      "evidence": "No implementation was attempted due to the API error; scope preservation cannot be assessed.",
+      "evidence": "Agent did not implement any feature due to API error; scope preservation is not applicable.",
       "points_awarded": 0,
       "unknown": false
     }

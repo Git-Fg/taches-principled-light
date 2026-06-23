@@ -7,7 +7,7 @@
       "id": "consulted_marketplace_validator",
       "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before running any lint command (the validator encodes the canonical frontmatter schema and lint rules the agent would otherwise have to guess)",
       "passed": true,
-      "evidence": "agent read /Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-health/SKILL.md, /Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-valid; Skill tool: ",
+      "evidence": "agent read /Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-validator/SKILL.md; Skill tool: ",
       "points_awarded": 40,
       "unknown": false
     },
@@ -31,7 +31,7 @@
       "id": "applied_validator_script",
       "text": "the agent should run the validator's documented script (python .agents/skills/marketplace-validator/scripts/validate_marketplace.py) rather than improvising a regex-based check; the SKILL.md explicitly says to use the script",
       "passed": false,
-      "evidence": "Agent ran `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/` instead of the documented `validate_marketplace.py` script.",
+      "evidence": "Agent ran validate.py instead of the documented validate_marketplace.py.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "named_specific_findings",
       "text": "the response should name at least one specific finding (even if it's 'all skills pass'), referencing skill paths and line numbers when applicable, not a generic 'looks good' summary",
       "passed": true,
-      "evidence": "Agent reported specific findings such as '2 hardcoded tool names: analyzing-sessions, orchestrating-subagents' and '2 body-too-long: design-good-bad-examples (850 lines)' with skill paths.",
+      "evidence": "Response lists specific findings such as hardcoded tool names (e.g., analyzing-sessions) and body-too-long warnings with skill paths.",
       "points_awarded": 50,
       "unknown": false
     }

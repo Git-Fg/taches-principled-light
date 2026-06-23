@@ -4,21 +4,21 @@
   "expected_skill": "security",
   "category_class": "marketplace",
   "with_skill": {
-    "instruction_following_score": 35.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 17.5,
-    "passed": 1,
-    "failed": 4,
-    "unknown": 0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 3,
+    "unknown": 2,
     "total": 5
   },
   "without_skill": {
-    "instruction_following_score": 35.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 17.5,
-    "passed": 1,
-    "failed": 4,
-    "unknown": 0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 3,
+    "unknown": 2,
     "total": 5
   },
   "delta": {

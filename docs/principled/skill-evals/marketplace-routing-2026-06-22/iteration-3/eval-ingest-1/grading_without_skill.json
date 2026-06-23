@@ -6,9 +6,9 @@
     {
       "id": "consulted_ingesting_skills",
       "text": "the agent should read .agents/skills/ingesting-skills/SKILL.md before cloning anything, since the skill encodes the 9-step onboarding workflow",
-      "passed": true,
-      "evidence": "agent read ; Skill tool: superpowers:writing-skills",
-      "points_awarded": 30,
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'ingesting-skills' (paths=['.agents/skills/ingesting-skills/SKILL.md', 'skills/ingesting-skills/SKILL.md'], observed_reads=[], observed_skills=['superpowers:writing-skills'])",
+      "points_awarded": 0,
       "unknown": false
     },
     {
@@ -31,7 +31,7 @@
       "id": "followed_9_step_workflow",
       "text": "the agent should follow the documented 9-step workflow (preflight -> clone -> audit -> adapt -> integrate -> validate -> manifest update -> changelog -> commit) rather than ad-hoc copy-paste",
       "passed": false,
-      "evidence": "The transcript only shows the agent loading writing-skills guidelines and asking for the URL, with no steps of the 9-step workflow performed.",
+      "evidence": "The agent only requested a GitHub URL and did not execute any of the 9 steps (preflight, clone, audit, etc.).",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,17 +39,17 @@
       "id": "produced_onboarding_doc",
       "text": "the agent should produce a short onboarding doc/note describing what the skill does, why it was added, and how to invoke it \u2014 not just silently commit code",
       "passed": false,
-      "evidence": "The transcript ends before any onboarding document is produced; no such output is present.",
+      "evidence": "No onboarding document was produced; the agent only asked for the input URL.",
       "points_awarded": 0,
       "unknown": false
     }
   ],
   "summary": {
-    "instruction_following_score": 30.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 15.0,
-    "passed": 1,
-    "failed": 4,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
     "unknown": 0,
     "total": 5
   },

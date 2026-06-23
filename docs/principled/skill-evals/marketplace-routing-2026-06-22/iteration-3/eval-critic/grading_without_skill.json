@@ -6,9 +6,9 @@
     {
       "id": "consulted_general_critic",
       "text": "the agent should read skills/general-critic/SKILL.md before reviewing; the skill defines the HIGH/MEDIUM/LOW severity taxonomy",
-      "passed": true,
-      "evidence": "agent read ; Skill tool: code-review",
-      "points_awarded": 30,
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'general-critic' (paths=['.agents/skills/general-critic/SKILL.md', 'skills/general-critic/SKILL.md'], observed_reads=[], observed_skills=['code-review'])",
+      "points_awarded": 0,
       "unknown": false
     },
     {
@@ -23,7 +23,7 @@
       "id": "applied_severity_taxonomy",
       "text": "the agent should classify findings by HIGH/MEDIUM/LOW severity per the skill, with explicit thresholds (HIGH = blocker; MEDIUM = should-fix; LOW = nice-to-have)",
       "passed": false,
-      "evidence": "Agent did not classify any findings; after failing to obtain a diff and finding no code, it asked for clarification without conducting a review.",
+      "evidence": "Agent failed to find any code to review (empty directory, no git repo) and asked for clarification; no findings were produced, so severity classification was never applied.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -31,17 +31,17 @@
       "id": "found_real_issues",
       "text": "the review should surface \u22651 substantive issue (correctness, security, performance, or design flaw), not just style nits",
       "passed": false,
-      "evidence": "Agent performed no review and did not surface any issue.",
+      "evidence": "No review was performed and no issues were surfaced because the agent could not locate source code or a git diff in the provided environment.",
       "points_awarded": 0,
       "unknown": false
     }
   ],
   "summary": {
-    "instruction_following_score": 30.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 11.2,
-    "passed": 1,
-    "failed": 3,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 4,
     "unknown": 0,
     "total": 4
   },

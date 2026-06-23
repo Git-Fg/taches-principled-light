@@ -6,9 +6,9 @@
     {
       "id": "consulted_marketplace_health",
       "text": "the agent should read .agents/skills/marketplace-health/SKILL.md before running any health check (the skill defines the audit dimensions)",
-      "passed": true,
-      "evidence": "agent read ; Skill tool: taches-principled-light:security",
-      "points_awarded": 30,
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'marketplace-health' (paths=['.agents/skills/marketplace-health/SKILL.md', 'skills/marketplace-health/SKILL.md'], observed_reads=[], observed_skills=['taches-principled-light:security'])",
+      "points_awarded": 0,
       "unknown": false
     },
     {
@@ -31,7 +31,7 @@
       "id": "ran_full_audit_pipeline",
       "text": "the agent should run the full marketplace-health audit pipeline (manifest consistency + license coverage + cross-reference integrity + docs-reflect-state) rather than checking just one dimension",
       "passed": false,
-      "evidence": "The agent only asked for marketplace type and did not execute any of the four audit dimensions (manifest consistency, license coverage, cross-reference integrity, docs-reflect-state) before the transcript ended.",
+      "evidence": "Agent invoked a security skill and asked for user input instead of executing the four-dimension marketplace-health audit pipeline.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,17 +39,17 @@
       "id": "specific_actionable_findings",
       "text": "the response should name specific medium/low findings (if any) with file paths and remediation steps, not just a binary 'healthy' verdict",
       "passed": false,
-      "evidence": "The agent produced no findings, file paths, or remediation steps; it only requested clarification without running any audit.",
+      "evidence": "Agent did not produce any findings; it only asked for input about which marketplace to audit.",
       "points_awarded": 0,
       "unknown": false
     }
   ],
   "summary": {
-    "instruction_following_score": 30.0,
+    "instruction_following_score": 0.0,
     "goal_completion_score": 0.0,
-    "overall_score": 12.4,
-    "passed": 1,
-    "failed": 4,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
     "unknown": 0,
     "total": 5
   },

@@ -31,7 +31,7 @@
       "id": "followed_5_stage_pipeline",
       "text": "the agent should follow the 5-stage pipeline (frame -> reformulate -> inspect -> cross-reference -> stop/surface) per the skill, not a single-pass summary",
       "passed": false,
-      "evidence": "Transcript shows only the skill launch, with no evidence of the 5-stage pipeline being executed (no frame, reformulate, inspect, cross-reference, or stop/surface steps observed).",
+      "evidence": "No pipeline stages are visible; the transcript shows only a single skill launch with no subsequent steps or report generation.",
       "points_awarded": 0,
       "unknown": false
     },
@@ -39,7 +39,7 @@
       "id": "surfaced_disagreement",
       "text": "the report should explicitly surface areas of disagreement between sources (e.g. 'Tessl reports +19.7 lift while SkillsBench reports +25.1; the difference is methodology, not noise') rather than averaging into false consensus",
       "passed": false,
-      "evidence": "Transcript does not contain any report or output that surfaces disagreements between sources; only the skill launch event is recorded.",
+      "evidence": "No report content or mention of source disagreement appears in the transcript; only a skill launch is recorded.",
       "points_awarded": 0,
       "unknown": false
     }

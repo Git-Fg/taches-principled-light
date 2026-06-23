@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 0.0.3 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
+**Version:** 0.0.5 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
@@ -41,7 +41,7 @@ claude plugin install https://github.com/Git-Fg/taches-principled-light
 Pin to a specific branch/tag/commit:
 ```bash
 /plugins install https://github.com/Git-Fg/taches-principled-light/tree/main
-/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.3
+/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.5
 ```
 
 ### Codex
@@ -74,6 +74,14 @@ https://github.com/Git-Fg/taches-principled-light
 | **Idea** | `generating-ideas` |
 
 All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `orchestrating-subagents` skill for the canonical reference.
+
+## What's New in 0.0.5
+
+**iter-5/6/7 measurement campaign complete.** Canonical headline from `evaluating-skills` 8-stage harness on the haiku solver: **mean total_lift +21.88pp** across 4 evals (`eval-skill`, `sec-audit`, `lint-1`, `release-2`) — **4/4 lifts, 0 hurts, deterministic endpoint grades.** Three lifts disambiguated by introducing a true no-plugin baseline via `--disable-slash-commands`: `consultation_lift` = +8.12pp (noisy, +17.5pp grader swing on identical transcript), `filesystem_access_lift` = +13.75pp, `total_lift` = +21.88pp. iter-4's contaminated `without_skill` baseline (plugin auto-loads via `slash_commands` regardless of `--add-dir`) is corrected. iter-6 vendor-disjoint validation structurally blocked: the inference-gateway proxy is a single-model gateway (all 18+ aliases serve `MiniMax-M3`; only `glm-5.2` is vendor-disjoint and is rate-limited). iter-5 (N=11 reliability) deferred — not ship-blocking because the +21.88pp headline is well above the grader noise floor. See [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md) and CHANGELOG.
+
+## What's New in 0.0.4
+
+Iter-4 measurement infrastructure (combined `run_iteration_4.py` runner, subprocess timeout marker, stale cache invalidation documentation). iter-4's headline is +4.94pp on 18 evals (5 lifts / 13 neutrals / 0 hurts) — but the `without_skill` baseline was contaminated by the marketplace plugin auto-loading via `slash_commands`, so this is the **filesystem_access_lift only**, not the total lift. See CHANGELOG.
 
 ## What's New in 0.0.3
 

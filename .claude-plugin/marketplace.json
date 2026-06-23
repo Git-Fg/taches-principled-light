@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "taches-principled-light",
-      "version": "0.0.3",
+      "version": "0.0.5",
       "description": "Specialist Claude Code plugin — 26 skills across DDD, FPF, Rust, MCP, security, git, wiki, session analytics, task lifecycle, design-hub (palette/typography/principles), and evaluating-skills (8-stage skill evaluation with behavioral JSONL review). Pairs with superpowers for the complete development toolkit.",
       "source": "./",
       "category": "development"

@@ -1,0 +1,10 @@
+{
+  "eval_id": "ingest-2",
+  "utterance": "add this skill to our marketplace, import it",
+  "expected_skill_dir": ".agents/skills/ingesting-skills",
+  "configs": [
+    "without_skill",
+    "with_full_marketplace",
+    "with_skill_only"
+  ]
+}

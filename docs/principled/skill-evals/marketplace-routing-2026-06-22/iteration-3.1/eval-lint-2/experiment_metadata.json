@@ -1,0 +1,10 @@
+{
+  "eval_id": "lint-2",
+  "utterance": "is this skill valid before I commit",
+  "expected_skill_dir": ".agents/skills/marketplace-validator",
+  "configs": [
+    "without_skill",
+    "with_full_marketplace",
+    "with_skill_only"
+  ]
+}

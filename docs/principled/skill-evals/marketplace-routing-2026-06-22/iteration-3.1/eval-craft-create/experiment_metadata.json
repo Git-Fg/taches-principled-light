@@ -1,0 +1,10 @@
+{
+  "eval_id": "craft-create",
+  "utterance": "create a new agent skill for my project",
+  "expected_skill_dir": "skills/crafting-skills",
+  "configs": [
+    "without_skill",
+    "with_full_marketplace",
+    "with_skill_only"
+  ]
+}

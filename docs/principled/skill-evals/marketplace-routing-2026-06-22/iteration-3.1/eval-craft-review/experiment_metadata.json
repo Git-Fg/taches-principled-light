@@ -1,0 +1,10 @@
+{
+  "eval_id": "craft-review",
+  "utterance": "review this skill's description and frontmatter",
+  "expected_skill_dir": "skills/crafting-skills",
+  "configs": [
+    "without_skill",
+    "with_full_marketplace",
+    "with_skill_only"
+  ]
+}

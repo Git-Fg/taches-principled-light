@@ -22,6 +22,12 @@ from pathlib import Path
 
 REPO = Path("/Users/felix/Documents/AutoPluginClaw/taches-principled-light")
 SKILLS_DIR = REPO / "skills"
+# The marketplace spans two folders: top-level `skills/` (26 skills) and
+# `.agents/skills/` (4 skills: marketplace-health, marketplace-validator,
+# ingesting-skills, releasing-marketplace). Both are independently
+# discoverable by recursive agents per the Agent Skills standard. Reads
+# of either folder count toward the "consulted a marketplace skill" signal.
+MARKETPLACE_SKILL_DIRS = [REPO / "skills", REPO / ".agents/skills"]
 WORKSPACE = REPO / "docs/principled/skill-evals/marketplace-routing-2026-06-22"
 ITER_DIR = WORKSPACE / "iteration-2"
 EVALS_FILE = WORKSPACE / "evals/evals.json"
@@ -93,7 +99,7 @@ def extract_skill_tool_invocations(events: list[dict]) -> list[str]:
 def preflight() -> bool:
     """Sanity-check that the inference gateway is reachable on Haiku before
     launching the full 36-run sweep. Returns True if a one-shot echo responds
-    without an API error.
+    without any error pattern (5xx, 4xx, rate limits, gateway issues).
     """
     print(f"[iter-2] preflight: {CLAUDE} --model {CLAUDE_MODEL} 'echo ok'", flush=True)
     cmd = [CLAUDE, "--print", "--output-format", "stream-json",
@@ -104,13 +110,21 @@ def preflight() -> bool:
     except subprocess.TimeoutExpired:
         print("[iter-2] preflight FAIL: 60s timeout (gateway unreachable?)", flush=True)
         return False
-    api_err = any(
-        "529" in line or "Overloaded" in line
-        for line in result.stdout.splitlines()
-    )
+    # Scan both stdout AND stderr for any error pattern. 529/Overloaded was
+    # the original failure mode; broaden to catch 4xx/5xx, rate limits, and
+    # generic Error/exception strings so non-529 failures abort fast.
+    combined = (result.stdout or "") + "\n" + (result.stderr or "")
+    error_patterns = [
+        "529", "Overloaded",
+        "API Error", "4xx", "5xx",
+        "rate limit", "rate_limit",
+        '"error":', '"is_error":true',
+        "Exception", "Traceback",
+    ]
+    api_err = any(p in combined for p in error_patterns)
     if result.returncode != 0 or api_err:
         print(f"[iter-2] preflight FAIL: rc={result.returncode} api_err={api_err}", flush=True)
-        print(result.stderr[:500], flush=True)
+        print((result.stderr or "")[:500], flush=True)
         return False
     print("[iter-2] preflight OK", flush=True)
     return True
@@ -159,7 +173,8 @@ def run_one(utterance: str, with_skill: bool, eval_dir: Path) -> dict:
         "skill_tool_invocations": tools,
         "skill_md_reads": reads,
         "marketplace_skill_md_reads": [
-            p for p in reads if str(SKILLS_DIR) in p
+            p for p in reads
+            if any(str(d) in p for d in MARKETPLACE_SKILL_DIRS)
         ],
     }
 

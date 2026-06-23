@@ -4,6 +4,14 @@ Behavioral evaluation of the marketplace skill router.
 Tracks the 5+ iterations run against the haiku solver (via inference-gateway proxy
 on port 3456) using the `evaluating-skills` 8-stage harness.
 
+## Start here
+
+**For a self-contained narrative of the 7-iteration campaign, read
+[`ITERATION-PHASE-RETROSPECTIVE.md`](ITERATION-PHASE-RETROSPECTIVE.md) first.**
+It synthesizes the canonical findings, methodology lessons, design decisions,
+and open follow-ups into a single document. This INDEX is the detailed
+timeline; the retrospective is the executive narrative.
+
 ## Iterations
 
 | # | Date | What it tested | Status | Verdict |
@@ -21,8 +29,11 @@ on port 3456) using the `evaluating-skills` 8-stage harness.
 
 ## Canonical report
 
-The iter-7 results are the canonical headline:
-[`marketplace-routing-2026-06-22/iteration-7/REPORT.md`](marketplace-routing-2026-06-22/iteration-7/REPORT.md).
+The iter-7 results are the canonical headline. **For the consolidated
+narrative, see
+[`ITERATION-PHASE-RETROSPECTIVE.md`](ITERATION-PHASE-RETROSPECTIVE.md) §
+"Canonical findings (the durable record)". For the raw REPORT, see
+[`marketplace-routing-2026-06-22/iteration-7/REPORT.md`](marketplace-routing-2026-06-22/iteration-7/REPORT.md).**
 This supersedes iter-4 as the citation target.
 
 **iter-7 headline (4-eval subset, deterministic endpoint grades):**

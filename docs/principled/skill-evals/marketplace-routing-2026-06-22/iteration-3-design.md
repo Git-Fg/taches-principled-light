@@ -496,6 +496,30 @@ The design document presents three schema forms for assertions. Their canonical 
 
 Hand-authored YAML is converted to the JSON form (with assertions summing to 100 per category) before iter-3 runs. The Pydantic model validates the JSON at load time and is the source of truth for what `grader.py` consumes. Anthropic's flat `evals[].expectations[]` schema (per `skills/evaluating-skills/references/schemas.md:11-27`) is a *legacy* format for routing-test results; iter-3 does not use it.
 
+## LLM-judge reliability (NEW: from Lee et al. 2026 and Yagubyan 2026)
+
+The iter-3 design was originally N=1 trial per (eval, config) for cost reasons. Two recent primary sources strongly suggest this is **insufficient for high-stakes evaluation**:
+
+1. **Lee, Zeng, Jeong, Sohn & Lee (2026), "How to Correctly Report LLM-as-a-Judge Evaluations"** ([arXiv 2511.21140v2](https://arxiv.org/html/2511.21140v2), ICML 2026, UW-Madison): raw LLM judgment scores are biased because judge sensitivity (q1) and specificity (q0) are imperfect. The bias is **positive at low true accuracy** and **negative at high true accuracy** — exactly the regime our marketplace evals live in (skills either help substantially or the model can already do it). They provide a **Rogan-Gladen (1978) bias-adjusted estimator** + confidence intervals accounting for both test-set and calibration-set uncertainty. Python implementation at [github.com/UW-Madison-Lee-Lab/LLM-judge-reporting](https://github.com/UW-Madison-Lee-Lab/LLM-judge-reporting).
+
+2. **Yagubyan (2026), "The Coin Flip Judge? Reliability and Bias in LLM-as-a-Judge Evaluation"** ([arXiv 2606.13685](https://arxiv.org/html/2606.13685), April 2026): single-trial LLM judging is unreliable. Empirical findings:
+   - **Mean flip rate 13.6%** across 29 tasks / 10 categories
+   - 28% of questions exceed 20% flip rate; one reached 56%
+   - **Cross-judge agreement only 76% (κ=0.51)** — moderate agreement
+   - **11 trials needed on average for 95% confidence** in majority vote; 15 for high-variance
+   - Significant first-position bias (72% A-majority, p=0.024)
+   - 25% of tested cases changed majority outcome with semantically-equivalent prompt templates
+
+**Implication for iter-3**: the design's planned N=1 is the bare minimum and produces unreliable deltas. The proper statistical fix is:
+
+**Option A (preferred) — multi-trial majority vote**: run each (eval, config) grade 3-5 times, take majority vote per assertion, then aggregate. Yagubyan's 11-trial recommendation is the upper bound; 3-5 trials gives 80-90% confidence which is sufficient for marketplace skill efficacy research. Cost multiplier: 3-5x more LLM calls. With 18 evals × 2 configs × 5 trials = 180 LLM calls vs the planned 36. At ~90s/call that's 4.5 hours vs 54 min — still feasible.
+
+**Option B (cheaper) — bias-adjusted estimator with calibration set**: per Lee et al., label a small calibration set (10-20 evals × 2 configs) with human judgments, estimate (q0, q1) for each judge, then apply the Rogan-Gladen correction to the raw scores. The bias-adjusted estimator is unbiased when calibration is large enough; CIs account for both test and calibration uncertainty. Implementation: clone the [UW-Madison-Lee-Lab/LLM-judge-reporting](https://github.com/UW-Madison-Lee-Lab/LLM-judge-reporting) repo, compute q0/q1 once, then apply per eval. Calibration cost is one-time; per-eval cost is the same as N=1 raw.
+
+**Recommendation**: For iter-3 (this batch), run with N=1 raw and **report the single-trial caveat loudly** in the benchmark.md. The 2-eval smoke test produced overall=45.0 (lint-1) and overall=16.5 (audit-1); the noise floor for these numbers is ±13.6% per Yagubyan. For iter-3.1, implement Option A (3-trial majority vote) as the production methodology. For iter-3.2, adopt Option B (Lee et al. bias-adjustment) once the human calibration set is built.
+
+**Multi-judge consensus** (Anthropic's recommended pattern for high-stakes grading): the [kenneth.computer multi-judge panel](https://kenneth.computer/research/notes/llm-as-judge) uses Claude Opus 4.6, GPT-5.2, and Gemini 3 — three frontier models from different providers. For our proxy, the equivalent would be `sonnet` (MiniMax-M3) + `glm-5.2` + a third family if available. Multi-judge consensus partially addresses the Yagubyan flip-rate problem because independent judges' errors are uncorrelated, but it doesn't address the Lee et al. bias (all judges share the same training-data worldview on what "correct" looks like).
+
 ## See also
 
 - `skills/evaluating-skills/references/behavioral-review.md` — the 5-dimension rubric and `material_difference` threshold used in iter-1 routing tests (now superseded by Tessl IF/GC for iter-3).

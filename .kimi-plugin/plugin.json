@@ -1,6 +1,6 @@
 {
   "name": "taches-principled-light",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Specialist plugin — DDD, first-principles reasoning, structured agent-driven dev, Rust lifecycle, MCP expertise, git workflow, security audit, wiki management, session analytics, full task lifecycle, design-hub, and evaluating-skills. Pairs with superpowers for the complete development toolkit.",
   "author": { "name": "Felix" },
   "skills": "./skills/",

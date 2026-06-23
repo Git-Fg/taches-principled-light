@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 0.0.5 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
+**Version:** 0.0.6 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
@@ -41,7 +41,7 @@ claude plugin install https://github.com/Git-Fg/taches-principled-light
 Pin to a specific branch/tag/commit:
 ```bash
 /plugins install https://github.com/Git-Fg/taches-principled-light/tree/main
-/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.5
+/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.6
 ```
 
 ### Codex
@@ -74,6 +74,10 @@ https://github.com/Git-Fg/taches-principled-light
 | **Idea** | `generating-ideas` |
 
 All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `orchestrating-subagents` skill for the canonical reference.
+
+## What's New in 0.0.6
+
+**Post-v0.0.5 polish, iter-8 design, and citation audit.** No new skills; no breaking changes; 19 commits, 35 files changed (+1613/-7). Four areas of work: (1) **iter-8 design** — 286-line plan + 213-line design supplements note addressing the two open follow-ups from iter-7 (proxy is structurally single-model → vendor-disjoint validation blocked; sec-audit +17.5pp grader swing on identical transcripts). The iter-8 architecture is a two-layer MCP test-runner stack: a mock MCP server (Tyk / AIMock / custom) feeds captured golden responses to the agent, and **mcp-assert** (Go, MIT, 18 stars, 0 open issues) acts as the test runner that asserts YAML expectations. (2) **Citation hallucination remediation** — 4 fabricated arXiv IDs (2406.01574, 2602.12345, 2603.12345) replaced with verified real ones (Wataoka 2024 / CoEval 2026 / SkillRouter 2026), 1 fabricated Claude-on-Claude κ=0.770 number replaced with the actual JudgeBench κ=0.720 from Norman/Rivera/Hughes Berkeley 2026 (arxiv:2606.19544). (3) **CI action bumps** — `actions/checkout` v4→v7, `actions/setup-python` v5→v6, `actions/upload-artifact` v4→v7 across both workflows. PR #1 (dependabot's auto-PR for these bumps) closed with an explanation comment; the local-application workflow is preferred for this repo. (4) **v0.0.5 self-critic pass** — 4 rounds of self-critic found 1 HIGH, 2 MEDIUM issues, all fixed. iter-8 design reviewed at 3 levels (PLAN.md ↔ supplements ↔ INDEX.md) for cross-reference integrity. See CHANGELOG for the long-form breakdown and the iter-8 supplements note for the MCP test-runner architecture detail.
 
 ## What's New in 0.0.5
 

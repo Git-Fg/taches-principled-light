@@ -10,7 +10,7 @@
 
 ### Problem identified after iter-8 plan committed
 
-The iter-8 plan uses `zerob13/mock-openai-api` to mock LLM judge responses.
+The iter-8 plan uses `<mock grader>` to mock LLM judge responses.
 The sec-audit eval's `secret_detection` assertion uses MCP-style tool calls
 against the agent's runtime. iter-7's sec-audit swung +17.5pp on identical
 transcripts, partly because the MCP tool responses are not deterministic
@@ -31,7 +31,7 @@ address this.
 stack** for the MCP stdio half:
 
 1. **Mock MCP server** (the actual mock the agent talks to via stdio):
-   `zerob13/mock-openai-api` is **not** an option here (it's HTTP-only).
+   `<mock grader>` is **not** an option here (it's HTTP-only).
    Candidates: Tyk mock MCP server, AIMock MCPMock, or a custom Python
    mock — the simplest one that serves the captured golden responses.
 2. **Test runner** (asserts behavior against the mock): **mcp-assert**
@@ -44,7 +44,7 @@ snapshot/replay as a first-class workflow. mcp-assert is the missing
 piece for determinism, but it doesn't replace the mock server, it
 sits on top of it.
 
-**OpenAI HTTP half** (unchanged): `zerob13/mock-openai-api` listens on
+**OpenAI HTTP half** (unchanged): `<mock grader>` listens on
 `:3000` inside the iter-8 `grader-mock` Docker Compose service
 (per iter-8 PLAN.md docker-compose.yml lines 112-127).
 
@@ -144,7 +144,7 @@ iter-N design.
 1. Run sec-audit with `--mcp-config mocks/secret-detection-mock.json` pointing at the mock MCP server (Tyk mock or a custom Python mock that serves the captured responses from §1). The harness invokes the mock via stdio.
 2. Use `mcp-assert snapshot --server <real-server>` to capture the original responses once, then have the mock MCP server serve those exact responses to the agent in iter-8 runs.
 3. If the +17.5pp grader swing collapses to <2pp, the cause was non-deterministic MCP tool responses, not LLM judge noise.
-4. If the swing persists, the cause is the LLM judge (which is the next thing to test via `zerob13/mock-openai-api`).
+4. If the swing persists, the cause is the LLM judge (which is the next thing to test via `<mock grader>`).
 
 This is a cheap 1-hour experiment that surgically disambiguates the two suspected noise sources.
 
@@ -154,15 +154,13 @@ This is a cheap 1-hour experiment that surgically disambiguates the two suspecte
 
 ---
 
-## 3. Multi-Model Gateway for `100.80.231.128:3456` Replacement
+## 3. Multi-Model Gateway for `<private inference gateway>` Replacement
 
 ### Problem
 
-The current proxy at `100.80.231.128:3456` is structurally a single-model
-gateway (20 vendor aliases — qwen, llama, gpt-4o, gemini, deepseek, mistral,
-claude-3×3, doubao, kimi, minimax, phi-4, mixtral, command-r, jamba, cerebras,
-fireworks, deepinfra, nex-agi/nex-n2-pro:free — all serve `MiniMax-M3`; only
-`glm-5.2` is vendor-disjoint and is rate-limited). This blocks iter-6's
+The current proxy at `<private inference gateway>` is structurally a single-family
+gateway (20 vendor aliases — all serve `the configured backend`; only
+`an external judge vendor` is vendor-disjoint and is rate-limited). This blocks iter-6's
 vendor-disjoint validation goal and is a real architectural constraint on
 the marketplace evaluation methodology going forward.
 
@@ -178,20 +176,24 @@ the marketplace evaluation methodology going forward.
 
 **Recommended:** **LiteLLM** as the self-hosted replacement. Reasons:
 
-1. **De-facto standard**: 51K stars, used by Stripe, Google ADK, Netflix, OpenAI Agents SDK
-2. **Drop-in OpenAI compatibility**: the existing iter-N harness code that talks to `100.80.231.128:3456` continues to work with just a base-URL change
+1. **De-facto standard**: 51K stars, used by Stripe, Netflix, and major
+   agent SDK vendors
+2. **Drop-in OpenAI compatibility**: the existing iter-N harness code that talks to `<private inference gateway>` continues to work with just a base-URL change
 3. **Native MCP gateway**: iter-8's mock work extends naturally to a real MCP gateway in v0.0.6+
 4. **Native A2A protocol support**: future-proofs for agent-to-agent evaluations
 5. **8ms P95 latency at 1k RPS**: well within the eval harness's needs
 6. **Admin dashboard + virtual keys + spend tracking + guardrails**: production-ready
-7. **100+ providers**: includes the vendor-disjoint options needed (Anthropic, OpenAI, Z.AI/glm, Google, etc.)
+7. **100+ providers**: includes the vendor-disjoint options needed
+   (multiple independent model families beyond the configured backend)
 
 **Migration path (v0.0.6+):**
 
-1. Stand up LiteLLM in a Docker container pointing at the existing `MiniMax-M3` endpoint + at least 2 vendor-disjoint providers (e.g., Anthropic Claude, Google Gemini).
-2. Update the iter harness's `OPENAI_BASE_URL` env var from `http://100.80.231.128:3456` to `http://litellm:4000`.
+1. Stand up LiteLLM in a Docker container pointing at the existing
+   `the configured backend` endpoint + at least 2 vendor-disjoint
+   providers (e.g., two independent model families).
+2. Update the iter harness's `OPENAI_BASE_URL` env var from `http://<private inference gateway>` to `http://litellm:4000`.
 3. Re-run iter-6 with the new gateway. The vendor-disjoint grading should now succeed (instead of 503ing like in iter-6 REPORT.md).
-4. Drop the `zerob13/mock-openai-api` for production eval runs (keep it for offline regression tests).
+4. Drop the `<mock grader>` for production eval runs (keep it for offline regression tests).
 
 **Sources:**
 - [BerriAI/litellm on GitHub](https://github.com/BerriAI/litellm) — 51,259 stars, MCP gateway, A2A protocol
@@ -206,9 +208,9 @@ the marketplace evaluation methodology going forward.
 
 | Finding | Impact on iter-8 | v0.0.6+ impact |
 |---------|-------------------|------------------|
-| **mcp-assert** (snapshot/replay) for MCP stdio + **zerob13/mock-openai-api** for OpenAI HTTP | Surgical disambiguation of the sec-audit +17.5pp grader swing (1-hour experiment); full snapshot/replay determinism for both halves of the eval stack | Real MCP gateway via LiteLLM MCP support; `mcp-assert snapshot` mode becomes the CI regression gate |
+| **mcp-assert** (snapshot/replay) for MCP stdio + **<mock grader>** for OpenAI HTTP | Surgical disambiguation of the sec-audit +17.5pp grader swing (1-hour experiment); full snapshot/replay determinism for both halves of the eval stack | Real MCP gateway via LiteLLM MCP support; `mcp-assert snapshot` mode becomes the CI regression gate |
 | Claude Code CLI flag inventory | iter-8B design needs `--mcp-config`; iter-8C design could use `--max-turns` for budget | iter-N+1 designs benefit from `--plugin-dir` for pinned reproducibility |
-| LiteLLM as multi-model gateway | Unblocks iter-6 vendor-disjoint validation | Replaces the single-model `100.80.231.128:3456` proxy |
+| LiteLLM as multi-model gateway | Unblocks iter-6 vendor-disjoint validation | Replaces the single-family `<private inference gateway>` proxy |
 
 ---
 

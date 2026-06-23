@@ -18,7 +18,10 @@ When iter-7 ran the LLM judge as `sonnet` and the solver as `haiku`,
 **both** hit the same MiniMax-M3 weights. This breaks the vendor-disjoint
 guarantee that justifies the headline (+21.88pp total_lift). The
 directional finding is robust, but the **magnitude** is suspect
-because the same model is judging its own outputs.
+because the same model is judging its own outputs. The self-preference
+bias mechanism in [Wataoka et al. 2024](https://arxiv.org/abs/2410.21819)
+(lower-perplexity preference) predicts that the same model would
+systematically rate its own outputs higher.
 
 To make this auditable in CI we need:
 1. A mock LLM endpoint that returns **different deterministic responses
@@ -194,6 +197,9 @@ a Helm chart to a problem that one image solves.
 - [LiteLLM Router docs (model_name alias dispatch, model_group_alias)](https://docs.litellm.ai/docs/routing)
 - [zerob13/mock-openai-api (GitHub)](https://github.com/zerob13/mock-openai-api)
 - [Portkey AI Gateway (fallback chains, virtual keys)](https://portkey.ai/features/ai-gateway)
-- CoEval 2026 — vendor-disjoint grader requirement
-- Wataoka et al. 2024 — body-hidden skill scoring
+- [Wataoka et al. 2024, "Self-Preference Bias in LLM-as-a-Judge", arXiv:2410.21819](https://arxiv.org/abs/2410.21819) — NeurIPS 2024 Safe Generative AI Workshop
+- [CoEval (Aperstein et al. 2026), arXiv:2606.03650](https://arxiv.org/abs/2606.03650) — vendor-disjoint panel, Spearman 0.95 / ρ=0.86
+- [SkillRouter (Zheng et al. 2026), arXiv:2603.22455](https://arxiv.org/abs/2603.22455) — body-hidden 31-44pp drop in routing accuracy
+- [SkillsBench (arXiv:2602.12670)](https://arxiv.org/abs/2602.12670) — 87 tasks / 8 domains for agent-skill evaluation
+- [SoK: Agentic Skills (arXiv:2602.20867)](https://arxiv.org/abs/2602.20867) — survey of agent-skill design space
 - SkillRouter 2026 — single-delta vs decomposed lift measurement

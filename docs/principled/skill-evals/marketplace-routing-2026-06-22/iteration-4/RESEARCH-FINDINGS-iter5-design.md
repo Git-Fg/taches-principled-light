@@ -16,9 +16,9 @@
 | 4 | Wataoka 2024, *Self-Preference Bias in LLM-as-a-Judge*, arxiv:2410.21819 (NeurIPS 2024 SGAI Workshop) | **Justifies iter-6 vendor-disjoint design.** | GPT-4 has significant self-preference; mechanism is **lower-perplexity preference**. |
 | 5 | Belmadani et al. 2026, *Who Judges the Judge?* (HeaLing 2026 workshop, ACL) | **Cross-confirms CoEval.** | LLM judges are NOT generator-invariant; "consistent evaluation biases linked to answer style, model family, and domain adaptation." |
 | 6 | Zheng et al. 2026, *SkillRouter*, arxiv:2603.22455v4 (cs.CL, 1 Apr 2026) | **Validates iter-4's body-matter finding.** | "Full skill text is a critical routing signal: removing the body causes 31–44pp drops"; 74% Hit@1; routing gains transfer to task success. |
-| 7 | Anonymous 2026, *A Systematic, Large-Scale Evaluation of LLM-as-a-Judge Models*, arxiv:2606.19544 | **Quantifies same-family bias magnitude.** | Claude-on-Claude κ=0.770 (Opus-Sonnet 0.782, Sonnet-Haiku 0.653). |
+| 7 | Norman/Rivera/Hughes 2026, *Reliability without Validity: A Systematic, Large-Scale Evaluation of LLM-as-a-Judge Models Across Agreement, Consistency, and Bias*, arxiv:2606.19544 (cs.CL, 17 Jun 2026) | **Quantifies same-family bias magnitude.** | κ deflation 33.8-41.2pp universal across 21 judges × 9 providers; test-retest >0.943 but ≠ correctness (consistency-bias paradox); Claude Opus 4.6 κ=0.720 on JudgeBench. |
 
-**Independent witnesses:** Each claim has 2+ sources. Wataoka self-preference is corroborated by Belmadani's "model family" finding and the systematic 2606.19544 κ=0.770 number. Yagubyan's N=11 result is methodologically consistent with classical majority-vote reliability curves (proportional to log(1/ε) for ε=0.05 error rate).
+**Independent witnesses:** Each claim has 2+ sources. Wataoka self-preference is corroborated by Belmadani's "model family" finding and the systematic 2606.19544 κ deflation result. Yagubyan's N=11 result is methodologically consistent with classical majority-vote reliability curves (proportional to log(1/ε) for ε=0.05 error rate).
 
 ---
 
@@ -80,7 +80,7 @@ The matrix predicts:
 
 ## What iter-4 Got Right
 
-1. **Heterogeneous judge (sonnet over haiku solver)** is the more conservative design. Per Wataoka 2024, same-family bias is real but moderate (Claude-on-Claude κ=0.770). Heterogeneous grading reduces self-preference risk.
+1. **Heterogeneous judge (sonnet over haiku solver)** is the more conservative design. Per Wataoka 2024, same-family bias is real but moderate (2606.19544: κ deflation 33.8-41.2pp universal; test-retest >0.943 but ≠ correctness). Heterogeneous grading reduces self-preference risk.
 2. **Lift mechanism split** (consultation-driven vs file-access-driven) is a real distinction that the SkillRouter 2026 paper independently validates: "full skill text is a critical routing signal" and removing it causes 31-44pp routing drops. This means iter-4's +4.94pp headline conflates two mechanisms that need disentangling.
 3. **Cache contamination correction** (dropping iter-3's +8.69pp to +4.94pp) is justified — the +8.69pp was inflated by stale v2.0.0 plugin cache showing different skill names.
 
@@ -113,7 +113,7 @@ The matrix predicts:
 
 **Revised:** **haiku solver + glm-5.2 judge** (vendor-disjoint: haiku is Anthropic, glm-5.2 is a different vendor via the proxy).
 - **Wall time:** 18 × 2 = 36 runs = ~1.2 hours.
-- **Why not gemini-3.1-pro-preview?** It's also vendor-disjoint from haiku. Could be a secondary option. Per arxiv 2606.19544 Claude-on-Claude κ=0.770, but cross-vendor κ is ~0.51 (Yagubyan 2026) — vendor-disjoint is the only way to claim "rules out same-family bias".
+- **Why not gemini-3.1-pro-preview?** It's also vendor-disjoint from haiku. Could be a secondary option. Per arxiv 2606.19544 κ deflation 33.8-41.2pp is universal across 21 judges, but cross-provider κ=0.51 (Yagubyan 2026) — vendor-disjoint is the only way to claim "rules out same-family bias".
 - **Comparison vs iter-4:** the delta between sonnet-over-haiku and glm-5.2-over-haiku isolates same-family bias contribution to the +4.94pp headline.
 - **Decision rule:** if iter-6 mean < iter-4 mean by >2pp, same-family bias is inflating iter-4 by ~2pp+. If within 1pp, iter-4 is robust.
 

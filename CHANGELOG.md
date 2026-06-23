@@ -2,6 +2,26 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [Unreleased]
+
+Post-v0.0.5 infrastructure work. No new skills; no breaking changes. The v0.0.5 release tag (be1f9f9) remains the latest published release; these commits are queued for the next release.
+
+### Added
+
+- **CI release-gate job** (`.github/workflows/eval-regression.yml` + `.github/scripts/release-gate.py`, commit `591fc86`): tag-push trigger (`push.tags: ['v*.*.*']`) on `ubuntu-latest`. Reads the committed `results[]`/`comparisons[]` from the iter benchmark JSON, asserts `summary.total_lift.mean_overall_delta >= +15pp` AND no per-eval `lifts.total_lift.overall_delta < 0pp`, and annotates the GitHub release with `[release-gate] PASS|FAIL`. Exit codes: 0=PASS, 1=FAIL, 2=missing/malformed JSON. Validates committed JSON rather than re-running the harness.
+- **v0.0.5 release notes** (`.github/RELEASE-v0.0.5.md`, commit `df91ef8`): 167-line long-form description for the GitHub release page. Headline (+21.88pp total_lift, 4/4 lifts, 0 hurts), per-eval table, methodology section, reproduction commands, and proxy-architecture caveat.
+- **Vendor-disjoint grader mock research** (`docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`, commit `a516333`): 205-line research note evaluating 3 grader-mock implementations for the vendor-disjoint judge pipeline (`zerob13/mock-openai-api` recommended as B-grade, WireMock+LiteLLM as A-grade, 30-line Python shim as C-grade fallback).
+- **Iter-7 self-critic fix** (commit `2697663`): corrected the v0.0.5 campaign summary in CHANGELOG to show `+21.88pp (4/4 lifts, 0 hurts)` as the canonical iter-7 headline rather than the prior `+4.94pp (iter-4 filesystem_access_lift only)`.
+
+### Changed
+
+- **Cached `--disable-slash-commands` baselines** (commit `f94c3f0`): baselines for the 4-eval iter-7 subset preserved for iter-N+1 reuse. Each iter that adds evals only needs to run fresh baseline for the new evals, not the full subset.
+
+### Verified
+
+- **marketplace-health**: HEALTH: pass (validator 0/87 warnings across 31 skills; manifest consistency at 0.0.5; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`.
+- **Citation audit + fix** (post-`a516333`): verified all 9 arXiv IDs cited in v0.0.5 release notes and iter-5/6/7 docs against direct arXiv fetch. Replaced 4 fabricated IDs (2406.01574 → 2410.21819 Wataoka 2024, 2602.12345 → 2606.03650 CoEval 2026, 2603.12345 → 2603.22455 SkillRouter 2026) and 1 fabricated number (Claude-on-Claude κ=0.770 → κ deflation 33.8-41.2pp universal + Claude Opus 4.6 κ=0.720 on JudgeBench, per arxiv:2606.19544 Norman/Rivera/Hughes Berkeley 2026). All 5 affected files updated; zero residual hallucinations in grep across all `.md`/`.py`/`.json`/`.yml`/`.yaml`/`.toml`.
+
 ## [0.0.3] — 2026-06-23
 
 Behavior-eval-validated router improvements + corrected eval pipeline. No new skills; no breaking changes. Mean lift +8.69pp over 17 evals, 6 lifts / 11 neutrals / **0 hurts**.
@@ -166,8 +186,12 @@ iter-4 was the cache-corrected headline. iter-7 is the lift-disambiguated headli
   when skill body hidden (validates iter-4 body-matter finding)
 - **Paik Kim 2026** (arxiv:2605.16354, 8 May 2026): doubly-robust power analysis
 - **Belmadani 2026** (HeaLing 2026 workshop, ACL): LLM judges NOT generator-invariant
-- **Systematic 2026** (arxiv:2606.19544, 23 Jun 2026): Claude-on-Claude κ=0.770;
-  shows that even same-family judging has only moderate agreement
+- **Systematic 2026** (arxiv:2606.19544, 17 Jun 2026, Norman/Rivera/Hughes
+  Berkeley): 21 judges × 9 providers × 3 benchmarks; kappa deflation
+  33.8-41.2pp universal across all 21 judges; test-retest reliability
+  >0.943 but **decoupled from correctness** ("consistency-bias paradox")
+  — even same-family judging produces only moderate chance-corrected
+  agreement (Claude Opus 4.6 κ=0.720 on JudgeBench)
 
 See [`iteration-4/RESEARCH-FINDINGS-iter5-design.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-4/RESEARCH-FINDINGS-iter5-design.md) for the full synthesis.
 

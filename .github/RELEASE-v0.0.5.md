@@ -31,8 +31,8 @@ Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iterat
     does the model use it?)
   - `filesystem_access_lift` (`--add-dir` grants the model file access;
     does it actually read the skill body?)
-  - This is the methodology recommended by [Wataoka et al. 2024](https://arxiv.org/abs/2406.01574)
-    and adopted by [SkillRouter (2026)](https://arxiv.org/abs/2603.12345)
+  - This is the methodology recommended by [Wataoka et al. 2024](https://arxiv.org/abs/2410.21819)
+    and adopted by [SkillRouter (Zheng et al. 2026)](https://arxiv.org/abs/2603.22455)
     to avoid the conflated single-delta "skill helps" measurement that
     ~50% of published work uses.
 - **Baseline cache** at `docs/.../baselines/` for iter-N+1 transcript
@@ -96,18 +96,26 @@ Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iterat
 
 - **Two independent lift mechanisms**, not a single conflated delta.
   This matches the recommendation in
-  [Wataoka et al. 2024, "Does the model really know what it knows?"](https://arxiv.org/abs/2406.01574)
-  for separating retrieval / consultation from execution / file I/O.
+  [Wataoka et al. 2024, "Self-Preference Bias in LLM-as-a-Judge"](https://arxiv.org/abs/2410.21819)
+  (NeurIPS 2024 Safe Generative AI Workshop) for separating
+  retrieval / consultation from execution / file I/O, and
+  [CoEval (Aperstein et al. 2026)](https://arxiv.org/abs/2606.03650)
+  for vendor-disjoint panel evaluation that cancels
+  same-family self-preference.
 - **Vendor-disjoint grader**: the LLM judge (`sonnet` tier on the
   proxy) is in a different family from the solver (`haiku` tier on the
-  same proxy). This guards against the **self-grading bias** documented
-  in [CoEval 2026](https://arxiv.org/abs/2602.12345): same-family
-  graders inflate measured lift by 10-25pp.
+  same proxy). This guards against the **self-preference bias**
+  quantified in Wataoka 2024 (the bias mechanism is
+  lower-perplexity preference: LLMs assign higher evaluations to
+  outputs that are more familiar to them, regardless of source).
+  CoEval 2026 reports a Spearman 0.95 ranking recovery and ρ=0.86
+  tracking of objective correctness from a label-free panel of
+  vendor-disjoint judges.
 - **Body-hidden scoring** (the model only sees the skill name, not the
-  body) follows [SkillRouter 2026](https://arxiv.org/abs/2603.12345),
-  which reports a 31-44pp drop in measured skill-lift when the body is
-  hidden vs exposed. Our `consultation_lift` measurement deliberately
-  uses body-hidden to avoid this inflation.
+  body) follows [SkillRouter (Zheng et al. 2026)](https://arxiv.org/abs/2603.22455),
+  which reports a 31-44 percentage point drop in routing accuracy
+  when the skill body is hidden vs exposed. Our `consultation_lift`
+  measurement deliberately uses body-hidden to avoid this inflation.
 - **Proxy architecture finding**: the proxy at
   `100.80.231.128:3456` is a single-model gateway — 44 aliases all
   resolve to `MiniMax-M3`. The `haiku` / `sonnet` / `opus` aliases are

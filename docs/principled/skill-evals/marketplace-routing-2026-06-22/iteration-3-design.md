@@ -519,18 +519,21 @@ Iteration-3 needs **four new scripts** + content authoring + schema work:
 
 4. **`analyzer.py`** (cross-eval aggregator) — wraps `aggregate_benchmark.py` from `skills/evaluating-skills/scripts/` with an **adapter layer** that translates the iter-3 `grading_iter3.json` schema into the existing `behavioral_comparison.json` 5-dimension schema. The existing script is **not** reusable as-is — its metrics (`pass_rate`, `time_seconds`, `tokens`) are dimension-agnostic but its expected input schema differs. The adapter approach keeps the marketplace's existing benchmarking tool working while iter-3 evolves independently.
 
-5. **An `assertions.json` per eval** (or a `assertions[]` field added to
-   `evals.json`). **18 evals × 5 assertions each = 90 hand-authored
-   assertions**. With each assertion needing a category (IF or GC) + points
-   (summing to 100 per category) + type + text + grader (code/model) +
-   compare_args (optional) + reference solution, this is roughly 6-9 hours
-   of content authoring. This is the biggest blocker — content, not tooling.
-   Reuse the `craft-create` example (lines 32-57) as the template; aim for
-   3 IF assertions summing to 100 + 2 GC assertions summing to 100 (or
-   4+3, 3+4, etc.) per eval. **The example's utterance ("create a new
-   agent skill for parsing PDFs") is illustrative** — adapt assertions to
-   match the actual utterance in `evals/evals.json` for each eval, not
-   the example template.
+5. **`assertions.json` per eval** — **COMPLETE as of this commit**. All 18
+   evals from `evals/evals.json` have assertion sets in
+   `iteration-3/assertions/*.json`. 90 total assertions; every file validates
+   against the schema (5 asserts each; IF=100; GC=100). 2 evals use weight
+   overrides: `audit-1` (0.7/1.0 — audit is goal-focused) and `critic`
+   (0.6/1.0 — review quality matters more than process). Each eval includes
+   a `reference_solution` field documenting what a complete passing
+   response looks like, so the LLM judge has concrete ground truth.
+   Per-eval categories:
+   - **local-meta** (7 evals): lint-1, lint-2, audit-1, audit-2, ingest-1,
+     ingest-2, release-1, release-2 — test marketplace-maintenance skills
+     in `.agents/skills/`.
+   - **marketplace** (10 evals): critic, research, craft-create,
+     craft-review, eval-skill, plan-multi, task-small, web-rust, sec-audit,
+     rust-clippy — test user-facing skills in `skills/`.
 
 6. **An assertion schema** that supports PASS / FAIL / UNKNOWN. UNKNOWN is
    returned by the LLM judge when the evidence is genuinely ambiguous; it is
@@ -559,13 +562,13 @@ Iteration-3 needs **four new scripts** + content authoring + schema work:
 
 | Step | Effort | Notes |
 |------|--------|-------|
-| Author 18 `assertions[]` sets | 6-9 hours | 18 × 5 assertions = 90 hand-authored assertions; each requires category + points (summing to 100/category) + reference solution |
+| Author 18 `assertions[]` sets | **DONE** | 90 assertions across 18 files, all schema-valid (commit `54ee96e`) |
 | Implement `grader.py` (LLM-as-judge) | 2 hours | Reuse the with/without-skill runner; only `compliance`+`quality` need the judge |
 | Implement `comparator.py` | 1 hour | Pure computation; weighted-average formula from line 219 |
 | Implement `analyzer.py` | 1 hour | Aggregation + report; per-skill lift, per-eval verdict distribution |
 | Calibrate judge model (Sonnet vs Haiku) | 1-2 hours | 5-10 evals × 2 configs × 2 compliance/quality assertions × 2 judges = 40-80 LLM calls at ~60s each |
 | Run iteration-3 | 4-6 hours (18 evals × 2 configs × ~60-200s each + 300s timeouts) | Plus ~72 LLM judge calls (18 × 2 × 2 compliance+quality assertions) |
-| **Total** | **~2 working days** | Realistic estimate; calibration + run time driven by LLM judge volume |
+| **Total** | **~1 working day** | Content blocker cleared; remaining work is grader+comparator+analyzer impl + calibration + run |
 
 ## When to run iteration-3
 

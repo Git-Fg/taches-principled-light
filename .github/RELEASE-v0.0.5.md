@@ -4,14 +4,18 @@
 (`plugin_only` vs `plugin_with_add_dir` vs `no_skill` baseline), with
 4 / 4 evals moving in the right direction and **0 hurts**. Three of the
 four evals grade deterministically; the fourth (sec-audit) is
-non-deterministic on the current judge (see _Known limitations_).
+non-deterministic on the current judge (see _Known limitations_) —
+the per-eval table below shows one captured realization. The
+directional finding is robust (4/4 lift, 0 hurts) and the headline
+is dominated by deterministic `filesystem_access_lift` (+13.75pp
+mean).
 
 Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md`](docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-7/REPORT.md)
 
 ## What's in the box
 
 - **26 top-level skills** in `skills/`
-- **3 marketplace-scoped skills** in `.agents/skills/`
+- **4 marketplace-scoped skills** in `.agents/skills/`
   (marketplace-validator, marketplace-health, releasing-marketplace,
   ingesting-skills) — these are the maintenance skills for the marketplace
   itself
@@ -117,11 +121,14 @@ Full report: [`docs/principled/skill-evals/marketplace-routing-2026-06-22/iterat
   when the skill body is hidden vs exposed. Our `consultation_lift`
   measurement deliberately uses body-hidden to avoid this inflation.
 - **Proxy architecture finding**: the proxy at
-  `100.80.231.128:3456` is a single-model gateway — 44 aliases all
-  resolve to `MiniMax-M3`. The `haiku` / `sonnet` / `opus` aliases are
-  proxy tier labels, not different models. Only `glm-5.2` is a genuine
-  second family and it is rate-limited (503 `circuit_breaker_open:
-  RateLimit`). This is documented in iter-6 REPORT.md.
+  `100.80.231.128:3456` is a single-model gateway — every alias in the
+  vendor catalog (qwen, llama, gpt-4o, gemini, deepseek, mistral,
+  claude-3×3, doubao, kimi, minimax, phi-4, mixtral, command-r, jamba,
+  cerebras, fireworks, deepinfra, nex-agi/nex-n2-pro:free) resolves to
+  `MiniMax-M3`. The `haiku` / `sonnet` / `opus` aliases are proxy tier
+  labels, not different models. Only `glm-5.2` is a genuine second
+  family and it is rate-limited (503 `circuit_breaker_open: RateLimit`).
+  This is documented in iter-6 REPORT.md.
 
 ## Known limitations
 

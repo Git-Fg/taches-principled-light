@@ -222,3 +222,98 @@ Not now. Iteration-2 (this batch) proves the harness scales and gives a coarse b
 ## Open question
 
 The Tessl paper measured both instruction-following and goal-completion but found that goal-completion saturates for almost all models. So in practice, **instruction-following is the only metric that varies across model tiers on this kind of task.** Should iteration-3 therefore weight instruction-following rubrics (e.g., "the agent followed the Compendium's prescribed frontmatter structure") heavily, and treat goal-completion rubrics as a sanity check (i.e., they should saturate to 100% — anything less is a real bug)? My take: yes for skills whose value is in workflow encoding (crafting-skills, plan-lifecycle, security), where the discriminator is whether the agent followed the right process. For skills whose value is in knowledge encoding (web-search, rust, engineering-mcp), the goal-completion rubric is the better primary metric. Different skills, different metrics, but within any single skill, pick one and stick to it. Defer to a per-skill decision when iteration-3 actually runs.
+
+## Grader type selection (Anthropic methodology)
+
+Per [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents), three grader types — choose the right one per assertion:
+
+| Type | Methods | When to use |
+|---|---|---|
+| **Code-based** | string match, binary tests, static analysis, outcome verification, tool-call verification, transcript analysis | When the assertion is deterministic (consultation, structure, tool-use). Fast, cheap, reproducible. |
+| **Model-based** | rubric-based scoring, natural-language assertions, pairwise comparison, reference-based evaluation, multi-judge consensus | When the assertion is open-ended (compliance, quality). Flexible but non-deterministic. |
+| **Human graders** | SME review, crowdsourced judgment, A/B testing, inter-annotator agreement | Calibration only. Reserve for subjective/ambiguous tasks. |
+
+For each task, scoring is **weighted** (combined scores hit a threshold), **binary** (all must pass), or **hybrid**. Tessl uses weighted (per-category 0–100 sums); our iter-3 follows the same.
+
+### Per-assertion grader recommendation
+
+| Assertion `type` | Recommended grader | Why |
+|---|---|---|
+| `consultation` | code-based | Deterministic: was `SKILL.md` read? Was the Skill tool invoked? |
+| `structure` | code-based | Deterministic: does the output have the right frontmatter keys, section ordering, etc. |
+| `compliance` | model-based | Judgment call: did the agent follow the skill's specific guidance? |
+| `quality` | model-based | Open-ended judgment: was the output tasteful, complete, non-overfit? |
+
+For model-based graders, Anthropic recommends:
+
+- **Give the LLM a way out** — instruction to return `"Unknown"` when uncertain.
+- **Grade each dimension with an isolated LLM-as-judge** rather than one grader per dimension.
+- **Calibrate LLM judges with human experts** before trusting the score.
+
+## Canonical eval task format (Anthropic YAML)
+
+Per Anthropic's example, the canonical eval task schema (adapted for our 18 marketplace evals):
+
+```yaml
+task:
+  id: craft-create
+  desc: |
+    Create a new agent skill for parsing PDFs.
+  graders:
+    - type: deterministic_tests   # consultation: did agent read crafting-skills/SKILL.md?
+      transcript_checks:
+        - read_file: skills/crafting-skills/SKILL.md
+    - type: llm_rubric            # compliance: did agent follow the Compendium?
+      rubric: prompts/crafting-skill-quality.md
+      assertions:
+        - "Description starts with 'Load when…'"
+        - "Description has Do NOT use for X clause"
+        - "Body has Decision Router section"
+    - type: state_check           # goal_completion: is the output a valid SKILL.md?
+      expect:
+        - file_exists: skills/pdf-parser/SKILL.md
+        - frontmatter_keys: [name, description, license]
+  tracked_metrics:
+    - type: transcript
+      metrics: [n_turns, n_toolcalls, n_total_tokens]
+    - type: latency
+      metrics: [time_to_first_token, time_to_last_token]
+```
+
+Our 18-eval set's JSON form follows this structure (with `assertions[]` flat list + `points` + `category` from Tessl). The YAML form is for human authoring; JSON is for the harness.
+
+## Anti-patterns to avoid
+
+Anthropic's "Demystifying evals" lists specific anti-patterns that have bitten even sophisticated teams:
+
+1. **Don't check tool-call order as success.** "There is a common instinct to check that agents followed very specific steps like a sequence of tool calls in the right order. We've found this approach too rigid and results in overly brittle tests, as agents regularly find valid approaches that eval designers didn't anticipate. So as not to unnecessarily punish creativity, it's often better to grade what the agent produced, not the path it took."
+   - **Exception for iter-3**: `consultation` assertions *do* check the path (was the skill read?). Justified because: (a) we want to measure skill *reach* — without a consultation check, a skill that's never consulted gets 100% goal_completion (since goal-completion saturates); (b) consultation is a yes/no fact, not a sequence.
+
+2. **0% pass rate across many trials = broken task.** "With frontier models, a 0% pass rate across many trials (i.e. 0% pass@100) is most often a signal of a broken task, not an incapable agent, and a sign to double-check your task specification and graders. For each task, it's useful to create a reference solution: a known working output that passes all graders."
+   - **For iter-3**: each of our 18 assertions needs a reference solution. Anthropic + Tessl agree.
+
+3. **Build partial credit in.** "For tasks with multiple components, build in partial credit. A support agent that correctly identifies the problem and verifies the customer but fails to process a refund is meaningfully better than one that fails immediately."
+   - **For iter-3**: Tessl's per-category 0–100 scoring already gives partial credit; we don't need to add it.
+
+4. **Watch for eval saturation.** "An eval at 100% tracks regressions but provides no signal for improvement. Eval saturation occurs when an agent passes all of the solvable tasks, leaving no room for improvement."
+   - **For iter-3**: if iter-3 returns 100% on a category across all 18 evals, the category has saturated. Harder tasks are needed.
+
+5. **Read the transcripts.** "You won't know if your graders are working well unless you read the transcripts and grades from many trials... Failures should seem fair: it's clear what the agent got wrong and why."
+   - **For iter-3**: step 4 (review) of the iter-2 loop should always include reading 5–10 transcripts of failed evals.
+
+6. **20–50 tasks is a great start.** "We see teams delay building evals because they think they need hundreds of tasks. In reality, 20–50 simple tasks drawn from real failures is a great start."
+   - **For iter-3**: our 18 evals is at the lower end of Anthropic's recommended range; if iter-3 surfaces interesting patterns, we should grow to 30–50.
+
+## Eval author guidance
+
+From Anthropic's roadmap, applied to our 18 marketplace evals:
+
+- **Step 0**: Start now — don't wait for the perfect suite. (We're starting with 18; iterate.)
+- **Step 1**: Start with what you already test manually. The `evals.json` set is hand-authored from prior routing-test failures (the 7W/0T/3L baseline at 904e11e). ✓
+- **Step 2**: Write unambiguous tasks with reference solutions. For each of our 18 evals, author a known-good response that passes all assertions. (Blocker for iter-3.)
+- **Step 3**: Build balanced problem sets. Our set has 10 marketplace-category + 8 local-meta + 1 critic + 5 research/etc — needs review for class balance.
+- **Step 4**: Build a robust eval harness with a stable environment. We use `/tmp/empty-claude-project` as the baseline for without-skill runs (no repo state leaks); with-skill runs use the marketplace repo.
+- **Step 5**: Design graders thoughtfully. (See table above.)
+- **Step 6**: Check the transcripts. (Run after iter-3.)
+- **Step 7**: Monitor for capability eval saturation. (Run after iter-3.)
+- **Step 8**: Keep evaluation suites healthy. (Long-term; out of iter-3 scope.)

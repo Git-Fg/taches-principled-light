@@ -38,21 +38,34 @@ Each assertion is one of:
 
 ## The 4 sub-agents
 
-Per Anthropic's pattern (executor / grader / comparator / analyzer), iteration-3 uses 4 sub-agents:
+Per Anthropic's [skill-creator pattern](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md) (executor / grader / comparator / analyzer, March 2026), iteration-3 uses 4 sub-agents. Anthropic ships reference implementations for each (`agents/grader.md`, `agents/comparator.md`, `agents/analyzer.md`) which we're adapting to Python `subprocess` runs of `claude --print`:
 
 ### 1. Executor
 
-Runs the with-skill and without-skill configurations identically to iteration-2 (Claude Code CLI, `--output-format stream-json`). Captures the full transcript and the final response text. Per-eval timeout raised to 300s (from 180s) to allow the agent to complete more thorough work.
+Runs the with-skill and without-skill configurations identically to iteration-2 (Claude Code CLI, `--output-format stream-json`). Anthropic's pattern recommends spawning **both runs in the same turn** (parallel) — we don't have that luxury in this Python harness, but iter-2's per-eval serial execution is acceptable. Per-eval timeout raised to 300s (from 180s) to allow the agent to complete more thorough work.
 
 ### 2. Grader
 
 For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call (Claude, with the eval's assertions + the response text + the eval's expected_skill + the relevant SKILL.md).
 
+Grading output schema (per Anthropic's `references/schemas.md`):
+
+```json
+{
+  "expectations": [
+    {"text": "...", "passed": true, "evidence": "..."},
+    {"text": "...", "passed": false, "evidence": "..."}
+  ]
+}
+```
+
+**Use `text` / `passed` / `evidence` — NOT `name` / `met` / `details`.** The exact field names matter for downstream tooling (the viewer depends on them).
+
 For the `consultation` assertions, the grader can use a deterministic check on the transcript (was the right SKILL.md read?). For the others, the grader uses LLM-as-judge.
 
 ### 3. Comparator
 
-For each eval, computes:
+For each eval, computes (per Anthropic's blind-A/B pattern: "give two outputs to an independent agent without telling it which is which"):
 - `with_skill_pass_rate` = (assertions PASS in with-skill run) / total assertions
 - `without_skill_pass_rate` = (assertions PASS in without-skill run) / total assertions
 - `delta` = with − without
@@ -71,6 +84,8 @@ Aggregates across all evals. Computes:
 - **Per-skill utility score** (this is what the Tessl paper calls the headline metric)
 - **Failure pattern clustering** (which assertions fail most often?)
 - **Recommended description edits** (for any eval where delta < 0)
+
+Per Anthropic's pattern, also surface patterns the aggregate stats might hide: assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
 
 ## See also
 

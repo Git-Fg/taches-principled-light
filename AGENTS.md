@@ -75,6 +75,25 @@ Four local meta-marketplace skills live in `.agents/skills/` for maintaining the
 
 Run `marketplace-health` before any release cut. It catches cross-reference bugs, license gaps, and stale doc claims that the per-skill validator misses.
 
+## Pre-commit Safety Floor
+
+A pre-commit hook at `.pre-commit-config.yaml` enforces the spec's risky-string scrub rules (`docs/principled/specs/2026-06-23-eval-cleanup-design.md` L145-162) on every commit. The hook lives at `scripts/check-risky-strings.py`. CI runs the same script as a backstop on every push to `main` (see `.github/workflows/marketplace-health.yml`).
+
+One-time setup:
+
+```bash
+python3 -m pip install --user pre-commit
+pre-commit install
+```
+
+Verify on demand:
+
+```bash
+pre-commit run --all-files
+```
+
+Bypass sparingly with `git commit --no-verify`. The hook only enforces high-signal patterns (specific model IDs, private IPs, error formats) — the broader vendor-name sweep lives in the spec, not the hook, to avoid false positives on legitimate tool-name references.
+
 ## Project Closure Convention
 
 For this project, the durable closure marker for a completed work cycle is **CHANGELOG entry + release tag + `grading_summary.json`**. The plan-lifecycle `SUMMARY.md` is optional unless a specific skill explicitly requires it. For archive bundles, `STATUS.md` pointing to the release tag + CHANGELOG entry is an acceptable alternative to `SUMMARY.md` (precedent: `docs/principled/attic/2026-06-22-marketplace-routing-v0.0.6/STATUS.md`).

@@ -1,0 +1,27 @@
+# Pre-commit hooks for the taches-principled-light marketplace.
+#
+# Setup (one-time per clone):
+#   python3 -m pip install --user pre-commit
+#   pre-commit install
+#
+# Verify on demand:
+#   pre-commit run --all-files
+#
+# Bypass (use sparingly; the safety floor exists for a reason):
+#   git commit --no-verify
+#
+# The `check-risky-strings` hook enforces the scrub rules from
+# docs/principled/specs/2026-06-23-eval-cleanup-design.md (L145-162). It runs
+# only on text files; binary files are skipped by the framework.
+repos:
+  - repo: local
+    hooks:
+      - id: check-risky-strings
+        name: Risky-string safety floor
+        entry: python3 scripts/check-risky-strings.py
+        language: system
+        types: [text]
+        stages: [pre-commit]
+        pass_filenames: true
+        require_serial: false
+        # Local hook; no upstream repo to pin.

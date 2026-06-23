@@ -6,11 +6,15 @@ on:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
+      - 'scripts/**'
+      - '.pre-commit-config.yaml'
       - '.github/workflows/marketplace-health.yml'
   pull_request:
     paths:
       - 'skills/**'
       - '.agents/skills/**'
+      - 'scripts/**'
+      - '.pre-commit-config.yaml'
 
 permissions:
   contents: read
@@ -34,6 +38,12 @@ jobs:
         # Without --no-fail: hard failures (broken cross-refs, manifest
         # divergence, missing licenses, doc-state mismatch) fail the build.
         run: python3 .agents/skills/marketplace-health/scripts/health.py
+
+      - name: Run risky-string safety floor
+        # CI backstop for the pre-commit hook at .pre-commit-config.yaml.
+        # Enforces the spec's risky-string scrub rules on every push to main.
+        # Fails the build if any scrubbed pattern re-appears in the active tree.
+        run: python3 scripts/check-risky-strings.py $(find . -type f -not -path './.git/*' \( -name '*.md' -o -name '*.py' -o -name '*.yml' -o -name '*.yaml' -o -name '*.json' -o -name '*.txt' -o -name '*.toml' \) -not -path './docs/principled/attic/*' -not -path './docs/principled/specs/*' -not -path './docs/superpowers/plans/*' -not -path './scripts/*')
 
       - name: Upload health report
         if: always()

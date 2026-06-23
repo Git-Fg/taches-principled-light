@@ -86,7 +86,7 @@ Runs the with-skill and without-skill configurations identically to iteration-2 
 
 ### 2. Grader
 
-For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). We deliberately deviate to **Haiku 4.5** (same chain as the solver, per project convention to target the VPS port-3456 proxy) — this is a *trade-off*, not an optimization:
+For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). We deliberately deviate from Tessl's Sonnet-only approach to a **two-tier strategy** driven by self-attribution bias research — see the Mitigation Strategy below for the full rationale. The short version: Haiku-as-judge of Haiku-as-solver is the worst case for self-attribution bias ([arxiv 2603.04582](https://arxiv.org/abs/2603.04582), ICML 2026), so Sonnet 4.5 is the first-choice judge, with Haiku 4.5 as a calibration-validated fallback.
 
 - **Lower grading quality** vs Sonnet 4.6 (smaller model, less nuanced on `compliance`/`quality`).
 - **Self-attribution bias**: Haiku judging Haiku's own solver output. Per [Self-Attribution Bias: When AI Monitors Go Easy on Themselves](https://arxiv.org/abs/2603.04582) (Khullar et al., ICML 2026), this is a documented failure mode: in their code-review setting, self-attributed monitors were **5× more likely** to approve insecure code patches compared to off-policy baselines. The bias is **not mitigated by reasoning** (they tested reasoning models). The effect is strongest in *on-policy* self-monitoring (model judges its own output) and weakest in *off-policy* settings (judges fixed artifacts by other models/humans).
@@ -111,7 +111,7 @@ Grading output schema (per Anthropic's `references/schemas.md`):
 
 ```json
 {
-  "judge_model": "claude-haiku-4-5",
+  "judge_model": "claude-sonnet-4-5",
   "expectations": [
     {"text": "...", "passed": true, "evidence": "...", "points_awarded": 30}
   ],
@@ -284,7 +284,7 @@ treated as a FAIL for scoring purposes but is flagged in the report
 for human review.
 ```
 
-The model is fixed (Haiku 4.5, same chain as the solver) per Tessl's "fixed judge" methodology. Note the trade-offs documented in the Grader section above (smaller model + self-grading bias vs cost savings).
+The model choice follows the two-tier mitigation strategy documented above (Sonnet 4.5 first-choice; Haiku 4.5 as calibration-validated fallback). Note the trade-offs: the solver always runs on Haiku 4.5 (per project convention); only the judge model varies.
 
 ## SkillsBench: the canonical reference for skill evaluation
 
@@ -411,7 +411,7 @@ Specific anti-patterns (SkillsBench rejects PRs that have these):
 |---|---|---|
 | Domain | Cross-domain (8 categories, 87 tasks) | Marketplace routing (1 category, 18 tasks) |
 | Verifier | Pure deterministic pytest (outcome only) | Hybrid: code + model-based (outcome + compliance + quality) |
-| Judge model | None (deterministic) | Fixed Haiku 4.5 |
+| Judge model | None (deterministic) | Sonnet 4.5 (first-choice) or Haiku 4.5 (calibration fallback) |
 | Trials per task | 3 | 1 |
 | Lift signal | Binary pass/fail | Per-assertion points summing to 100 |
 | Anti-cheat | No `/tests`/`/solution` access | N/A (single-agent, isolated) |
@@ -530,9 +530,9 @@ Iteration-3 needs:
 | Implement `grader.py` (LLM-as-judge) | 2 hours | Reuse the with/without-skill runner; only `compliance`+`quality` need the judge |
 | Implement `comparator.py` | 1 hour | Pure computation; weighted-average formula from line 219 |
 | Implement `analyzer.py` | 1 hour | Aggregation + report; per-skill lift, per-eval verdict distribution |
-| Calibrate judge model (Haiku vs Sonnet 4.5) | 1 hour | Run 5-10 evals with both judges; check delta agreement |
-| Run iteration-3 | ~3 hours (18 evals × 2 configs × ~60s each) | Plus ~60 LLM judge calls (one per compliance+quality assertion per config) |
-| **Total** | **~1.5 working days** | Realistic estimate; depends on judge calibration findings |
+| Calibrate judge model (Sonnet vs Haiku) | 2-3 hours | 5-10 evals × 2 configs × ~5 assertions × 2 judges = 100-200 LLM calls at ~60s each |
+| Run iteration-3 | 4-6 hours (18 evals × 2 configs × ~60-200s each + 300s timeouts) | Plus ~108 LLM judge calls (18 × 2 × ~3 compliance+quality assertions) |
+| **Total** | **~2 working days** | Realistic estimate; calibration + run time driven by LLM judge volume |
 
 ## When to run iteration-3
 

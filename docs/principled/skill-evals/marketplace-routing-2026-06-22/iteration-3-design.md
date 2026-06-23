@@ -20,7 +20,7 @@ The marketplace already ships an 8-stage eval loop in `skills/evaluating-skills/
 What iteration-3 adds on top:
 
 1. **Per-eval `assertions[]`** (the only big content blocker) — 18 evals × 3-4 assertions each, hand-authored.
-2. **`grader.py`** — a thin Python harness that, for each `(eval, config)` pair, spawns a `claude --print` reviewer subagent with the behavioral-review contract, the eval's assertions, the transcript path, and the SKILL.md context. The reviewer agent emits `behavioral_comparison.json` per Anthropic's grading schema (`expectations[]` with `text`/`passed`/`evidence` fields).
+2. **`grader.py`** — a thin Python harness that, for each `(eval, config)` pair, spawns a `claude --print` reviewer subagent with the behavioral-review contract, the eval's assertions, the transcript path, and the SKILL.md context. The reviewer agent emits **`grading_iter3.json`** per Anthropic's grading schema. This is a *new* output schema (distinct from the existing `behavioral_comparison.json` 5-dimension schema used by `evaluating-skills`) because iter-3 adds two new top-level fields (`judge_model`, `summary` with per-category scores) that the 5-dimension schema does not carry. Reusing the existing schema would force a lossy adapter or break downstream tooling; using a new name avoids both.
 3. **`run_iteration_3.py`** — orchestrator. Mirrors `run_iteration_2.py` structure but invokes `grader.py` per eval after capturing both transcripts.
 
 The marketplace has not shipped `grader.py` yet (the 8-stage loop in `evaluating-skills` is a process spec, not an implementation). Implementing it is the iter-3 code work.
@@ -82,17 +82,17 @@ Per Anthropic's [skill-creator pattern](https://github.com/anthropics/skills/blo
 
 ### 1. Executor
 
-Runs the with-skill and without-skill configurations identically to iteration-2 (Claude Code CLI, `--output-format stream-json`). Anthropic's pattern recommends spawning **both runs in the same turn** (parallel) — we don't have that luxury in this Python harness, but iter-2's per-eval serial execution is acceptable. Per-eval timeout raised to 300s (from 180s) to allow the agent to complete more thorough work.
+Runs the with-skill and without-skill configurations identically to iteration-2 (Claude Code CLI, `--output-format stream-json`). Anthropic's pattern recommends spawning **both runs in the same turn** (parallel) — we don't have that luxury in this Python harness, but iter-2's per-eval serial execution is acceptable. Per-eval timeout stays at **300s** (matches iter-2's `TIMEOUT_S` constant; iter-2 OUTCOME.md confirms this was already the ceiling that release-1 and research saturated). For iter-3 we may want to raise to 450s for research/release workflows specifically, but a per-eval override is the cleaner solution than a global bump.
 
 ### 2. Grader
 
-For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). We deliberately deviate from Tessl's Sonnet-only approach to a **two-tier strategy** driven by self-attribution bias research — see the Mitigation Strategy below for the full rationale. The short version: Haiku-as-judge of Haiku-as-solver is the worst case for self-attribution bias ([arxiv 2603.04582](https://arxiv.org/abs/2603.04582), ICML 2026), so Sonnet 4.5 is the first-choice judge, with Haiku 4.5 as a calibration-validated fallback.
+For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). **Our deployment target is Sonnet 4.5** (the latest model available on our inference-gateway proxy on port 3456; Sonnet 4.6 is not yet deployed on our chain). The judge-model choice is **separate from the solver-model choice** — the solver remains Haiku 4.5 per project convention; only the judge varies. We deliberately deviate from Tessl's Sonnet-only approach to a **two-tier strategy** driven by self-attribution bias research — see the Mitigation Strategy below for the full rationale. The short version: Haiku-as-judge of Haiku-as-solver is the worst case for self-attribution bias ([arxiv 2603.04582](https://arxiv.org/abs/2603.04582), ICML 2026), so Sonnet 4.5 is the first-choice judge, with Haiku 4.5 as a calibration-validated fallback.
 
 - **Lower grading quality** vs Sonnet 4.6 (smaller model, less nuanced on `compliance`/`quality`).
 - **Self-attribution bias**: Haiku judging Haiku's own solver output. Per [Self-Attribution Bias: When AI Monitors Go Easy on Themselves](https://arxiv.org/abs/2603.04582) (Khullar et al., ICML 2026), this is a documented failure mode: in their code-review setting, self-attributed monitors were **5× more likely** to approve insecure code patches compared to off-policy baselines. The bias is **not mitigated by reasoning** (they tested reasoning models). The effect is strongest in *on-policy* self-monitoring (model judges its own output) and weakest in *off-policy* settings (judges fixed artifacts by other models/humans).
 - **Same-family bias** ([Wataoka et al. 2024](https://arxiv.org/abs/2410.21819)): models prefer outputs from architecturally similar systems. Haiku 4.5 grading Haiku 4.5's output is the worst case for this. Mitigating by using a different-family judge (e.g., Sonnet 4.5 → Haiku solver) reduces but does not eliminate bias.
 - **Bias is roughly symmetric between with-skill and without-skill runs** (same judge in both configs), so the *delta* signal should be more reliable than absolute scores. But absolute scores may be inflated by 5–15 points based on the self-attribution literature.
-- **Cost**: ~10× cheaper than Sonnet 4.6 at ~60 grader calls/eval.
+- **Cost**: with the canonical 5-assertion split (3 IF + 2 GC), only the 2 GC assertions are model-judged; per `(eval, config)` pair that's 2 LLM grader calls. Across 18 evals × 2 configs = 72 grader calls per iteration. ~10× cheaper than Sonnet 4.6 at this call volume.
 
 **Mitigation strategy (revised after literature review)**:
 
@@ -148,7 +148,7 @@ And classifies each eval as one of:
 - `skill_redundant` (instruction_following_delta ≈ 0; the model already captures the skill's behavior — per Tessl "Implications for skill authors": "the skill can be removed")
 - `inconclusive` (transcript truncated, sample too small, etc.)
 
-Per Tessl Table 4 (with-skill vs without-skill across 19 model-harness configurations), the typical delta is **5.5–22 points on the overall score** (e.g., +19.7 for Haiku 4.5, +25.7 for the highest config GLM 5.1 OpenHands), driven primarily by `instruction_following` (Tessl §5.1: *"driven primarily by the instruction-following component"*). The same range applied to IF-only deltas (e.g., Haiku's +31.7 IF delta sits above the 5.5–22 range, indicating Haiku is an unusually strong IF responder). `goal_completion` deltas are smaller (+7.7 for Haiku 4.5) and saturate near 90% for frontier models.
+Per Tessl Table 4 (with-skill vs without-skill across 19 model-harness configurations), the typical delta is **5.5–22 points on the overall score** (e.g., +19.7 for Haiku 4.5), driven primarily by `instruction_following` (Tessl §5.1: *"driven primarily by the instruction-following component"*). The same range applied to IF-only deltas (e.g., Haiku's +31.7 IF delta sits above the 5.5–22 range, indicating Haiku is an unusually strong IF responder). `goal_completion` deltas are smaller (+7.7 for Haiku 4.5) and saturate near 90% for frontier models. Note: SkillsBench's separate 18-config study (line 296) reports a different highest delta (+25.7 for GLM 5.1 OpenHands); these are two different papers and the +25.7 figure should not be attributed to Tessl.
 
 ### 4. Analyzer
 
@@ -220,6 +220,10 @@ class EvaluationCriteria(BaseModel):
     reward_basis: list[Literal["instruction_following", "goal_completion"]] = [
         "instruction_following", "goal_completion"
     ]
+    weight: dict[Literal["instruction_following", "goal_completion"], float] = {
+        "instruction_following": 1.0,
+        "goal_completion": 1.0,
+    }
 ```
 
 ### Reward combination: weighted average across categories (Tessl-style)
@@ -243,16 +247,6 @@ With default `weight = {"instruction_following": 1.0, "goal_completion": 1.0}` a
 **Why weighted average, not tau-bench's product**: a product treats any category failure as zero, which discards partial-credit signal. For skill efficacy research, we want to know "how much did consulting the skill help?" — a weighted average preserves that signal even when one category fails. For example, an eval where IF=100, GC=60 (full skill compliance, partial goal completion) gets score=80 with averaging vs score=0 with product. The former is more useful for deciding whether to keep the skill.
 
 ### `compare_args` pattern (specification match, not verbatim)
-
-The design document presents three schema forms for assertions. Their canonical resolution:
-
-| Form | Source | When used | Status |
-|---|---|---|---|
-| **YAML** (`task.graders[]` with `deterministic_tests`/`llm_rubric`/`state_check` entries) | Anthropic Demystifying Evals | Human authoring of new evals | Authoring format |
-| **JSON** (`assertions[]` flat list with `points` + `category` + `type`) | Tessl rubric schema | Runtime harness input | **Canonical runtime format** |
-| **Pydantic** (`EvaluationCriteria` with `Assertion` and `reward_basis`) | tau-bench `EvaluationCriteria` | Type-checked authoring tool input | Validation layer |
-
-The hand-authored YAML is converted to the JSON form (with assertions summing to 100 per category) before iter-3 runs. The Pydantic model validates the JSON at load time and is the source of truth for what the grader.py harness consumes. Anthropic's flat `evals[].expectations[]` schema (per `skills/evaluating-skills/references/schemas.md:11-27`) is a *legacy* format for routing-test results; iter-3 does not use it.
 
 Tau-bench's `Action.compare_with_tool_call` only checks the args in `compare_args[]`, ignoring others. Iter-3 adopts this for `structure` assertions on tool calls: a skill that says "call `release_marketplace(version='0.0.2')`" can be checked with `compare_args=['version']` — the agent's exact tool name spelling or other args don't matter. This is the "grade the outcome, not the path" principle from Anthropic applied to specific-arg inspection.
 
@@ -292,7 +286,7 @@ The model choice follows the two-tier mitigation strategy documented above (Sonn
 
 ### Headline numbers (SkillsBench v1.1, 87 tasks, 8 domains)
 
-- **Aggregate lift**: 33.9% → 50.5% with curated skills (+16.6 pp; **+25.5% normalized gain** = `Δ / (100 − baseline) = 16.6 / (100 − 33.9) ≈ 25.5%`)
+- **Aggregate lift**: 33.9% → 50.5% with curated skills (+16.6 pp; **+25.1% normalized gain** = `Δ / (100 − baseline) = 16.6 / 66.1 ≈ 25.1%`)
 - **Per-config range**: +4.1 to +25.7 pp across **18 model-harness configurations** (not 18 distinct models — some configs reuse the same model under different harnesses, e.g., Haiku 4.5 in Claude Code vs OpenHands)
 - **Haiku 4.5 Claude Code**: 8.8% → 30.1% with skills (Δ +21.3 pp; +23.4% normalized = `21.3 / (100 − 8.8) ≈ 23.4%`)
 
@@ -472,11 +466,12 @@ Hand-authored YAML is converted to the JSON form (with assertions summing to 100
 
 ## See also
 
-- `methodology-note-routing-vs-validator.md` — the same instruction-following vs goal-completion distinction in the context of the validator's `\b\w+\b` count vs the routing test's content-word filter.
+- `skills/evaluating-skills/references/behavioral-review.md` — the 5-dimension rubric and `material_difference` threshold used in iter-1 routing tests (now superseded by Tessl IF/GC for iter-3).
+- `skills/evaluating-skills/references/schemas.md` — the `behavioral_comparison.json` 5-dimension schema (iter-1 format); iter-3 uses the new `grading_iter3.json` schema documented in this design.
 
 ## Required infrastructure changes
 
-Iteration-3 needs:
+Iteration-3 needs **four new scripts** + content authoring + schema work:
 
 0. **Verify SKILL.md read filter is widened** (the fix from iter-2 commit
    `069b31c` is already in place at `scripts/run_iteration_2.py:30,177-178`).
@@ -491,7 +486,15 @@ Iteration-3 needs:
    but should probably be excluded from "user-facing skill consultation"
    metrics (separate flag, TBD).
 
-1. **An `assertions.json` per eval** (or a `assertions[]` field added to
+1. **`run_iteration_3.py`** (orchestrator) — mirrors `run_iteration_2.py` structure: invokes `grader.py` per eval after capturing both with-skill and without-skill transcripts. Differences from iter-2 runner: per-eval timeout bumped per M002; reads the new `assertions.json` instead of just `expected_skill`; passes assertion context to grader; aggregates with `analyzer.py` at the end.
+
+2. **`grader.py`** (LLM-as-judge runner) — takes `(assertions.json path, transcript path, skill_context_path, judge_model)` → emits `grading_iter3.json`. Code-based checks (`consultation`, `structure` with `compare_args`) bypass the LLM call entirely; only `compliance` + `quality` assertions invoke the LLM judge. Architecture: **one LLM call per `(eval, config)` for all compliance+quality assertions in one batch** (matches the judge prompt at line 265-285). Alternative per-assertion LLM calls would multiply latency and cost by 2-3× without quality benefit.
+
+3. **`comparator.py`** (with vs without deltas) — pure computation: weighted-average formula from the `EvaluationCriteria.weight` field; emits `comparison_iter3.json` with per-eval deltas (IF delta, GC delta, overall delta) and verdict classification (`skill_lifts_quality` / `skill_neutral` / `skill_hurts` / `skill_redundant` / `inconclusive`).
+
+4. **`analyzer.py`** (cross-eval aggregator) — wraps `aggregate_benchmark.py` from `skills/evaluating-skills/scripts/` with an **adapter layer** that translates the iter-3 `grading_iter3.json` schema into the existing `behavioral_comparison.json` 5-dimension schema. The existing script is **not** reusable as-is — its metrics (`pass_rate`, `time_seconds`, `tokens`) are dimension-agnostic but its expected input schema differs. The adapter approach keeps the marketplace's existing benchmarking tool working while iter-3 evolves independently.
+
+5. **An `assertions.json` per eval** (or a `assertions[]` field added to
    `evals.json`). **18 evals × 5 assertions each = 90 hand-authored
    assertions**. With each assertion needing a category (IF or GC) + points
    (summing to 100 per category) + type + text + grader (code/model) +
@@ -499,18 +502,21 @@ Iteration-3 needs:
    of content authoring. This is the biggest blocker — content, not tooling.
    Reuse the `craft-create` example (lines 32-57) as the template; aim for
    3 IF assertions summing to 100 + 2 GC assertions summing to 100 (or
-   4+3, 3+4, etc.) per eval.
+   4+3, 3+4, etc.) per eval. **The example's utterance ("create a new
+   agent skill for parsing PDFs") is illustrative** — adapt assertions to
+   match the actual utterance in `evals/evals.json` for each eval, not
+   the example template.
 
-2. **An LLM-as-judge runner** that takes `(assertion, transcript, response_text, skill_context)` → `(pass, justification)`. The grader is best implemented as another subprocess `claude --print` call with a tightly-scoped prompt. Only `compliance` and `quality` assertions need the judge; `consultation` and `structure` are code-based and bypass it.
-
-3. **An assertion schema** that supports PASS / FAIL / UNKNOWN. UNKNOWN is
+6. **An assertion schema** that supports PASS / FAIL / UNKNOWN. UNKNOWN is
    returned by the LLM judge when the evidence is genuinely ambiguous; it is
-   treated as FAIL for scoring but flagged for human review. There is **no**
-   NOT_APPLICABLE state in iter-3 — `consultation` assertions are binary by
-   design (the skill was read or wasn't) and are graded code-based, so
-   "not_applicable" cannot arise.
+   treated as FAIL for scoring but flagged for human review (the human-review
+   queue lives in `docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3/unknowns.md`,
+   one row per UNKNOWN verdict with eval_id, assertion_id, evidence excerpt,
+   and review status). There is **no** NOT_APPLICABLE state in iter-3 —
+   `consultation` assertions are binary by design (the skill was read or
+   wasn't) and are graded code-based, so "not_applicable" cannot arise.
 
-4. **A better signal baseline.** The Tessl paper noted that "When the pass rates are identical, make your test cases harder." Several of our 18 utterances are easy enough that the model can answer them without any skill. For iteration-3, the eval set should be rebalanced toward harder, more specific tasks where the skill actually changes the answer.
+7. **A better signal baseline.** The Tessl paper noted that "When the pass rates are identical, make your test cases harder." Several of our 18 utterances are easy enough that the model can answer them without any skill. For iteration-3, the eval set should be rebalanced toward harder, more specific tasks where the skill actually changes the answer.
 
 ## Failure modes iteration-3 should catch that iteration-2 cannot
 
@@ -530,8 +536,8 @@ Iteration-3 needs:
 | Implement `grader.py` (LLM-as-judge) | 2 hours | Reuse the with/without-skill runner; only `compliance`+`quality` need the judge |
 | Implement `comparator.py` | 1 hour | Pure computation; weighted-average formula from line 219 |
 | Implement `analyzer.py` | 1 hour | Aggregation + report; per-skill lift, per-eval verdict distribution |
-| Calibrate judge model (Sonnet vs Haiku) | 2-3 hours | 5-10 evals × 2 configs × ~5 assertions × 2 judges = 100-200 LLM calls at ~60s each |
-| Run iteration-3 | 4-6 hours (18 evals × 2 configs × ~60-200s each + 300s timeouts) | Plus ~108 LLM judge calls (18 × 2 × ~3 compliance+quality assertions) |
+| Calibrate judge model (Sonnet vs Haiku) | 1-2 hours | 5-10 evals × 2 configs × 2 compliance/quality assertions × 2 judges = 40-80 LLM calls at ~60s each |
+| Run iteration-3 | 4-6 hours (18 evals × 2 configs × ~60-200s each + 300s timeouts) | Plus ~72 LLM judge calls (18 × 2 × 2 compliance+quality assertions) |
 | **Total** | **~2 working days** | Realistic estimate; calibration + run time driven by LLM judge volume |
 
 ## When to run iteration-3

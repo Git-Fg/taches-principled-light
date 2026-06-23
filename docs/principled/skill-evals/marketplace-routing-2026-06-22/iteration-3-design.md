@@ -71,7 +71,7 @@ Tessl rules (apply directly to our schema):
 | `goal_completion` | Did the solution produce the requested outputs and is the final artifact correct? (Tessl verbatim.) | When the skill encodes knowledge or capabilities unavailable to the base agent. |
 
 For each assertion type:
-- `consultation` (did the agent read/invoke the right skill?) — deterministic check on the transcript (was the right SKILL.md read?). Often a 20-pt "gating" assertion.
+- `consultation` (did the agent read/invoke the right skill?) — deterministic check on the transcript. Counts BOTH `Skill` tool invocations AND `Read` tool calls on `*/SKILL.md` paths. **Empirical finding from iter-2 data** (`eval-audit-1/with_skill.jsonl`): the agent used `Read` (4 times) but NOT the `Skill` tool (0 times). The marketplace skills were accessed by reading the SKILL.md files directly. Both paths are valid consultations; an assertion that only counts `Skill` invocations would miss 100% of the consultation signal in practice. Often a 20-pt "gating" assertion.
 - `compliance` (did the agent follow the skill's specific guidance?) — check transcript evidence + output for adherence to specific patterns.
 - `structure` (does the output have the right structural form?) — check output artifact's structure (frontmatter, required sections).
 - `quality` (qualitative judgment) — LLM-as-judge for taste / style / completeness.

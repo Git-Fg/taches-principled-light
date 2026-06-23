@@ -52,20 +52,33 @@ sits on top of it.
 
 ```bash
 # 1. One-time capture phase: point mcp-assert at the REAL secret_detection
-#    MCP server, snapshot the responses into evals/fixtures/secret-detection.json
+#    MCP server and snapshot the responses. The default snapshot file
+#    location is <suite-dir>/fixtures/<suite-name>.json; --update writes
+#    (or overwrites) that file. Replace <secret-detection-server-cmd>
+#    with the actual command that launches the real server.
 mcp-assert snapshot --suite evals/secret-detection/ \
-  --server "npx @anthropic-ai/secret-detection-server" \
-  --output evals/fixtures/secret-detection.json
+  --server "<secret-detection-server-cmd>" \
+  --update
 
-# 2. iter-8 runs: a mock MCP server (e.g., Tyk mock) serves those
-#    captured responses to the agent. mcp-assert then asserts YAML
-#    expectations against the mock's outputs (not the real server's).
+# 2. iter-8 runs: a mock MCP server (e.g., Tyk's mock-mcp-server binary)
+#    serves those captured responses to the agent. mcp-assert then
+#    asserts YAML expectations against the mock's outputs (not the
+#    real server's). Replace <mock-mcp-server-cmd> with the actual
+#    mock server's invocation; many mock servers take a --fixture flag.
 mcp-assert run --suite evals/secret-detection/ \
-  --server "npx @tyk/mock-mcp --fixture evals/fixtures/secret-detection.json"
+  --server "<mock-mcp-server-cmd> --fixture evals/secret-detection/fixtures/secret-detection.json"
 
 # 3. CI: gate on snapshot diff + assertion pass-rate
 mcp-assert ci --suite evals/secret-detection/ --threshold 95 --junit results.xml
 ```
+
+**Note on the bash example above:** the `<secret-detection-server-cmd>`
+and `<mock-mcp-server-cmd>` placeholders are intentionally generic — the
+exact package/binary names depend on which mock server we pick for
+iter-8 (Tyk mock-mcp-server, AIMock MCPMock, or a custom Python mock).
+The point of the example is to show the **workflow shape** (snapshot
+real server → mock serves captured responses → mcp-assert asserts),
+not to lock in specific package names.
 
 **Key clarification from round-6 self-critic:** mcp-assert is a
 **test runner**, not a mock. The architecture has two layers, not

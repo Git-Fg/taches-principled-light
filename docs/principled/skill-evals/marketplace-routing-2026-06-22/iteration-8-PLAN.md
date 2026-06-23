@@ -15,6 +15,14 @@ See [`docs/.../research/vendor-disjoint-grader-mock-2026-06-23.md`](../../resear
 for the full mock-implementation evaluation (3 candidates compared: WireMock
 + LiteLLM, `zerob13/mock-openai-api`, and a 30-line Python shim).
 
+> **Supplements (2026-06-23):** [`2026-06-23-iter8-design-supplements.md`](../../research/2026-06-23-iter8-design-supplements.md)
+> adds three things this plan does not cover: (1) a **two-layer MCP stack**
+> for `secret_detection` (mock MCP server + mcp-assert test runner —
+> mcp-assert is a test runner, not a mock); (2) a **Claude Code CLI flag
+> inventory** with `--mcp-config` and `--max-turns` recommended for
+> sub-experiments 8B and 8C; (3) a **LiteLLM multi-model gateway** as the
+> v0.0.6+ replacement for the single-model `100.80.231.128:3456` proxy.
+
 ---
 
 ## Why iter-8

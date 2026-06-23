@@ -71,13 +71,12 @@ Same as v0.0.5 — no changes to the public surface:
     replacement for the structurally-single-family
     `<private inference gateway>` proxy; unblocks iter-6 vendor-disjoint
     validation in v0.0.6+ once deployed.
-- **CI release-gate job** at
-  [`.github/workflows/eval-regression.yml`](../../.github/workflows/eval-regression.yml)
-  (104 lines) + [`.github/scripts/release-gate.py`](../../.github/scripts/release-gate.py)
-  **(119 lines)**. Triggers on `v*.*.*` tag push. Reads the committed
-  iter benchmark JSON, asserts `summary.total_lift.mean_overall_delta >= +15pp`
-  AND no per-eval `lifts.total_lift.overall_delta < 0pp`. The v0.0.6
-  tag push ran the gate in 10s and **PASSED**.
+- **CI release-gate job** (v0.0.7 release-gate): triggered on
+  `v*.*.*` tag push. Read the committed iter benchmark JSON, asserted
+  `summary.total_lift.mean_overall_delta >= +15pp` AND no per-eval
+  `lifts.total_lift.overall_delta < 0pp`. The v0.0.6 tag push ran
+  the gate in 10s and **PASSED**. **Removed in v0.0.8** — see the
+  v0.0.8 entry for the rationale.
 - **Vendor-disjoint grader mock research**: three implementations
   evaluated. **Removed in v0.0.8** — absorbed into the iter-8 design supplements note.
   - **A-grade**: WireMock + LiteLLM (most flexible, but ~120 lines

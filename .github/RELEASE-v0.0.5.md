@@ -42,14 +42,18 @@ Full report: [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](do
 - **Baseline cache** at `docs/.../baselines/` for iter-N+1 transcript
   reuse. The `--disable-slash-commands` baseline transcripts are now
   stable across iterations: same prompt → same transcript.
-- **CI gate** at `.github/workflows/eval-regression.yml`: on `v*.*.*` tag
-  push, validates the iter-7 `benchmark.json` against the release
-  contract (`total_lift >= +15pp`, no per-eval hurt) and annotates the
-  GitHub Release with the headline. The gate validates the committed
+- **CI gate** (v0.0.7 release-gate): on `v*.*.*` tag push, validated
+  the iter-7 `benchmark.json` against the release contract
+  (`total_lift >= +15pp`, no per-eval hurt) and annotated the GitHub
+  Release with the headline. The gate validated the committed
   benchmark rather than re-running the harness, because the harness
-  depends on a private proxy that is not publicly routable from GitHub
-  Actions runners (re-run path is deferred to a future version when
-  either the proxy has a public endpoint or a self-hosted runner exists). **Removed in v0.0.8** — the v0.0.7 closure marker removed the eval iterations from the active tree, making the release-gate's input JSON structurally inoperable; `marketplace-health` remains as the pre-release gate.
+  depends on a private proxy that is not publicly routable from
+  GitHub Actions runners (re-run path is deferred to a future
+  version when either the proxy has a public endpoint or a
+  self-hosted runner exists). **Removed in v0.0.8** — the v0.0.7
+  closure marker removed the eval iterations from the active tree,
+  making the release-gate's input JSON structurally inoperable;
+  `marketplace-health` remains as the pre-release gate.
 - **Grader-noise investigation** at `iter-7/GRADER-NOISE-INVESTIGATION.md` (preserved in closure archive) showing that `temperature=0` does not make the current proxy's configured backend deterministic (5-run probe, default vs temp=0 both stochastic). Mitigation: multi-run averaging (3× per cell, median), deferred to iter-8.
 
 ### Changed

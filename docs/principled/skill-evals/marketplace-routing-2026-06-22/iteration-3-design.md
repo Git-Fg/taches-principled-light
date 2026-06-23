@@ -80,6 +80,20 @@ Aggregates across all evals. Computes:
 
 Iteration-3 needs:
 
+0. **Widen the SKILL.md read filter** (fix for the iter-2 metric bug). The
+   current `run_iteration_2.py:170` filter only matches reads under
+   `REPO / "skills"` and misses reads of `.agents/skills/*/SKILL.md`. The
+   `.agents/skills/` folder contains 4 marketplace skills:
+   `marketplace-health`, `marketplace-validator`, `ingesting-skills`,
+   `releasing-marketplace`. The iter-3 filter should accept both:
+   ```python
+   MARKETPLACE_SKILL_DIRS = [REPO / "skills", REPO / ".agents/skills"]
+   ```
+   See `iteration-2/METRIC-BUG-NOTE.md` for the audit-2 case study that
+   surfaced this bug (the with-skill agent went off on a tangent reading
+   eval infrastructure files and produced a wrong answer; the metric
+   reported `material_difference: false` for both runs).
+
 1. **An `assertions.json` per eval** (or a `assertions[]` field added to `evals.json`). 18 evals × ~3-4 assertions each = 54-72 hand-authored assertions. This is the biggest blocker — it's content work, not tooling.
 
 2. **An LLM-as-judge runner** that takes `(assertion, transcript, response_text, skill_context)` → `(pass, justification)`. The grader is best implemented as another subprocess `claude --print` call with a tightly-scoped prompt.

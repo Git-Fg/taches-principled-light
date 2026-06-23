@@ -10,8 +10,9 @@ on port 3456) using the `evaluating-skills` 8-stage harness.
 |---|------|----------------|--------|---------|
 | 1 | 2026-06-22 | Pilot — single eval `craft-create` end-to-end on Claude Code CLI | superseded by iter-2 | passed |
 | 2 | 2026-06-22 | Full N=18 evals × {with, without}-skill = 36 runs | superseded by iter-3 | 17/18 completed; 1 proxy 503 |
-| 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **canonical** | mean delta **+8.69pp**, 6 lifts / 11 neutrals / **0 hurts** |
-| 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | in progress (9/15 runs) | H1 confirmed for `craft-create`; **critical correction**: `--add-dir` does NOT control skill listing — all installed plugins load globally; without_skill baseline is contaminated. See [`SKILL-DISCOVERY-ARCHITECTURE.md`](marketplace-routing-2026-06-22/SKILL-DISCOVERY-ARCHITECTURE.md) and [`iteration-3.1/RESULTS-PARTIAL.md`](marketplace-routing-2026-06-22/iteration-3.1/RESULTS-PARTIAL.md). |
+| 3 | 2026-06-22 | Full N=17 evals, fixed consultation assertion bug + judge heterogeneity | **canonical, with caveat** | mean delta **+8.69pp**, 6 lifts / 11 neutrals / **0 hurts**. ⚠️ results reflect stale v2.0.0 plugin cache; see `SKILL-DISCOVERY-ARCHITECTURE.md` v1.2 |
+| 3.1 | 2026-06-22 | Per-skill `--add-dir` experiment: H1 (plugin shadowing) vs H2 (description surfaces) vs H3 (choice paralysis) | **complete** (9/15 runs) | H1 confirmed for `craft-create`; H2 confirmed for `craft-review`; H3 not dominant; **H4 bonus**: zero-skill invocations in 6/9 runs (routing-heuristic failure upstream). See [`iteration-3.1/RESULTS.md`](marketplace-routing-2026-06-22/iteration-3.1/RESULTS.md) |
+| 4 | planned | Cache-refreshed re-run of iter-3 (Phase A: heterogeneous judges; Phase B: sonnet only) | **designed** | [`iteration-4/PLAN.md`](marketplace-routing-2026-06-22/iteration-4/PLAN.md) v1.1. Cache refresh smoke test PASSED — `craft-create` now picks `crafting-skills` directly |
 
 ## Canonical report
 

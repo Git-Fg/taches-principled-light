@@ -70,6 +70,13 @@ def run_one(utterance: str, with_skill: bool, eval_dir: Path,
         r = subprocess.run(cmd, input=utterance, capture_output=True, text=True,
                            timeout=TIMEOUT_S, cwd=add_dir)
     except subprocess.TimeoutExpired:
+        eval_dir.mkdir(parents=True, exist_ok=True)
+        marker = eval_dir / "timeout.json"
+        marker.write_text(json.dumps({
+            "status": "timeout",
+            "timeout_s": TIMEOUT_S,
+            "duration_ms": TIMEOUT_S * 1000,
+        }))
         return {"status": "timeout", "duration_ms": TIMEOUT_S * 1000,
                 "total_events": 0}
     eval_dir.mkdir(parents=True, exist_ok=True)

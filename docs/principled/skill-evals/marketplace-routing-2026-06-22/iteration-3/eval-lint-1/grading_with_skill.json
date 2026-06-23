@@ -1,0 +1,60 @@
+{
+  "judge_model": "haiku",
+  "config": "with",
+  "eval_id": "lint-1",
+  "expectations": [
+    {
+      "id": "consulted_marketplace_validator",
+      "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before running any lint command (the validator encodes the canonical frontmatter schema and lint rules the agent would otherwise have to guess)",
+      "passed": true,
+      "evidence": "agent read /Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-health/SKILL.md, /Users/felix/Documents/AutoPluginClaw/taches-principled-light/.agents/skills/marketplace-valid; Skill tool: ",
+      "points_awarded": 40,
+      "unknown": false
+    },
+    {
+      "id": "reported_per_skill_results",
+      "text": "the lint output should be structured per-skill (one row per marketplace skill with name, status, and any specific finding), not a single aggregate count",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "found_no_unsuppressed_errors",
+      "text": "the lint output should report zero unsuppressed validation errors across all marketplace skills (the marketplace is healthy per iter-1 baseline 7W)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "applied_validator_script",
+      "text": "the agent should run the validator's documented script (python .agents/skills/marketplace-validator/scripts/validate_marketplace.py) rather than improvising a regex-based check; the SKILL.md explicitly says to use the script",
+      "passed": false,
+      "evidence": "Agent ran `python3 .agents/skills/marketplace-validator/scripts/validate.py` instead of the documented `validate_marketplace.py` as per SKILL.md.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "named_specific_findings",
+      "text": "the response should name at least one specific finding (even if it's 'all skills pass'), referencing skill paths and line numbers when applicable, not a generic 'looks good' summary",
+      "passed": true,
+      "evidence": "The agent listed specific warnings (e.g., 'when_to_use' key not canonical, hardcoded tool names, body-too-long) with skill paths like 'analyzing-sessions' and 'design-good-bad-examples'.",
+      "points_awarded": 50,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 40.0,
+    "goal_completion_score": 50.0,
+    "overall_score": 45.0,
+    "passed": 2,
+    "failed": 3,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

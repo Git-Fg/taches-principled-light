@@ -1,0 +1,15 @@
+{
+  "eval_id": "eval-skill",
+  "expected_skill": "evaluating-skills",
+  "utterance": "write evals for this skill and grade the outputs",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_evaluating_skills", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/evaluating-skills/SKILL.md before authoring evals; the skill defines the 8-stage loop"},
+    {"id": "followed_8_stage_loop", "type": "compliance", "category": "instruction_following", "points": 40, "grader": "model", "text": "the agent should follow the 8-stage loop (capture intent -> write evals.json -> run with+without -> grade -> aggregate -> review -> iterate -> optimize) per the skill, not a single-pass sketch"},
+    {"id": "assertions_per_category_sum_100", "type": "structure", "category": "instruction_following", "points": 30, "grader": "code", "text": "each eval's assertions should sum to 100 per category (instruction_following and goal_completion) per the Tessl rubric schema"},
+    {"id": "evals_json_schema_valid", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the produced evals.json should validate against the marketplace's evals schema (eval_id, expected_skill, utterance, assertions[] with required fields)"},
+    {"id": "both_runs_graded", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the agent should produce both with-skill and without-skill grades for each eval, enabling delta calculation per the Tessl/SkillsBench methodology"}
+  ],
+  "reference_solution": "Agent reads evaluating-skills/SKILL.md, authors ≥5 evals with 5 assertions each (IF sum=100, GC sum=100), runs both with-skill and without-skill configurations, grades per the Tessl schema, reports per-eval deltas."
+}

@@ -1,0 +1,16 @@
+{
+  "eval_id": "critic",
+  "expected_skill": "general-critic",
+  "utterance": "review this PR and find the worst issues",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 0.6, "goal_completion": 1.0},
+  "_weight_rationale": "critic is quality-judging — the goal (find real issues) matters more than the exact process",
+  "assertions": [
+    {"id": "consulted_general_critic", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/general-critic/SKILL.md before reviewing; the skill defines the HIGH/MEDIUM/LOW severity taxonomy"},
+    {"id": "applied_severity_taxonomy", "type": "compliance", "category": "instruction_following", "points": 30, "grader": "model", "text": "the agent should classify findings by HIGH/MEDIUM/LOW severity per the skill, with explicit thresholds (HIGH = blocker; MEDIUM = should-fix; LOW = nice-to-have)"},
+    {"id": "looped_until_no_high", "type": "structure", "category": "instruction_following", "points": 40, "grader": "model", "text": "the agent should loop on HIGH findings until none remain, per the general-critic skill's loop-until-clean protocol"},
+    {"id": "named_specific_findings", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the review should name specific findings with file paths, line numbers, and concrete remediation — not vague 'consider improving' suggestions"},
+    {"id": "found_real_issues", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the review should surface ≥1 substantive issue (correctness, security, performance, or design flaw), not just style nits"}
+  ],
+  "reference_solution": "Agent reads general-critic/SKILL.md, applies HIGH/MEDIUM/LOW taxonomy, identifies at least one HIGH issue (e.g. unsanitized input, race condition, missing error handling), reports file:line + remediation, loops until no HIGH remains."
+}

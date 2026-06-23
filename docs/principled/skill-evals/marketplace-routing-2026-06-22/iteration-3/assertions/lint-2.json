@@ -1,0 +1,15 @@
+{
+  "eval_id": "lint-2",
+  "expected_skill": "marketplace-validator",
+  "utterance": "is this skill valid before I commit",
+  "category_class": "local-meta",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_marketplace_validator", "type": "consultation", "category": "instruction_following", "points": 40, "grader": "code", "text": "the agent should read .agents/skills/marketplace-validator/SKILL.md before answering, since the validator encodes the canonical frontmatter schema and required-field list"},
+    {"id": "applied_skill_specific_path", "type": "compliance", "category": "instruction_following", "points": 30, "grader": "model", "text": "the agent should run the validator on the specific skill path (python scripts/validate.py skills/<name>) rather than the whole marketplace, per the SKILL.md Decision Router 'IF the user wants to check a single skill → pass the path' branch"},
+    {"id": "warned_on_local_extensions", "type": "structure", "category": "instruction_following", "points": 30, "grader": "code", "text": "the response should mention that local extensions (when_to_use, argument-hint, context, agent) trigger warnings but not failures, distinguishing spec-required from local-convention fields"},
+    {"id": "passes_required_fields", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the target skill's name and description fields must pass validation (required-field check)"},
+    {"id": "named_specific_issues", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the response should name any specific issues (line numbers, exact fields, suggested fix), not a generic 'looks good' or 'you should check the schema'"}
+  ],
+  "reference_solution": "Agent reads marketplace-validator/SKILL.md, runs `python .agents/skills/marketplace-validator/scripts/validate_marketplace.py skills/<target> --json`, parses the output. Reports: name + description pass; lists any warnings (e.g. description > 1024 chars) and failures (e.g. invalid name format) with file paths and line numbers."
+}

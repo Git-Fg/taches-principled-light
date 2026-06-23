@@ -1,0 +1,15 @@
+{
+  "eval_id": "task-small",
+  "expected_skill": "task-lifecycle",
+  "utterance": "add this small feature with verification and docs",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_task_lifecycle", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/task-lifecycle/SKILL.md before implementing; the skill defines the draft -> spec -> implement-verify -> docs lifecycle"},
+    {"id": "followed_lifecycle_stages", "type": "compliance", "category": "instruction_following", "points": 40, "grader": "model", "text": "the agent should follow all 4 stages (draft capture -> spec refine -> implement+verify -> docs update) rather than jumping straight to code"},
+    {"id": "verification_automated", "type": "structure", "category": "instruction_following", "points": 30, "grader": "code", "text": "the verification stage should produce an automated check (test, command, or assertion) rather than 'looks good to me'"},
+    {"id": "docs_updated_to_match", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the relevant docs (README, AGENTS.md, or skill body) should be updated to reflect the new feature; not just code committed"},
+    {"id": "small_scope_preserved", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the agent should resist scope creep — the feature should match the original spec, not balloon into a multi-file refactor unless explicitly justified"}
+  ],
+  "reference_solution": "Agent reads task-lifecycle/SKILL.md, drafts spec, implements with TDD-style test, verifies test passes, updates docs to mention the new feature, commits with conventional message."
+}

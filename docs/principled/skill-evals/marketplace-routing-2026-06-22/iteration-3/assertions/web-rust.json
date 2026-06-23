@@ -1,0 +1,15 @@
+{
+  "eval_id": "web-rust",
+  "expected_skill": "web-search",
+  "utterance": "find documentation on the open web for Rust async traits",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_web_search", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/web-search/SKILL.md before searching; the skill defines the 5-movement loop and source hierarchy"},
+    {"id": "applied_5_movement_loop", "type": "compliance", "category": "instruction_following", "points": 35, "grader": "model", "text": "the agent should apply the 5-movement loop (frame -> reformulate -> inspect -> cross-reference -> stop/surface), not a single-pass search"},
+    {"id": "preferred_primary_sources", "type": "structure", "category": "instruction_following", "points": 35, "grader": "code", "text": "the response should prefer primary sources (docs.rs, Rust RFCs, the Rust reference) over secondary aggregators (StackOverflow, blogs)"},
+    {"id": "cited_specific_urls", "type": "structure", "category": "goal_completion", "points": 40, "grader": "code", "text": "the response should cite ≥2 specific URLs (with stable identifiers like docs.rs/std/...) for the Rust async traits documentation"},
+    {"id": "surfaced_recency_or_limitations", "type": "quality", "category": "goal_completion", "points": 60, "grader": "model", "text": "the response should note the recency of sources (e.g. async-trait crate status, whether Rust 1.75+ stabilized native async traits) and surface limitations of the search (e.g. 'official std docs are sparse on this topic')"}
+  ],
+  "reference_solution": "Agent reads web-search/SKILL.md, applies 5-movement loop on 'Rust async traits', cites docs.rs/async-trait, Rust RFC 3185 (stabilization), and a recent blog post; notes that native async fn in traits is stable since 1.75."
+}

@@ -1,0 +1,15 @@
+{
+  "eval_id": "release-2",
+  "expected_skill": "releasing-marketplace",
+  "utterance": "tag and push the new version",
+  "category_class": "local-meta",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_releasing_marketplace", "type": "consultation", "category": "instruction_following", "points": 40, "grader": "code", "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md to confirm the canonical tag/push sequence"},
+    {"id": "created_annotated_tag", "type": "compliance", "category": "instruction_following", "points": 30, "grader": "model", "text": "the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes"},
+    {"id": "tag_message_matches_changelog", "type": "structure", "category": "instruction_following", "points": 30, "grader": "code", "text": "the tag message should match the latest CHANGELOG.md entry (top entry) verbatim or with minor summary edits — not a fresh improvisation"},
+    {"id": "remote_tag_exists", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "after the run, git ls-remote --tags origin should show the new tag"},
+    {"id": "no_force_push_used", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the agent should not use --force or --force-with-lease to push tags; if the tag already exists, it should refuse and ask for confirmation rather than overwrite"}
+  ],
+  "reference_solution": "Agent reads releasing-marketplace/SKILL.md, verifies CHANGELOG top entry matches planned tag message, creates annotated tag with `git tag -a v0.0.2 -m '...'`, pushes with `git push origin v0.0.2`, confirms via `git ls-remote --tags origin`."
+}

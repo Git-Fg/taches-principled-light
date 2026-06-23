@@ -1,0 +1,15 @@
+{
+  "eval_id": "research",
+  "expected_skill": "deep-research",
+  "utterance": "do deep research on agent skill evaluation methodology",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_deep_research", "type": "consultation", "category": "instruction_following", "points": 25, "grader": "code", "text": "the agent should read skills/deep-research/SKILL.md before starting, since the skill defines the 5-stage pipeline"},
+    {"id": "followed_5_stage_pipeline", "type": "compliance", "category": "instruction_following", "points": 40, "grader": "model", "text": "the agent should follow the 5-stage pipeline (frame -> reformulate -> inspect -> cross-reference -> stop/surface) per the skill, not a single-pass summary"},
+    {"id": "triangulated_sources", "type": "structure", "category": "instruction_following", "points": 35, "grader": "code", "text": "the response should cite ≥3 independent sources for any non-trivial claim, with primary sources preferred over secondary aggregators"},
+    {"id": "long_form_evidence", "type": "structure", "category": "goal_completion", "points": 40, "grader": "code", "text": "the output should be a long-form (multi-section) report written to docs/principled/research/<slug>/index.md per the skill's canonical output path"},
+    {"id": "surfaced_disagreement", "type": "quality", "category": "goal_completion", "points": 60, "grader": "model", "text": "the report should explicitly surface areas of disagreement between sources (e.g. 'Tessl reports +19.7 lift while SkillsBench reports +25.1; the difference is methodology, not noise') rather than averaging into false consensus"}
+  ],
+  "reference_solution": "Agent reads deep-research/SKILL.md, executes 5-stage pipeline on the question, writes report to docs/principled/research/skill-evaluation-methodology/index.md with triangulated sources and explicit disagreement surfacing."
+}

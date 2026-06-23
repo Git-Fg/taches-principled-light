@@ -1,0 +1,15 @@
+{
+  "eval_id": "sec-audit",
+  "expected_skill": "security",
+  "utterance": "audit code for OWASP top 10 vulnerabilities and secrets",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_security", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/security/SKILL.md before auditing; the skill defines the SAST/dependency-audit/secrets-detection/compliance modes"},
+    {"id": "selected_appropriate_modes", "type": "compliance", "category": "instruction_following", "points": 35, "grader": "model", "text": "the agent should select the right modes for the request (OWASP top 10 → SAST mode; 'secrets' → secrets-detection mode; per the routing table in security/SKILL.md)"},
+    {"id": "ran_secrets_scan", "type": "structure", "category": "instruction_following", "points": 35, "grader": "code", "text": "the agent should run a secrets-detection scan (Grep/ripgrep for common patterns: API_KEY=, AWS_SECRET, Bearer tokens, etc.) and report findings with file:line"},
+    {"id": "owasp_categories_covered", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the audit should cover at least 5 of the OWASP Top 10 categories (injection, broken auth, sensitive data exposure, XXE, broken access control, security misconfig, XSS, insecure deserialization, vulnerable components, insufficient logging)"},
+    {"id": "named_real_vulnerabilities", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the response should identify ≥1 real vulnerability or risk (with file:line + remediation), not a generic 'looks fine' or 'consider OWASP training'"}
+  ],
+  "reference_solution": "Agent reads security/SKILL.md, runs SAST + secrets-detection modes, identifies any high-severity findings (e.g. hardcoded API key, missing input validation), reports OWASP category + file:line + remediation."
+}

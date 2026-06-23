@@ -1,0 +1,15 @@
+{
+  "eval_id": "release-1",
+  "expected_skill": "releasing-marketplace",
+  "utterance": "cut a release and bump the version to 0.0.2",
+  "category_class": "local-meta",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_releasing_marketplace", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md before any version bump or release cut"},
+    {"id": "ran_pre_release_gate", "type": "compliance", "category": "instruction_following", "points": 35, "grader": "model", "text": "the agent should run the pre-release gate (health check + validator on full marketplace + benchmark freshness) per the skill's fixed sequence; refuse to proceed if the gate fails"},
+    {"id": "version_synced_across_files", "type": "structure", "category": "instruction_following", "points": 35, "grader": "code", "text": "the agent should bump the version in all 4 plugin manifests (claude-plugin, codex-plugin, cursor-plugin, kimi-plugin) plus the marketplace's own version field — not just one"},
+    {"id": "changelog_entry_drafted", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "CHANGELOG.md should have a new top entry for 0.0.2 with date, summary of changes, and link to commit range"},
+    {"id": "tag_pushed", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the agent should create an annotated git tag (v0.0.2) and push it to origin, then confirm the remote tag exists — not just a local commit"}
+  ],
+  "reference_solution": "Agent reads releasing-marketplace/SKILL.md, runs pre-release gate, bumps version in 4 manifests, drafts CHANGELOG entry, commits, creates annotated tag v0.0.2, pushes tag, confirms remote tag."
+}

@@ -1,0 +1,15 @@
+{
+  "eval_id": "plan-multi",
+  "expected_skill": "plan-lifecycle",
+  "utterance": "plan this multi-phase project with critic checkpoints",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_plan_lifecycle", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/plan-lifecycle/SKILL.md before planning; the skill defines the ROADMAP.md + per-phase PLAN.md structure"},
+    {"id": "created_roadmap_plus_phase_plans", "type": "compliance", "category": "instruction_following", "points": 40, "grader": "model", "text": "the agent should produce both ROADMAP.md (high-level phase breakdown) and per-phase PLAN.md files with critic checkpoints per the skill's contract"},
+    {"id": "deviation_tracking_documented", "type": "structure", "category": "instruction_following", "points": 30, "grader": "code", "text": "each PLAN.md should include a 'deviation tracking' section per the skill (how to record when actuals diverge from planned)"},
+    {"id": "phase_boundaries_clear", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the phases should have explicit boundaries (each phase has a deliverable + acceptance criteria), not a vague sequential sketch"},
+    {"id": "critic_checkpoints_meaningful", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the critic checkpoints between phases should be substantive review gates (e.g. 'verify acceptance criteria + run adversarial critic'), not generic 'review the work' placeholders"}
+  ],
+  "reference_solution": "Agent reads plan-lifecycle/SKILL.md, creates ROADMAP.md with 4 phases + per-phase PLAN.md with critic checkpoints, defines deviation tracking, names specific deliverables per phase."
+}

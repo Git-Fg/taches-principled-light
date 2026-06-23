@@ -1,0 +1,15 @@
+{
+  "eval_id": "craft-review",
+  "expected_skill": "crafting-skills",
+  "utterance": "review this skill's description and frontmatter",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_crafting_skills", "type": "consultation", "category": "instruction_following", "points": 35, "grader": "code", "text": "the agent should read skills/crafting-skills/SKILL.md before reviewing; the skill encodes the description-quality rubric"},
+    {"id": "applied_routing_checklist", "type": "compliance", "category": "instruction_following", "points": 35, "grader": "model", "text": "the agent should apply the routing-quality checklist (Load when / Use when / Do NOT use for / concrete trigger phrases / negative scope) to the reviewed skill's description"},
+    {"id": "specific_findings_with_diff", "type": "structure", "category": "instruction_following", "points": 30, "grader": "code", "text": "the review should present findings as a before/after diff (current description + suggested rewrite), not just 'consider improving X'"},
+    {"id": "frontmatter_validates", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the reviewed skill's frontmatter should pass marketplace-validator (name format, description length ≤1024, license present, no stale platform refs)"},
+    {"id": "routing_improvement_actionable", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the suggested description rewrite should be measurably better for routing — i.e., include trigger phrases the user would actually type, and explicit negative scope to prevent over-triggering"}
+  ],
+  "reference_solution": "Agent reads crafting-skills/SKILL.md, runs the description-quality rubric on the target skill, presents a before/after diff, runs marketplace-validator on the result. Final report: 'X issues found; suggested description: <rewrite>; routing test delta: +N pp'."
+}

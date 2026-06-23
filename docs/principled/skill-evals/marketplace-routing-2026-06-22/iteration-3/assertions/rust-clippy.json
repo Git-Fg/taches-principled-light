@@ -1,0 +1,15 @@
+{
+  "eval_id": "rust-clippy",
+  "expected_skill": "rust",
+  "utterance": "configuring clippy and cargo-deny for my Rust project",
+  "category_class": "marketplace",
+  "weight": {"instruction_following": 1.0, "goal_completion": 1.0},
+  "assertions": [
+    {"id": "consulted_rust_skill", "type": "consultation", "category": "instruction_following", "points": 30, "grader": "code", "text": "the agent should read skills/rust/SKILL.md before configuring; the skill encodes clippy/cargo-deny/cargo-vet setup patterns"},
+    {"id": "clippy_config_produced", "type": "structure", "category": "instruction_following", "points": 35, "grader": "code", "text": "the response should produce a clippy.toml (or [lints] table in Cargo.toml) with at least the workspace-level lints (clippy::all, clippy::pedantic, clippy::nursery)"},
+    {"id": "cargo_deny_config_produced", "type": "structure", "category": "instruction_following", "points": 35, "grader": "code", "text": "the response should produce a deny.toml configuration with licenses, bans, advisories, and sources sections per the rust skill's recommended template"},
+    {"id": "ci_integration_mentioned", "type": "structure", "category": "goal_completion", "points": 50, "grader": "code", "text": "the response should mention CI integration (GitHub Actions or similar) running cargo clippy --all-targets --all-features -- -D warnings and cargo deny check"},
+    {"id": "version_pinned", "type": "quality", "category": "goal_completion", "points": 50, "grader": "model", "text": "the response should pin specific versions (clippy = Rust 1.74+ stable; cargo-deny = 0.14+) and note MSRV implications, not just 'install latest'"}
+  ],
+  "reference_solution": "Agent reads rust/SKILL.md, produces Cargo.toml [lints] section + deny.toml + .github/workflows/ci.yml running clippy + cargo-deny, pins versions, notes MSRV."
+}

@@ -37,28 +37,30 @@ Each eval becomes a JSON file with three required fields and a list of assertion
   "assertions": [
     {"id": "consulted_crafting_skills", "type": "consultation",
      "text": "the agent should read crafting-skills/SKILL.md (or invoke the Skill tool on crafting-skills)",
-     "category": "instruction_following", "points": 20},
+     "category": "instruction_following", "points": 30},
     {"id": "applied_routing_pattern", "type": "compliance",
      "text": "the agent should follow the Compendium's 'Load when… / Use when… / Do NOT use for…' structure for the new skill's frontmatter",
-     "category": "instruction_following", "points": 25},
+     "category": "instruction_following", "points": 40},
     {"id": "decision_router_top", "type": "structure",
      "text": "the new SKILL.md body should start with a Decision Router section",
-     "category": "instruction_following", "points": 20},
+     "category": "instruction_following", "points": 30},
     {"id": "no_recipe_overfit", "type": "quality",
      "text": "the new skill should not be a verbatim recipe copy of an existing skill (e.g., should not just say 'follow the PDF parsing tutorial')",
-     "category": "goal_completion", "points": 15},
+     "category": "goal_completion", "points": 40},
     {"id": "produced_valid_skill", "type": "structure",
      "text": "the output file parses as a valid SKILL.md with name + description + license frontmatter",
-     "category": "goal_completion", "points": 20}
+     "category": "goal_completion", "points": 60}
   ]
 }
 ```
+
+Note: `instruction_following` assertions sum to 30 + 40 + 30 = **100**. `goal_completion` assertions sum to 40 + 60 = **100**. Each category is independently scored on 0–100. The author must size each category's assertions to sum to exactly 100.
 
 Tessl rules (apply directly to our schema):
 
 - **`points` sum to 100 per category** — `instruction_following` and `goal_completion` are scored independently, each on a 0–100 scale.
 - **Each assertion is one of 4 types** — `consultation` (did the agent read/invoke the right skill?), `compliance` (did the agent follow the skill's specific guidance?), `structure` (does the output have the right structural form?), `quality` (qualitative judgment — typically requires LLM-as-judge).
-- **`category` is one of `instruction_following` or `goal_completion`** — Tessl's two-axis split. Per Tessl Table 4, `instruction_following` is the discriminating metric for skill lift (5.5–22 point delta with skill vs without); `goal_completion` saturates near 90% for almost all models.
+- **`category` is one of `instruction_following` or `goal_completion`** — Tessl's two-axis split. Per Tessl Table 4, `instruction_following` is the discriminating metric for skill lift (5.5–22 point delta on the overall score, driven primarily by IF); `goal_completion` saturates near 90% for almost all models.
 - **Assertions are hidden from the solver agent** and used only by the judge agent.
 
 ### Per-category guidance (from Tessl + Anthropic)
@@ -84,9 +86,16 @@ Runs the with-skill and without-skill configurations identically to iteration-2 
 
 ### 2. Grader
 
-For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Per Tessl's methodology, use a fixed strong model for the judge across all experiments** (they use Sonnet 4.6; we use Haiku since that's our iteration-2/3 target — same chain ensures consistent scoring).
+For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). We deliberately deviate to **Haiku 4.5** (same chain as the solver, per project convention to target the VPS port-3456 proxy) — this is a *trade-off*, not an optimization:
+
+- **Lower grading quality** vs Sonnet 4.6 (smaller model, less nuanced on `compliance`/`quality`).
+- **Self-grading bias**: Haiku judging Haiku's own solver output. The bias is roughly symmetric between with-skill and without-skill runs (same judge), so the *delta* signal should be more reliable than the absolute scores. But absolute scores may be inflated.
+- **Cost**: ~10× cheaper than Sonnet 4.6 at 60 grader calls/eval.
+
+**Mitigation**: run a calibration subset of 5-10 evals with both Haiku and Sonnet 4.5 judges before the full iter-3 run. If the deltas agree within ±5 points, proceed with Haiku; if not, switch to Sonnet.
 
 The judge receives:
+
 - The eval's `assertions[]` (text + points + category + type)
 - The transcript JSONL (`with_skill.jsonl` or `without_skill.jsonl`)
 - The relevant `SKILL.md` (for the `compliance` assertions)
@@ -96,7 +105,7 @@ Grading output schema (per Anthropic's `references/schemas.md`):
 ```json
 {
   "expectations": [
-    {"text": "...", "passed": true, "evidence": "...", "points_awarded": 20}
+    {"text": "...", "passed": true, "evidence": "...", "points_awarded": 30}
   ],
   "summary": {
     "instruction_following_score": 75.0,
@@ -109,7 +118,7 @@ Grading output schema (per Anthropic's `references/schemas.md`):
 
 **Use `text` / `passed` / `evidence` / `points_awarded` — NOT `name` / `met` / `details`.** The exact field names matter for downstream tooling.
 
-For the `consultation` assertions, the grader can use a deterministic check on the transcript (was the right SKILL.md read?). For the others, the grader uses LLM-as-judge.
+For the `consultation` assertions, the grader is **not** needed — those checks are code-based (parse the transcript for `Read` events on the expected skill path, check `Skill` tool invocations). Only `compliance` and `quality` use the LLM judge. `structure` assertions on tool calls use `compare_args` from the schema (also code-based, see below).
 
 ### 3. Comparator
 
@@ -156,13 +165,17 @@ Per Anthropic's pattern, also surface patterns the aggregate stats might hide: a
 
 Per Tessl's published benchmark:
 
-| Condition | IF score | GC score | Overall | Cost |
+| Condition | IF score | GC score | Overall (50/50 avg) | Cost |
 |---|---|---|---|---|
 | Haiku 4.5 without skill | 43.6 | 85.3 | 64.4 | $0.08/scenario |
 | Haiku 4.5 with skill | 75.3 | 93.0 | 84.1 | $0.11/scenario |
-| **Δ** | **+31.7** | **+7.7** | **+19.7** | **+37%** |
+| **Δ IF** | **+31.7** | — | — | — |
+| **Δ GC** | — | **+7.7** | — | — |
+| **Δ Overall** | — | — | **+19.7** | **+37%** |
 
-Our iter-2/3 also targets Haiku 4.5. If our marketplace skills are well-constructed, we should expect similar instruction-following lift (+20 to +30 points) when an agent consults the right skill vs doesn't.
+The `Δ` rows are derived (one per column, not aggregated). The "+19.7 overall" matches Tessl's "Skill Δ" headline because the overall score is computed as a 50/50 weighted average of IF and GC: `0.5 × 75.3 + 0.5 × 93.0 = 84.15 ≈ 84.1` and `0.5 × 43.6 + 0.5 × 85.3 = 64.45 ≈ 64.4`. The lift is driven primarily by IF (+31.7) — Tessl's central finding for the Haiku tier.
+
+Our iter-2/3 also targets Haiku 4.5. If our marketplace skills are well-constructed, we should expect similar IF lift (**+25 to +32 points**) when an agent consults the right skill vs doesn't.
 
 ## EvaluationCriteria schema (synthesized from tau-bench + Anthropic + Tessl)
 
@@ -195,26 +208,25 @@ class EvaluationCriteria(BaseModel):
     ]
 ```
 
-### Reward combination: multiplicative per category
+### Reward combination: weighted average across categories (Tessl-style)
 
 Tau-bench computes the final reward as a **product** of per-category rewards, where each category is either 1.0 (all assertions pass) or 0.0 (any assertion fails). This is stricter than Tessl's additive approach but matches Anthropic's "the agent either solved the task or didn't" framing.
 
-Iter-3 will use a **hybrid** approach:
+Iter-3 will follow **Tessl's approach** (verified against Table 4 numerics: `0.5 × 75.3 + 0.5 × 93.0 = 84.15 ≈ 84.1` overall):
 
-- **Within category**: Tessl-style partial credit via `points_awarded` summing to category total. e.g., 4/5 assertions in `instruction_following` → 80/100.
-- **Across categories**: Multiplicative, with each category worth 50%. e.g., `0.5 * instruction_following_score + 0.5 * goal_completion_score` (tau-bench uses multiplication; we use weighted sum to keep the score interpretable as 0–100).
-- **`reward_basis` controls whether a category is included** — if `instruction_following` is not in `reward_basis`, that category is computed as a diagnostic but does not gate the score.
+- **Within category**: Tessl-style partial credit. Each assertion has a `points` value; `points_awarded` is summed per category and divided by the category total (100) to get a 0-100 category score. 4/5 assertions in `instruction_following` summing to 80 pts → IF score = 80.
+- **Across categories**: Weighted average. With default equal weights (`weight["instruction_following"] = 1.0`, `weight["goal_completion"] = 1.0`), the overall score is the simple average: `0.5 × IF + 0.5 × GC`. Per-eval `reward_basis` can omit a category (set its weight to 0) to gate it out — omitted categories are still computed as diagnostics but do not affect the overall score.
 
 Final score formula:
 
-```
-score = 100 * (
-    (instruction_following_avg if "instruction_following" in reward_basis else 1.0) *
-    (goal_completion_avg if "goal_completion" in reward_basis else 1.0)
-)
+```python
+score = 100 * sum(category_avg[c] * weight[c] for c in reward_basis) \
+            / sum(weight[c] for c in reward_basis)
 ```
 
-This is a "tau-bench product, weighted by Tessl's per-category averaging" compromise. The product captures "any failure in any gating category is a real failure"; the per-category averaging captures partial credit for sub-assertions.
+With default `weight = {"instruction_following": 1.0, "goal_completion": 1.0}` and `reward_basis = ["instruction_following", "goal_completion"]`, this simplifies to `0.5 × IF + 0.5 × GC` — verified to reproduce Tessl Table 4's overall score exactly.
+
+**Why weighted average, not tau-bench's product**: a product treats any category failure as zero, which discards partial-credit signal. For skill efficacy research, we want to know "how much did consulting the skill help?" — a weighted average preserves that signal even when one category fails. For example, an eval where IF=100, GC=60 (full skill compliance, partial goal completion) gets score=80 with averaging vs score=0 with product. The former is more useful for deciding whether to keep the skill.
 
 ### `compare_args` pattern (specification match, not verbatim)
 
@@ -222,11 +234,11 @@ Tau-bench's `Action.compare_with_tool_call` only checks the args in `compare_arg
 
 ### LLM-as-judge prompt (synthesized from tau-bench + Anthropic)
 
-The grader LLM gets a tightly-scoped system prompt (adapted from `evaluator_nl_assertions.py`):
+The grader LLM gets a tightly-scoped system prompt (adapted from `evaluator_nl_assertions.py`). Only `compliance` and `quality` assertions are LLM-judged; `consultation` and `structure` are code-based and bypass this prompt.
 
 ```
 TASK
-- You will be given a list of expected outcomes (assertions), a transcript
+- You will be given a list of compliance/quality assertions, a transcript
   of the agent's run, and the relevant skill's SKILL.md.
 - Your job is to evaluate whether the agent satisfies each assertion.
 - Grade each assertion individually.
@@ -240,12 +252,13 @@ FORMAT
 
 If you cannot determine whether an assertion was satisfied from the
 transcript and final response, return "passed": false and explain why
-in "evidence". If a consultation assertion is checking that a skill was
-read but the agent never loaded the skill, return "passed": false
-(NOT "not_applicable" — the assertion is binary).
+in "evidence". Per Anthropic's recommendation, you may also return
+"unknown": true if the evidence is genuinely ambiguous — this is
+treated as a FAIL for scoring purposes but is flagged in the report
+for human review.
 ```
 
-The model is fixed (Haiku 4.5, same chain as the solver) per Tessl's methodology: a fixed strong judge ensures consistent scoring across experiments.
+The model is fixed (Haiku 4.5, same chain as the solver) per Tessl's "fixed judge" methodology. Note the trade-offs documented in the Grader section above (smaller model + self-grading bias vs cost savings).
 
 ## SkillsBench: the canonical reference for skill evaluation
 
@@ -363,7 +376,7 @@ Specific anti-patterns (SkillsBench rejects PRs that have these):
 
 1. **Focused skills (≤3 modules) outperform larger bundles.** Our design-hub with 5 sub-skills is in the "borderline" zone; we should monitor whether the hub routing + subskills combo outperforms a flat skill with all 5 modules.
 2. **Smaller models with skills can match larger models without them.** On SkillsBench, Haiku 4.5 with skills ≈ Sonnet 4.5 without skills on several domains. This validates the value of skills as model-level leverage.
-3. **8 controlled categories** (office-white-collar, software-eng, scientific, infrastructure, multimodal, research, finance, robotics) — our marketplace spans most of these implicitly; we may want to add a `category` field to each of our 18 evals.
+3. **8 controlled categories** (office-white-collar, software-eng, scientific, infrastructure, multimodal, research, finance, robotics). Our existing evals are already classified; no retrofit needed.
 4. **3 trials per task** for confidence intervals. Our iter-3 should consider this — current iter-2/3 design is single-trial per (eval, config), which gives noisier lift estimates.
 
 ### Comparison: iter-3 vs SkillsBench
@@ -427,25 +440,37 @@ Iter-3 per-eval results can be classified by these three signals to produce acti
 
 Iteration-3 needs:
 
-0. **Widen the SKILL.md read filter** (fix for the iter-2 metric bug). The
-   current `run_iteration_2.py:170` filter only matches reads under
-   `REPO / "skills"` and misses reads of `.agents/skills/*/SKILL.md`. The
-   `.agents/skills/` folder contains 4 marketplace skills:
-   `marketplace-health`, `marketplace-validator`, `ingesting-skills`,
-   `releasing-marketplace`. The iter-3 filter should accept both:
-   ```python
-   MARKETPLACE_SKILL_DIRS = [REPO / "skills", REPO / ".agents/skills"]
-   ```
-   See `iteration-2/METRIC-BUG-NOTE.md` for the audit-2 case study that
-   surfaced this bug (the with-skill agent went off on a tangent reading
-   eval infrastructure files and produced a wrong answer; the metric
-   reported `material_difference: false` for both runs).
+0. **Verify SKILL.md read filter is widened** (the fix from iter-2 commit
+   `069b31c` is already in place at `scripts/run_iteration_2.py:30,177-178`).
+   The filter `MARKETPLACE_SKILL_DIRS = [REPO / "skills", REPO / ".agents/skills"]`
+   matches reads of marketplace skills in either folder. **Action when iter-3
+   starts**: re-run the audit-2 case study from `iteration-2/METRIC-BUG-NOTE.md`
+   with the new filter and confirm `lint-1` reports 2 reads (was 0 before the
+   fix). The 4 `.agents/skills/` skills are: `marketplace-health`,
+   `marketplace-validator`, `ingesting-skills`, `releasing-marketplace`. Note:
+   these are marketplace-maintenance *meta-skills*; reads of them count as
+   "consulted a marketplace skill" for the iter-3 `consultation` assertion
+   but should probably be excluded from "user-facing skill consultation"
+   metrics (separate flag, TBD).
 
-1. **An `assertions.json` per eval** (or a `assertions[]` field added to `evals.json`). 18 evals × ~3-4 assertions each = 54-72 hand-authored assertions. This is the biggest blocker — it's content work, not tooling.
+1. **An `assertions.json` per eval** (or a `assertions[]` field added to
+   `evals.json`). **18 evals × 5 assertions each = 90 hand-authored
+   assertions**. With each assertion needing a category (IF or GC) + points
+   (summing to 100 per category) + type + text + grader (code/model) +
+   compare_args (optional) + reference solution, this is roughly 6-9 hours
+   of content authoring. This is the biggest blocker — content, not tooling.
+   Reuse the `craft-create` example (lines 32-57) as the template; aim for
+   3 IF assertions summing to 100 + 2 GC assertions summing to 100 (or
+   4+3, 3+4, etc.) per eval.
 
-2. **An LLM-as-judge runner** that takes `(assertion, transcript, response_text, skill_context)` → `(pass, justification)`. The grader is best implemented as another subprocess `claude --print` call with a tightly-scoped prompt.
+2. **An LLM-as-judge runner** that takes `(assertion, transcript, response_text, skill_context)` → `(pass, justification)`. The grader is best implemented as another subprocess `claude --print` call with a tightly-scoped prompt. Only `compliance` and `quality` assertions need the judge; `consultation` and `structure` are code-based and bypass it.
 
-3. **An assertion schema** that supports PASS / FAIL / NOT_APPLICABLE (e.g., a `consultation` assertion against a skill that the model didn't load is NOT_APPLICABLE, not FAIL). NOT_APPLICABLE is excluded from the pass-rate denominator.
+3. **An assertion schema** that supports PASS / FAIL / UNKNOWN. UNKNOWN is
+   returned by the LLM judge when the evidence is genuinely ambiguous; it is
+   treated as FAIL for scoring but flagged for human review. There is **no**
+   NOT_APPLICABLE state in iter-3 — `consultation` assertions are binary by
+   design (the skill was read or wasn't) and are graded code-based, so
+   "not_applicable" cannot arise.
 
 4. **A better signal baseline.** The Tessl paper noted that "When the pass rates are identical, make your test cases harder." Several of our 18 utterances are easy enough that the model can answer them without any skill. For iteration-3, the eval set should be rebalanced toward harder, more specific tasks where the skill actually changes the answer.
 
@@ -454,7 +479,7 @@ Iteration-3 needs:
 | Failure mode | Caught by iteration-2? | Caught by iteration-3? |
 |--------------|:----------------------:|:----------------------:|
 | Agent reads the skill but doesn't apply it | No (shows as +1 read) | Yes (compliance assertion FAIL) |
-| Agent produces the right answer by coincidence (no skill needed) | No (passes as no_difference) | Yes (consultation assertion NOT_APPLICABLE if no skill read, or skill_lifts_quality=0) |
+| Agent produces the right answer by coincidence (no skill needed) | No (passes as no_difference) | Yes (consultation assertion FAIL — agent did not consult the expected skill; skill_lifts_quality=0) |
 | Agent produces a structurally wrong output despite reading the skill | No | Yes (structure assertion FAIL) |
 | Agent consults a wrong skill (false positive routing) | No (counts as +1 read) | Yes (consultation assertion FAIL on expected_skill) |
 | Agent over-applies the skill (recipe overfit) | No | Yes (quality assertion FAIL) |
@@ -463,12 +488,13 @@ Iteration-3 needs:
 
 | Step | Effort | Notes |
 |------|--------|-------|
-| Author 18 `assertions[]` sets | 4-6 hours | This is the bottleneck; mostly content work |
-| Implement `grader.py` (LLM-as-judge) | 2 hours | Reuse the with/without-skill runner |
-| Implement `comparator.py` | 1 hour | Pure computation |
-| Implement `analyzer.py` | 1 hour | Aggregation + report |
-| Run iteration-3 | ~3 hours (18 evals × 2 configs × 4 sub-agents × 60s each) | The grader calls add 18 × 2 × 2 = 72 extra LLM calls |
-| **Total** | **~1 working day** | Realistic estimate |
+| Author 18 `assertions[]` sets | 6-9 hours | 18 × 5 assertions = 90 hand-authored assertions; each requires category + points (summing to 100/category) + reference solution |
+| Implement `grader.py` (LLM-as-judge) | 2 hours | Reuse the with/without-skill runner; only `compliance`+`quality` need the judge |
+| Implement `comparator.py` | 1 hour | Pure computation; weighted-average formula from line 219 |
+| Implement `analyzer.py` | 1 hour | Aggregation + report; per-skill lift, per-eval verdict distribution |
+| Calibrate judge model (Haiku vs Sonnet 4.5) | 1 hour | Run 5-10 evals with both judges; check delta agreement |
+| Run iteration-3 | ~3 hours (18 evals × 2 configs × ~60s each) | Plus ~60 LLM judge calls (one per compliance+quality assertion per config) |
+| **Total** | **~1.5 working days** | Realistic estimate; depends on judge calibration findings |
 
 ## When to run iteration-3
 
@@ -566,7 +592,7 @@ From Anthropic's roadmap, applied to our 18 marketplace evals:
 - **Step 0**: Start now — don't wait for the perfect suite. (We're starting with 18; iterate.)
 - **Step 1**: Start with what you already test manually. The `evals.json` set is hand-authored from prior routing-test failures (the 7W/0T/3L baseline at 904e11e). ✓
 - **Step 2**: Write unambiguous tasks with reference solutions. For each of our 18 evals, author a known-good response that passes all assertions. (Blocker for iter-3.)
-- **Step 3**: Build balanced problem sets. Our set has 10 marketplace-category + 8 local-meta + 1 critic + 5 research/etc — needs review for class balance.
+- **Step 3**: Build balanced problem sets. Our set is **18 evals = 9 marketplace-category + 9 local-meta** (per `evals/evals.json`). Need review for class balance — most local-meta evals are easy enough that the model can answer them without any skill.
 - **Step 4**: Build a robust eval harness with a stable environment. We use `/tmp/empty-claude-project` as the baseline for without-skill runs (no repo state leaks); with-skill runs use the marketplace repo.
 - **Step 5**: Design graders thoughtfully. (See table above.)
 - **Step 6**: Check the transcripts. (Run after iter-3.)

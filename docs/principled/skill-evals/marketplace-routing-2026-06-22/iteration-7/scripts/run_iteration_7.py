@@ -48,6 +48,7 @@ ITER4_DIR = WORKSPACE / "iteration-4"
 ITER3_ASSERTIONS = (WORKSPACE / "iteration-3") / "assertions"
 ITER3_GRADER = (WORKSPACE / "iteration-3") / "scripts" / "grader.py"
 EVALS_FILE = WORKSPACE / "evals/evals.json"
+BASELINES_DIR = WORKSPACE / "baselines"
 CLAUDE = "/Users/felix/.local/bin/claude"
 CLAUDE_MODEL = "haiku"
 TIMEOUT_S = 300
@@ -63,6 +64,20 @@ ITER7_EVALS = [
     ("lint-1", "file-access"),
     ("release-2", "file-access"),
 ]
+
+
+def cache_baseline(eval_id: str, eval_dir: Path) -> bool:
+    """Copy canonical --disable-slash-commands baseline from baselines/ to
+    eval_dir/baseline_skill.jsonl. Returns True on cache hit, False on miss.
+    See BASELINES_DIR/MANIFEST.json for canonical sources.
+    """
+    src = BASELINES_DIR / f"{eval_id}.jsonl"
+    dst = eval_dir / "baseline_skill.jsonl"
+    if not src.exists():
+        return False
+    eval_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dst)
+    return True
 
 
 def preflight() -> bool:
@@ -304,6 +319,10 @@ def main() -> int:
     p.add_argument("--judge-model", default=DEFAULT_JUDGE_MODEL)
     p.add_argument("--skip-transcripts", action="store_true",
                    help="Skip baseline transcript generation (re-use existing)")
+    p.add_argument("--refresh-baseline", action="store_true",
+                   help="Ignore canonical baselines/ cache; regenerate all 4 "
+                        "baselines from scratch (use after eval prompt or "
+                        "proxy config changes)")
     args = p.parse_args()
 
     ITER7_DIR.mkdir(parents=True, exist_ok=True)
@@ -341,7 +360,16 @@ def main() -> int:
             utterance = ev["utterance"]
             ed = ITER7_DIR / f"eval-{eval_id}"
             ed.mkdir(parents=True, exist_ok=True)
-            print(f"\n[{i}/4] {eval_id} baseline", flush=True)
+            # Cache hit: copy from canonical baselines/ unless --refresh-baseline
+            if not args.refresh_baseline and cache_baseline(eval_id, ed):
+                size = (ed / "baseline_skill.jsonl").stat().st_size
+                print(f"\n[{i}/4] {eval_id} baseline (CACHED from baselines/)",
+                      flush=True)
+                print(f"  size={size}B  src=baselines/{eval_id}.jsonl",
+                      flush=True)
+                continue
+            print(f"\n[{i}/4] {eval_id} baseline (FRESH generation)",
+                  flush=True)
             print(f"  utterance: {utterance}", flush=True)
             m = run_baseline(utterance, ed)
             print(f"  baseline:     {m['status']} "

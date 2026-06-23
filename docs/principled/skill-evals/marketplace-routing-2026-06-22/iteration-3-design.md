@@ -27,7 +27,7 @@ The marketplace has not shipped `grader.py` yet (the 8-stage loop in `evaluating
 
 ## Per-eval structure
 
-Each eval becomes a JSON file with three required fields and a list of assertions:
+Each eval becomes a JSON file with three required fields and a list of assertions. Adopt the [Tessl framework rubric schema](https://arxiv.org/abs/2606.17819) ([huggingface dataset](https://huggingface.co/datasets/tesslio/task-evals-for-skills)) as the canonical format, simplified for our 18 marketplace evals:
 
 ```json
 {
@@ -35,23 +35,44 @@ Each eval becomes a JSON file with three required fields and a list of assertion
   "expected_skill": "crafting-skills",
   "utterance": "create a new agent skill for parsing PDFs",
   "assertions": [
-    {"id": "loaded_skill_md", "type": "consultation",
-     "text": "the agent should read crafting-skills/SKILL.md (or invoke the Skill tool on crafting-skills)"},
+    {"id": "consulted_crafting_skills", "type": "consultation",
+     "text": "the agent should read crafting-skills/SKILL.md (or invoke the Skill tool on crafting-skills)",
+     "category": "instruction_following", "points": 20},
     {"id": "applied_routing_pattern", "type": "compliance",
-     "text": "the agent should follow the Compendium's 'Load when… / Use when… / Do NOT use for…' structure for the new skill's frontmatter"},
+     "text": "the agent should follow the Compendium's 'Load when… / Use when… / Do NOT use for…' structure for the new skill's frontmatter",
+     "category": "instruction_following", "points": 25},
     {"id": "decision_router_top", "type": "structure",
-     "text": "the new SKILL.md body should start with a Decision Router section"},
+     "text": "the new SKILL.md body should start with a Decision Router section",
+     "category": "instruction_following", "points": 20},
     {"id": "no_recipe_overfit", "type": "quality",
-     "text": "the new skill should not be a verbatim recipe copy of an existing skill (e.g., should not just say 'follow the PDF parsing tutorial')"}
+     "text": "the new skill should not be a verbatim recipe copy of an existing skill (e.g., should not just say 'follow the PDF parsing tutorial')",
+     "category": "goal_completion", "points": 15},
+    {"id": "produced_valid_skill", "type": "structure",
+     "text": "the output file parses as a valid SKILL.md with name + description + license frontmatter",
+     "category": "goal_completion", "points": 20}
   ]
 }
 ```
 
-Each assertion is one of:
-- `consultation` (did the agent read/invoke the right skill?)
-- `compliance` (did the agent follow the skill's specific guidance?)
-- `structure` (does the output have the right structural form?)
-- `quality` (qualitative judgment — typically requires LLM-as-judge)
+Tessl rules (apply directly to our schema):
+
+- **`points` sum to 100 per category** — `instruction_following` and `goal_completion` are scored independently, each on a 0–100 scale.
+- **Each assertion is one of 4 types** — `consultation` (did the agent read/invoke the right skill?), `compliance` (did the agent follow the skill's specific guidance?), `structure` (does the output have the right structural form?), `quality` (qualitative judgment — typically requires LLM-as-judge).
+- **`category` is one of `instruction_following` or `goal_completion`** — Tessl's two-axis split. Per Tessl Table 4, `instruction_following` is the discriminating metric for skill lift (5.5–22 point delta with skill vs without); `goal_completion` saturates near 90% for almost all models.
+- **Assertions are hidden from the solver agent** and used only by the judge agent.
+
+### Per-category guidance (from Tessl + Anthropic)
+
+| Category | What it measures | When to use |
+|---|---|---|
+| `instruction_following` | Did the agent follow the preferences encoded in the skill? Library choices, structural conventions, naming rules, prohibited patterns, required steps. (Tessl verbatim.) | When the skill encodes a specific opinionated workflow or convention. |
+| `goal_completion` | Did the solution produce the requested outputs and is the final artifact correct? (Tessl verbatim.) | When the skill encodes knowledge or capabilities unavailable to the base agent. |
+
+For each assertion type:
+- `consultation` (did the agent read/invoke the right skill?) — deterministic check on the transcript (was the right SKILL.md read?). Often a 20-pt "gating" assertion.
+- `compliance` (did the agent follow the skill's specific guidance?) — check transcript evidence + output for adherence to specific patterns.
+- `structure` (does the output have the right structural form?) — check output artifact's structure (frontmatter, required sections).
+- `quality` (qualitative judgment) — LLM-as-judge for taste / style / completeness.
 
 ## The 4 sub-agents
 
@@ -63,46 +84,85 @@ Runs the with-skill and without-skill configurations identically to iteration-2 
 
 ### 2. Grader
 
-For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call (Claude, with the eval's assertions + the response text + the eval's expected_skill + the relevant SKILL.md).
+For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Per Tessl's methodology, use a fixed strong model for the judge across all experiments** (they use Sonnet 4.6; we use Haiku since that's our iteration-2/3 target — same chain ensures consistent scoring).
+
+The judge receives:
+- The eval's `assertions[]` (text + points + category + type)
+- The transcript JSONL (`with_skill.jsonl` or `without_skill.jsonl`)
+- The relevant `SKILL.md` (for the `compliance` assertions)
 
 Grading output schema (per Anthropic's `references/schemas.md`):
 
 ```json
 {
   "expectations": [
-    {"text": "...", "passed": true, "evidence": "..."},
-    {"text": "...", "passed": false, "evidence": "..."}
-  ]
+    {"text": "...", "passed": true, "evidence": "...", "points_awarded": 20}
+  ],
+  "summary": {
+    "instruction_following_score": 75.0,
+    "goal_completion_score": 90.0,
+    "overall_score": 82.5,
+    "passed": 4, "failed": 1, "total": 5
+  }
 }
 ```
 
-**Use `text` / `passed` / `evidence` — NOT `name` / `met` / `details`.** The exact field names matter for downstream tooling (the viewer depends on them).
+**Use `text` / `passed` / `evidence` / `points_awarded` — NOT `name` / `met` / `details`.** The exact field names matter for downstream tooling.
 
 For the `consultation` assertions, the grader can use a deterministic check on the transcript (was the right SKILL.md read?). For the others, the grader uses LLM-as-judge.
 
 ### 3. Comparator
 
-For each eval, computes (per Anthropic's blind-A/B pattern: "give two outputs to an independent agent without telling it which is which"):
-- `with_skill_pass_rate` = (assertions PASS in with-skill run) / total assertions
-- `without_skill_pass_rate` = (assertions PASS in without-skill run) / total assertions
-- `delta` = with − without
+For each eval, computes (per Tessl's with-skill vs without-skill methodology and Anthropic's blind-A/B pattern: "give two outputs to an independent agent without telling it which is which"):
+
+- `with_skill_instruction_following_score` (0–100)
+- `without_skill_instruction_following_score` (0–100)
+- `with_skill_goal_completion_score` (0–100)
+- `without_skill_goal_completion_score` (0–100)
+- `instruction_following_delta` = with − without
+- `goal_completion_delta` = with − without
+- `overall_delta` = weighted average delta (Tessl uses equal weighting; we may choose instruction-following-heavy for workflow-encoding skills)
 
 And classifies each eval as one of:
-- `skill_lifts_quality` (delta > 0.2, with-skill substantially better)
-- `skill_neutral` (|delta| ≤ 0.1, similar)
-- `skill_hurts` (delta < -0.2, with-skill worse)
+- `skill_lifts_quality` (overall_delta > 5 points per Tessl Table 4 norms; with-skill substantially better)
+- `skill_neutral` (|overall_delta| ≤ 5 points, similar)
+- `skill_hurts` (overall_delta < -5 points, with-skill worse)
+- `skill_redundant` (instruction_following_delta ≈ 0; the model already captures the skill's behavior — per Tessl "Implications for skill authors": "the skill can be removed")
 - `inconclusive` (transcript truncated, sample too small, etc.)
+
+Per Tessl Table 4 (with-skill vs without-skill on real skills across 19 models), the typical delta is **5.5–22 points** on the overall score, driven primarily by `instruction_following`. `goal_completion` deltas are smaller and saturate near 90% for frontier models.
 
 ### 4. Analyzer
 
 Aggregates across all evals. Computes:
-- **Overall skill lift** = mean delta across all evals
-- **Per-assertion-type pass rate** (consultation vs compliance vs structure vs quality)
-- **Per-skill utility score** (this is what the Tessl paper calls the headline metric)
-- **Failure pattern clustering** (which assertions fail most often?)
+- **Overall skill lift** = mean `overall_delta` across all evals (Tessl reports this as the headline metric)
+- **Per-category skill lift** = mean `instruction_following_delta` and `goal_completion_delta` separately
+- **Per-skill utility score** (Tessl's term) — mean overall delta for each expected_skill
+- **Per-eval verdict distribution** (skill_lifts_quality / skill_neutral / skill_hurts / skill_redundant / inconclusive)
+- **Failure pattern clustering** (which assertion `text` patterns fail most often?)
 - **Recommended description edits** (for any eval where delta < 0)
 
+Per Tessl Table 5, the uplift varies dramatically by skill domain:
+- **Media & File Processing: +38.1** (highest — skills encode strict workflows)
+- **Security & Compliance: +30.3**
+- **Testing, QA & Code Quality: +16.7** (lowest — skills describe principles not procedures)
+- **API Development & Integration: +25.9**
+
+Heuristic from Tessl: "when knowledge can be captured as a workflow, it is a strong candidate for a skill." Marketplace skills that fit this pattern (pdf-design-guide, releasing-marketplace, ingesting-skills, marketplace-validator, marketplace-health, security) should expect **+20–35 point uplift** in iter-3. Methodology-heavy skills (crafting-skills, evaluating-skills, general-critic) may show smaller uplift because they encode principles rather than procedures.
+
 Per Anthropic's pattern, also surface patterns the aggregate stats might hide: assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
+
+### Haiku 4.5 baseline reference (Tessl Table 4)
+
+Per Tessl's published benchmark:
+
+| Condition | IF score | GC score | Overall | Cost |
+|---|---|---|---|---|
+| Haiku 4.5 without skill | 43.6 | 85.3 | 64.4 | $0.08/scenario |
+| Haiku 4.5 with skill | 75.3 | 93.0 | 84.1 | $0.11/scenario |
+| **Δ** | **+31.7** | **+7.7** | **+19.7** | **+37%** |
+
+Our iter-2/3 also targets Haiku 4.5. If our marketplace skills are well-constructed, we should expect similar instruction-following lift (+20 to +30 points) when an agent consults the right skill vs doesn't.
 
 ## See also
 

@@ -21,46 +21,60 @@ address this.
 
 | Option | Stack | Maintenance | Pros | Cons | Verdict |
 |--------|-------|-------------|------|------|---------|
-| **mcp-assert** (blackwell-systems) | Go single binary, stdio/SSE/HTTP, MIT | github.com/blackwell-systems/mcp-assert, last commit 2026-06-23, 18 stars, 0 open issues | Purpose-built for deterministic MCP testing; `snapshot` command captures golden files, `intercept` records live tool-call trajectories, `run` replays against captured fixtures; 18 assertion types in YAML; 14 lint rules; integrated with Vitest / Jest / Bun / PHPUnit / pytest / Go test; adopted by Wyre Technology (25 servers) and Ant Group | Only 18 stars, project is ~2 months old (created 2026-04-23); "no mocks" tagline means it tests real servers, not that it can't replay — fixture-driven via `snapshot --update` | **A-grade (recommended)** for snapshot/replay fixtures |
-| **Tyk mock MCP server** | Go, MCP 2025 spec | tyk.io, blog post (search hit) | Deterministic, self-contained, simple | Single-purpose; no schema-driven mock, no snapshot/replay workflow | B-grade (relegated) |
+| **mcp-assert** (blackwell-systems) | Go single binary, stdio/SSE/HTTP, MIT | github.com/blackwell-systems/mcp-assert, last commit 2026-06-23, 18 stars, 0 open issues | Purpose-built for deterministic MCP testing; `snapshot` command captures golden files, `intercept` records live tool-call trajectories, `run` replays against captured fixtures; 18 assertion types in YAML; 24 lint rules; integrated with Vitest / Jest / Bun / PHPUnit / pytest / Go test; adopted by Wyre Technology (25 servers) and Ant Group (AntV) | Only 18 stars, project is ~2 months old (created 2026-04-23); mcp-assert is a **test runner**, not a mock — still need a small mock MCP server (see §"Two-layer MCP stack" below) to feed golden responses | **A-grade (recommended)** for the test-runner + assertion layer |
+| **Tyk mock MCP server** | Go, MCP 2025 spec | tyk.io, blog post (search hit) | Deterministic, self-contained, simple | Single-purpose; no schema-driven mock, no snapshot/replay workflow | B-grade (relegated — useful as the mock-MCP-server half, see below) |
 | **mcpland/mock-mcp** | TypeScript, OpenAPI → MCP | github.com/mcpland, 2026 | AI-driven mock data from OpenAPI schemas | Heavier setup; depends on schema quality; no snapshot/replay | B-grade for schema-driven |
 | **AIMock MCPMock** (CopilotKit) | Part of AIMock superset | github.com/CopilotKit/aimock, Apr 2026 | Integrated with LLMock + A2AMock + VectorMock + drift detection; production-tested at AG-UI | Larger install footprint (the whole AIMock stack); overkill if we only need MCP replay | A-grade only if we adopt the rest of AIMock |
 | **Custom Python mock** | Python, minimal HTTP | local | Minimal dependencies; total control | No maintenance; must hand-write all responses | C-grade escape hatch |
 
-**Recommended for iter-8 (revised 2026-06-23):** **mcp-assert** for the
-MCP stdio half (purpose-built for snapshot/replay fixtures) +
-**zerob13/mock-openai-api** for the OpenAI HTTP half (already in the
-iter-8 plan). Both run in a single Docker container via Compose:
-zerob13 listens on :3000, mcp-assert is invoked per-test from the
-agent shell via the `--mcp-config` JSON file that points at the
-mcp-assert CLI as the MCP server. The previous recommendation of
-"Tyk mock MCP server" or "AIMock MCPMock" is superseded — neither
-offers snapshot/replay as a first-class workflow, which is the core
-determinism primitive iter-8 needs.
+**Recommended for iter-8 (revised 2026-06-23):** A **two-layer MCP
+stack** for the MCP stdio half:
+
+1. **Mock MCP server** (the actual mock the agent talks to via stdio):
+   `zerob13/mock-openai-api` is **not** an option here (it's HTTP-only).
+   Candidates: Tyk mock MCP server, AIMock MCPMock, or a custom Python
+   mock — the simplest one that serves the captured golden responses.
+2. **Test runner** (asserts behavior against the mock): **mcp-assert**
+   for `snapshot --update` (capture phase) and `run --suite`
+   (replay-and-assert phase). This is the new addition to iter-8.
+
+The previous recommendation of "Tyk mock MCP server" or "AIMock
+MCPMock" as the *sole* MCP solution is superseded — neither offers
+snapshot/replay as a first-class workflow. mcp-assert is the missing
+piece for determinism, but it doesn't replace the mock server, it
+sits on top of it.
+
+**OpenAI HTTP half** (unchanged): `zerob13/mock-openai-api` listens on
+`:3000` inside the iter-8 `grader-mock` Docker Compose service
+(per iter-8 PLAN.md docker-compose.yml lines 112-127).
 
 ### mcp-assert snapshot/replay workflow (new)
 
 ```bash
-# 1. Run a one-time capture against the real secret_detection MCP server
-#    to record the exact JSON the agent will see
+# 1. One-time capture phase: point mcp-assert at the REAL secret_detection
+#    MCP server, snapshot the responses into evals/fixtures/secret-detection.json
 mcp-assert snapshot --suite evals/secret-detection/ \
   --server "npx @anthropic-ai/secret-detection-server" \
-  --update
+  --output evals/fixtures/secret-detection.json
 
-# 2. iter-8 runs: replay the captured snapshot deterministically
+# 2. iter-8 runs: a mock MCP server (e.g., Tyk mock) serves those
+#    captured responses to the agent. mcp-assert then asserts YAML
+#    expectations against the mock's outputs (not the real server's).
 mcp-assert run --suite evals/secret-detection/ \
-  --server "mcp-assert-replay-server --fixture evals/fixtures/secret-detection.json"
+  --server "npx @tyk/mock-mcp --fixture evals/fixtures/secret-detection.json"
 
-# 3. CI: gate on snapshot diff
+# 3. CI: gate on snapshot diff + assertion pass-rate
 mcp-assert ci --suite evals/secret-detection/ --threshold 95 --junit results.xml
 ```
 
-The key insight from mcp-assert's design: it speaks the **real** MCP
-protocol (initialize handshake, tools/list, tools/call) against
-whichever server you point it at, then asserts YAML expectations
-against the responses. For iter-8, the "server" is replaced by a
-fixture-replay server that returns the captured golden responses
-byte-for-byte.
+**Key clarification from round-6 self-critic:** mcp-assert is a
+**test runner**, not a mock. The architecture has two layers, not
+one. mcp-assert does NOT serve responses to the agent — the mock
+MCP server does. mcp-assert speaks the real MCP protocol (initialize
+handshake, tools/list, tools/call) against whatever server you point
+it at, then asserts YAML expectations against the responses. For
+iter-8, the "server" is a mock that returns the captured golden
+responses.
 
 ### Claude Code CLI integration
 
@@ -112,8 +126,8 @@ iter-N design.
 
 **Add `--mcp-config` to the iter-8B grader-noise root-cause sub-experiment** (sub-experiment 8B from iter-8 PLAN.md). Concretely:
 
-1. Run sec-audit with `--mcp-config mocks/secret-detection-mock.json` pointing at AIMock MCPMock (or Tyk mock).
-2. Replay the iter-7 sec-audit transcript through the same harness.
+1. Run sec-audit with `--mcp-config mocks/secret-detection-mock.json` pointing at the mock MCP server (Tyk mock or a custom Python mock that serves the captured responses from §1). The harness invokes the mock via stdio.
+2. Use `mcp-assert snapshot --server <real-server>` to capture the original responses once, then have the mock MCP server serve those exact responses to the agent in iter-8 runs.
 3. If the +17.5pp grader swing collapses to <2pp, the cause was non-deterministic MCP tool responses, not LLM judge noise.
 4. If the swing persists, the cause is the LLM judge (which is the next thing to test via `zerob13/mock-openai-api`).
 

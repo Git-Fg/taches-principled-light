@@ -123,13 +123,15 @@ def extract_transcript_excerpt(events: list[dict], max_chars: int = 8000) -> str
     return "\n".join(lines)
 
 
-def grade_code_based_assertion(assertion: dict, events: list[dict]) -> tuple[bool, str, int]:
+def grade_code_based_assertion(assertion: dict, events: list[dict],
+                               expected_skill: str = "") -> tuple[bool, str, int] | None:
     """Grade consultation + structure assertions without an LLM call.
 
-    Returns (passed, evidence, points_awarded).
-
-    consultation: count Read on SKILL.md + Skill tool invocations + Bash that
-                  invokes skill-named scripts (weak signal)
+    consultation: count Read on the EXPECTED SKILL.md + Skill tool invocations
+                  of the EXPECTED skill. Spurious matches on plugin skills
+                  (e.g., superpowers:writing-skills) are rejected. The
+                  expected skill is taken from the assertion's `expected_paths`
+                  field if present, else from the parent file's `expected_skill`.
     structure:    if compare_args set, parse Bash tool_use args and match;
                   otherwise return None to signal "needs LLM judge fallback".
     """
@@ -145,14 +147,35 @@ def grade_code_based_assertion(assertion: dict, events: list[dict]) -> tuple[boo
     if atype == "consultation":
         read_paths = [inp.get("file_path", "") for n, inp in tool_uses if n == "Read"]
         skill_calls = [inp.get("skill", "") for n, inp in tool_uses if n == "Skill"]
-        any_read = any("SKILL.md" in p for p in read_paths)
-        any_skill = any(s for s in skill_calls)
-        if any_read or any_skill:
-            paths_str = ", ".join(p for p in read_paths if "SKILL.md" in p)[:200]
-            skills_str = ", ".join(s for s in skill_calls if s)[:200]
-            evidence = f"agent read {paths_str}; Skill tool: {skills_str}"
+
+        per_assertion_paths = assertion.get("expected_paths") or []
+        expected_paths = list(per_assertion_paths)
+        if not expected_paths and expected_skill:
+            expected_paths = [
+                f".agents/skills/{expected_skill}/SKILL.md",
+                f"skills/{expected_skill}/SKILL.md",
+            ]
+        expected_skill_names = [expected_skill] if expected_skill else []
+
+        def _matches_expected(path: str) -> bool:
+            if not expected_paths:
+                return False
+            return any(ep in path for ep in expected_paths)
+
+        def _skill_call_matches(name: str) -> bool:
+            if not expected_skill_names:
+                return False
+            return any(en in name for en in expected_skill_names)
+
+        matched_reads = [p for p in read_paths if _matches_expected(p)]
+        matched_skills = [s for s in skill_calls if _skill_call_matches(s)]
+        if matched_reads or matched_skills:
+            evidence = f"agent read {', '.join(matched_reads)[:200]}; Skill tool: {', '.join(matched_skills)[:200]}"
             return True, evidence, points
-        return False, "agent did not read or invoke any skill", 0
+        return False, (
+            f"agent did not read or invoke expected skill "
+            f"'{expected_skill}' (paths={expected_paths}, observed_reads={read_paths[:3]}, observed_skills={skill_calls[:3]})"
+        ), 0
     if atype == "structure":
         compare_args = assertion.get("compare_args")
         if compare_args:
@@ -230,19 +253,30 @@ def grade_with_judge(assertions: list[dict], transcript_excerpt: str,
              "points_awarded": 0, "unknown": True}
             for a in judge_assertions
         ]
-    # Map by id; fill missing with UNKNOWN
+    # Map by id; fill missing with UNKNOWN. If judge returned passed=null or
+    # not a bool, treat as unknown (caller should review in unknowns.md).
     out_by_id = {e.get("id"): e for e in expectations if e.get("id")}
-    return [
-        {
+    out: list[dict] = []
+    for a in judge_assertions:
+        je = out_by_id.get(a["id"])
+        if not je:
+            out.append({
+                "id": a["id"], "text": a.get("text", ""),
+                "passed": False, "evidence": "no judge output for this assertion",
+                "points_awarded": 0, "unknown": True,
+            })
+            continue
+        passed_val = je.get("passed")
+        is_unknown = not isinstance(passed_val, bool)
+        out.append({
             "id": a["id"],
             "text": a.get("text", ""),
-            "passed": out_by_id.get(a["id"], {}).get("passed", False),
-            "evidence": out_by_id.get(a["id"], {}).get("evidence", "no judge output for this assertion"),
-            "points_awarded": out_by_id.get(a["id"], {}).get("points_awarded", 0) if out_by_id.get(a["id"], {}).get("passed") else 0,
-            "unknown": out_by_id.get(a["id"], {}).get("unknown", False),
-        }
-        for a in judge_assertions
-    ]
+            "passed": False if is_unknown else passed_val,
+            "evidence": je.get("evidence", "no judge output for this assertion"),
+            "points_awarded": (je.get("points_awarded", 0) if passed_val is True else 0),
+            "unknown": is_unknown or bool(je.get("unknown", False)),
+        })
+    return out
 
 
 def compute_summary(expectations: list[dict], assertions: list[dict],
@@ -306,12 +340,13 @@ def main() -> int:
 
     # Code-based grading (consultation + structure-with-compare_args only;
     # structure without compare_args returns None and falls through to judge)
+    expected_skill = assertions_data.get("expected_skill", "")
     expectations: list[dict] = []
     fallback_to_judge: list[dict] = []
     for a in assertions:
         if a.get("grader") != "code":
             continue
-        result = grade_code_based_assertion(a, events)
+        result = grade_code_based_assertion(a, events, expected_skill=expected_skill)
         if result is None:
             fallback_to_judge.append(a)
             continue

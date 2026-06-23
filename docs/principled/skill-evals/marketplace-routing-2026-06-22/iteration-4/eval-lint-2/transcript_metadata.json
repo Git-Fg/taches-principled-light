@@ -1,0 +1,15 @@
+{
+  "eval_id": "lint-2",
+  "with_skill": {
+    "config": "with",
+    "status": "truncated_timeout",
+    "duration_ms": 300000,
+    "total_events": 41
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 115215,
+    "total_events": 13
+  }
+}

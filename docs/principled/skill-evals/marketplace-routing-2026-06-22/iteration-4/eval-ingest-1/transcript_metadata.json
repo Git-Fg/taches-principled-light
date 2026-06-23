@@ -1,0 +1,15 @@
+{
+  "eval_id": "ingest-1",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 9985,
+    "total_events": 6
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 55835,
+    "total_events": 10
+  }
+}

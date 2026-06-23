@@ -1,0 +1,44 @@
+[iter-4] 18 evals x 2 configs = 36 transcript runs
+[iter-4] judge model: sonnet
+[iter-4] timeout per run: 300s
+[iter-4] wall budget: ~180 min worst case
+[iter-4] preflight: /Users/felix/.local/bin/claude --model haiku
+[iter-4] preflight OK
+
+[1/18] lint-1 (expected=marketplace-validator)
+  utterance: lint the marketplace and check the frontmatter
+  with-skill:    completed dur=241942ms events=36
+  without-skill: completed dur=31827ms events=9
+
+[2/18] lint-2 (expected=marketplace-validator)
+  utterance: is this skill valid before I commit
+  with-skill:    truncated_timeout dur=300000ms events=41
+  without-skill: completed dur=115215ms events=13
+
+[3/18] audit-1 (expected=marketplace-health)
+  utterance: audit the marketplace and run the pre-release health check
+  with-skill:    completed dur=238045ms events=36
+  without-skill: completed dur=56878ms events=11
+
+[4/18] audit-2 (expected=marketplace-health)
+  utterance: is the marketplace healthy, check for drift
+  with-skill:    truncated_timeout dur=300000ms events=28
+  without-skill: completed dur=67587ms events=10
+
+[5/18] ingest-1 (expected=ingesting-skills)
+  utterance: port this skill from a github url into our collection
+  with-skill:    completed dur=9985ms events=6
+  without-skill: completed dur=55835ms events=10
+
+[6/18] ingest-2 (expected=ingesting-skills)
+  utterance: add this skill to our marketplace, import it
+  with-skill:    completed dur=144568ms events=28
+  without-skill: completed dur=136047ms events=21
+
+[7/18] release-1 (expected=releasing-marketplace)
+  utterance: cut a release and bump the version to 0.0.2
+  with-skill:    completed dur=148749ms events=48
+  without-skill: completed dur=42192ms events=27
+
+[8/18] release-2 (expected=releasing-marketplace)
+  utterance: tag and push the new version

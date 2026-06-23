@@ -1,0 +1,15 @@
+{
+  "eval_id": "lint-1",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 241942,
+    "total_events": 36
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 31827,
+    "total_events": 9
+  }
+}

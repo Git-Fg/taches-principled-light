@@ -1,0 +1,15 @@
+{
+  "eval_id": "audit-1",
+  "with_skill": {
+    "config": "with",
+    "status": "completed",
+    "duration_ms": 238045,
+    "total_events": 36
+  },
+  "without_skill": {
+    "config": "without",
+    "status": "completed",
+    "duration_ms": 56878,
+    "total_events": 11
+  }
+}

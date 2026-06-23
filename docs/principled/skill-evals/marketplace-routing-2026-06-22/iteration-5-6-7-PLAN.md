@@ -78,8 +78,7 @@ CoEval 2026 definition.
 
 **Per Wataoka 2024:** GPT-4 has significant self-preference bias. Mechanism is
 **lower-perplexity preference** — judges prefer outputs more familiar to them.
-Same-family bias is real but moderate: arxiv:2606.19544 (Norman/Rivera/Hughes
-Berkeley, 17 Jun 2026) reports κ deflation 33.8-41.2pp is universal across
+Same-family bias is real but moderate: arxiv:2606.19544 (Norman/Rivera/Hughes, 17 Jun 2026) reports κ deflation 33.8-41.2pp is universal across
 21 judges × 9 providers, but test-retest reliability >0.943; the
 "consistency-bias paradox" is that test-retest ≠ correctness. Claude Opus 4.6
 achieves κ=0.720 on JudgeBench. Cross-provider κ=0.51 (Yagubyan 2026).

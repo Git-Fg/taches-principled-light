@@ -271,8 +271,7 @@ isn't structurally single-model.
 - **zerob13/mock-openai-api** ([GitHub](https://github.com/zerob13/mock-openai-api)):
   Go-based OpenAI-API-compatible mock with per-route response files.
   Recommended in [vendor-disjoint-grader-mock research note](../../research/vendor-disjoint-grader-mock-2026-06-23.md).
-- **Systematic 2026** (arxiv:2606.19544, 17 Jun 2026, Norman/Rivera/Hughes
-  Berkeley): κ deflation 33.8-41.2pp universal across 21 judges; test-retest
+- **Systematic 2026** (arxiv:2606.19544, 17 Jun 2026, Norman/Rivera/Hughes): κ deflation 33.8-41.2pp universal across 21 judges; test-retest
   reliability >0.943 but decoupled from correctness. The "consistency-bias
   paradox" means a deterministic mock grader (high test-retest) is necessary
   but **not sufficient** for grading accuracy — iter-8B's stddev check

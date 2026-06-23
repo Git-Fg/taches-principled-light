@@ -21,7 +21,7 @@ address this.
 
 | Option | Stack | Maintenance | Pros | Cons | Verdict |
 |--------|-------|-------------|------|------|---------|
-| **mcp-assert** (blackwell-systems) | Go single binary, stdio/SSE/HTTP, MIT | github.com/blackwell-systems/mcp-assert, last commit 2026-06-23, 18 stars, 0 open issues | Purpose-built for deterministic MCP testing; `snapshot` command captures golden files, `intercept` records live tool-call trajectories, `run` replays against captured fixtures; 18 assertion types in YAML; 24 lint rules; integrated with Vitest / Jest / Bun / PHPUnit / pytest / Go test; adopted by Wyre Technology (25 servers) and Ant Group (AntV) | Only 18 stars, project is ~2 months old (created 2026-04-23); mcp-assert is a **test runner**, not a mock — still need a small mock MCP server (see §"Two-layer MCP stack" below) to feed golden responses | **A-grade (recommended)** for the test-runner + assertion layer |
+| **mcp-assert** (blackwell-systems) | Go single binary, stdio/SSE/HTTP, MIT | github.com/blackwell-systems/mcp-assert, 18 stars, MIT, 0 open issues, project created 2026-04-23 | Purpose-built for deterministic MCP testing; `snapshot` command captures golden files, `intercept` records live tool-call trajectories, `run` replays against captured fixtures; 18 assertion types in YAML; 24 lint rules; integrated with Vitest / Jest / Bun / PHPUnit / pytest / Go test; adopted by Wyre Technology (25 servers) and Ant Group (AntV) | Only 18 stars, project is ~2 months old (created 2026-04-23); mcp-assert is a **test runner**, not a mock — still need a small mock MCP server (see §"Two-layer MCP stack" below) to feed golden responses | **A-grade (recommended)** for the test-runner + assertion layer |
 | **Tyk mock MCP server** | Go, MCP 2025 spec | tyk.io, blog post (search hit) | Deterministic, self-contained, simple | Single-purpose; no schema-driven mock, no snapshot/replay workflow | B-grade (relegated — useful as the mock-MCP-server half, see below) |
 | **mcpland/mock-mcp** | TypeScript, OpenAPI → MCP | github.com/mcpland, 2026 | AI-driven mock data from OpenAPI schemas | Heavier setup; depends on schema quality; no snapshot/replay | B-grade for schema-driven |
 | **AIMock MCPMock** (CopilotKit) | Part of AIMock superset | github.com/CopilotKit/aimock, Apr 2026 | Integrated with LLMock + A2AMock + VectorMock + drift detection; production-tested at AG-UI | Larger install footprint (the whole AIMock stack); overkill if we only need MCP replay | A-grade only if we adopt the rest of AIMock |
@@ -170,7 +170,7 @@ the marketplace evaluation methodology going forward.
 
 | Gateway | Stack | License | Stars | MCP support | A2A support | Self-host complexity | Verdict |
 |---------|-------|---------|-------|-------------|-------------|----------------------|---------|
-| **LiteLLM** | Python | NOASSERTION (dual) | 51,254 | ✅ native MCP gateway | ✅ A2A Protocol | Low (single Docker) | **A-grade (recommended)** |
+| **LiteLLM** | Python | NOASSERTION (dual) | 51,259 | ✅ native MCP gateway | ✅ A2A Protocol | Low (single Docker) | **A-grade (recommended)** |
 | **Bifrost** | Go | open source | (smaller) | partial | partial | Low | B-grade |
 | **Portkey** | hosted + self-host | proprietary | n/a | yes | yes | Low (managed) | B-grade if managed is OK |
 | **Kong AI Gateway** | Kong + plugin | Apache | n/a | via plugin | via plugin | Medium (Kong stack) | B-grade for orgs already on Kong |
@@ -194,7 +194,7 @@ the marketplace evaluation methodology going forward.
 4. Drop the `zerob13/mock-openai-api` for production eval runs (keep it for offline regression tests).
 
 **Sources:**
-- [BerriAI/litellm on GitHub](https://github.com/BerriAI/litellm) — 51,254 stars, MCP gateway, A2A protocol
+- [BerriAI/litellm on GitHub](https://github.com/BerriAI/litellm) — 51,259 stars, MCP gateway, A2A protocol
 - [Stop Juggling LLM APIs: 8 Gateways Ranked 2026 (TECHSY)](https://techsy.io/en/blog/best-llm-gateway-tools)
 - [AI Gateway Comparison 2026 (SlashLLM)](https://slashllm.com/resources/ai-gateway-comparison)
 - [LLM Gateway Comparison 2026 (FloTorch)](https://www.flotorch.ai/blogs/llm-gateway-comparison-2026)

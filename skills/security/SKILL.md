@@ -1,6 +1,6 @@
 ---
 name: security
-description: "Load when auditing for security vulnerabilities — SAST, dependency auditing, secrets detection, or compliance (OWASP, GDPR, SOC2, PCI-DSS). Use when the user says 'security audit', 'find secrets', 'check for vulnerabilities', 'OWASP audit', 'find exposed credentials', 'audit dependencies', 'vulnerable packages', 'check for CVEs', 'compliance check', 'GDPR audit', or 'SOC2 review'. Do NOT use for general code review (use reviewing-and-polishing) or Rust-specific dependency policy (use rust)."
+description: "Load when auditing for security vulnerabilities — SAST, dependency auditing, secrets detection, or compliance (OWASP, GDPR, SOC2, PCI-DSS). Use when the user says 'security audit', 'find secrets', 'check for vulnerabilities', 'OWASP audit', 'find exposed credentials', 'audit dependencies', 'vulnerable packages', 'check for CVEs', 'compliance check', 'GDPR audit', or 'SOC2 review'. Do NOT use for general code review or Rust-specific dependency policy."
 allowed-tools: Read, Grep, Glob, Bash, Edit
 when_to_use: |
   - User is preparing for production deployment or major release.
@@ -15,7 +15,7 @@ license: MIT
 ## Routing Guidance
 
 - IMMEDIATELY before production deployment, before merging security-related PRs, or when fixing vulnerabilities.
-- Do NOT use for architecture design (use restructuring-code) or general code quality (use reviewing-and-polishing REVIEW).
+- Do NOT use for architecture design or general code quality.
 
 ## CONTRAST
 

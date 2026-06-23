@@ -1,6 +1,6 @@
 ---
 name: marketplace-validator
-description: "Load when linting the full marketplace for spec compliance — schema, name format, description length, body size, stale refs, hardcoded tool names. Use for 'lint the marketplace', 'check all skills', 'pre-release lint'. Do NOT use for single-skill pre-commit checks (use crafting-skills), aggregated audit (use marketplace-health), or authoring."
+description: "Load when linting the full marketplace for spec compliance — schema, name format, description length, body size, stale refs, hardcoded tool names. Use for 'lint the marketplace', 'check all skills', 'pre-release lint'. Do NOT use for single-skill pre-commit checks, aggregated audit, or authoring."
 ---
 
 # Marketplace Validator

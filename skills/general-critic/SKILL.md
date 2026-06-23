@@ -1,6 +1,6 @@
 ---
 name: general-critic
-description: "Load when a deliverable needs adversarial review before delivery — plan, code, document, decision, or rule set. Use when the user asks to critique, audit, pressure-test, or review a completed artifact. Do NOT use for bug diagnosis in running code (use systematic-debugging) or architectural redesign (use restructuring-code)."
+description: "Load when a deliverable needs adversarial review before delivery — plan, code, document, decision, or rule set. Use when the user asks to critique, audit, pressure-test, or review a completed artifact. Do NOT use for bug diagnosis in running code, architectural redesign, skill spec compliance review, or behavioral evaluation."
 when_to_use: |
   Use for completed artifacts that need a severity-rated critique before they
   are delivered. The review should be adversarial but grounded in the artifact

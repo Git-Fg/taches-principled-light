@@ -195,7 +195,7 @@ After expansion, the retrospective grows from 293 lines to ~400 lines. It is now
 
 After implementation:
 
-1. `python3 .agents/skills/marketplace-health/scripts/health.py` — pass with `validator=0/87`.
+1. `python3 .agents/skills/marketplace-health/scripts/health.py` — pass with `validator=0/0` (note: original spec said `0/87`; the reduction to 0 reflects codifying the 8 marketplace extension keys in `ALLOWED_FRONTMATTER` + the sibling-name sweep + whitelisting 7 documented description-word-count exceptions).
 2. `git grep -nE "MiniMax|100\.80\.231\.128|nex-agi|claude-haiku-4-5-20251001|circuit_breaker_open"` returns 0 matches in the active tree (i.e., the working tree, excluding `docs/principled/attic/`).
 3. `git grep -nE "MiniMax|100\.80\.231\.128|nex-agi"` in the active tree returns 0 matches.
 4. `INDEX.md` and `ITERATION-PHASE-RETROSPECTIVE.md` are the only two files in `docs/principled/skill-evals/` (plus `iteration-8-PLAN.md` under `marketplace-routing-2026-06-22/`).
@@ -241,7 +241,7 @@ Aggressive consolidation of the iteration-phase documentation surface. The retro
 - `iter-7/benchmark.json` dependency on the private proxy removed
 
 ### Verified
-- `marketplace-health`: pass (validator 0/87)
+- `marketplace-health`: pass (validator 0/0 — the 8 marketplace extension keys are codified in `ALLOWED_FRONTMATTER`, and 7 documented description-word-count exceptions are whitelisted)
 - `git grep` for risky patterns: 0 matches in active tree
 - No broken cross-references
 ```
@@ -258,6 +258,6 @@ If v0.0.8 needs to be reverted, the v0.0.7 release tag and the closure archive a
 - **What about the v0.0.7 closure archive at `docs/principled/attic/2026-06-23-closure/`?** → Not modified. Per AGENTS.md "Project Closure Convention" the archive is the historical record and is immutable. v0.0.8 follows the same closure convention: CHANGELOG `[0.0.8]` entry + v0.0.8 tag are the durable closure markers; no `SUMMARY.md` is required for a documentation-only release.
 - **What about `skills/crafting-skills/references/frontmatter-complete.md` reference to `sonnet, opus, haiku`?** → Kept. That reference documents the Claude Code CLI model ID format. It is not an eval-iteration reference and does not name the marketplace's configured backend.
 - **What about the `100.80.231.128` reference in `baselines/MANIFEST.json`?** → Whole `baselines/` directory is deleted; no scrub needed.
-- **What if the marketplace-health report flags a post-cleanup issue?** → Fix inline. The cleanup must pass `validator=0/87`; if any validator fails, the cleanup is incomplete.
+- **What if the marketplace-health report flags a post-cleanup issue?** → Fix inline. The cleanup must pass `validator=0/0` (originally spec'd as 0/87; reduced after codifying 8 marketplace extension keys + whitelisting 7 documented description-word-count exceptions); if any validator fails, the cleanup is incomplete.
 - **What about the GitHub Releases pages for v0.0.5/v0.0.6/v0.0.7?** → Cannot be retroactively rewritten. The in-repo `.github/RELEASE-v*.md` files are scrubbed for repo-internal hygiene (so anyone reading the source tree doesn't see the proxy URL), but the public release pages on GitHub still show the original content. The v0.0.8 CHANGELOG entry documents this scope limitation explicitly. Future releases should follow the same in-repo scrub pattern from the start.
 - **What about the cross-references in the v0.0.7 closure archive at `docs/principled/attic/2026-06-23-closure/`?** → The archive is immutable. Dangling cross-references inside the archive are acceptable because the archive is a historical snapshot, not a live document. The archive's own STATUS.md / metadata.md should be the entry point; readers do not follow internal cross-references from the archive back into the active tree.

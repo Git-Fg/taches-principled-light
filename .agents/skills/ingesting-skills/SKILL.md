@@ -1,6 +1,6 @@
 ---
 name: ingesting-skills
-description: "Load when porting a skill from an external source — local path, GitHub URL, plugin directory, or another collection. Use for 'port this skill', 'add to marketplace', 'import this plugin'. Do NOT use for authoring from scratch (use crafting-skills), evaluating (use evaluating-skills), or quick single-file copies."
+description: "Load when porting a skill from an external source — local path, GitHub URL, plugin directory, or another collection. Use for 'port this skill', 'add to marketplace', 'import this plugin'. Do NOT use for authoring from scratch, evaluating, or quick single-file copies."
 ---
 # Ingesting Skills
 

@@ -1,7 +1,7 @@
 ---
 name: plan-do-check-act
-description: "Load when running a PDCA experiment — testing a hypothesis with measurable criteria before standardizing. Use when the user says 'run a PDCA cycle', 'A/B test this change', or 'validate the improvement'. Do NOT use for multi-phase project planning (use plan-lifecycle) or debugging (use superpowers' systematic-debugging)."
-when_to_use: "Use for proof-of-concepts, A/B tests, and validating improvements before standardization. Do NOT use for debugging (use superpowers' `systematic-debugging`) or code style (use reviewing-and-polishing)."
+description: "Load when running a PDCA experiment — testing a hypothesis with measurable criteria before standardizing. Use when the user says 'run a PDCA cycle', 'A/B test this change', or 'validate the improvement'. Do NOT use for multi-phase project planning or debugging."
+when_to_use: "Use for proof-of-concepts, A/B tests, and validating improvements before standardization. Do NOT use for debugging or code style."
 argument-hint: "[improvement goal or problem to address] [--cycle N]"
 license: MIT
 ---

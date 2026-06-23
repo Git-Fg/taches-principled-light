@@ -229,7 +229,7 @@ Do not add `tools:` when:
 Per issue #35 R4, the marketplace's testing methodology for subagents is three phases:
 
 1. **Static read** — read every skill in the plugin (`skills/*/SKILL.md`). Map the spawn patterns. Identify the tool/contract surface.
-2. **Real-condition invocation** — set up a realistic test scenario. Spawn the subagent via the Agent tool with a concrete task. Capture the JSONL trace.
+2. **Real-condition invocation** — set up a realistic test scenario. Spawn the subagent with a concrete task. Capture the JSONL trace.
 3. **JSONL trace analysis** — compare what the subagent reported to what it actually did (via tool calls). The discrepancy between subagent-report and JSONL is the ground truth for any audit.
 
 **The trace is not optional.** It is the only way to find bugs the model didn't surface in its own report (issues #35 findings #1 and #2 are both invisible without JSONL analysis).

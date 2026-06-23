@@ -1,4 +1,5 @@
 # Wiki Registry Schema
+<!-- check-citations-skip: this file documents a path pattern (`references/registry-schema.md`) that points to the installed copy of the plugin, not a sibling reference -->
 
 This file is the single source of truth for the format of `~/.claude/wiki-root.md`. The hub skill (`SKILL.md`) and a subagent explorer all cite this file imperatively before performing any wiki operation. Read it once at the start of any wiki work and the rest of the operation flows from what is here.
 

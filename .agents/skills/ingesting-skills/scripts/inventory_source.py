@@ -24,6 +24,15 @@ import re
 import sys
 from pathlib import Path
 
+# Reuse the marketplace-validator's parser and code-block stripper — they handle
+# folded (`>`), literal (`|`), single-quoted (`'…'`), and double-quoted (`"…"`)
+# scalars correctly. The previous in-file copy of parse_frontmatter_safe lacked
+# single/double-quote handling, so a description like `description: "Load when…"`
+# returned a 49-char string (with the quotes) instead of 47, breaking the
+# `starts_load_when` check.
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "marketplace-validator" / "scripts"))
+from validate import parse_frontmatter_safe, strip_code_blocks  # noqa: E402
+
 ALLOWED_FRONTMATTER = {"name", "description", "license", "allowed-tools", "metadata", "compatibility"}
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 MAX_NAME_LEN = 64
@@ -43,65 +52,6 @@ HARDCODED_TOOL_NAMES = [
     "the Glob tool", "the Grep tool", "the NotebookEdit tool", "the WebFetch tool",
     "the WebSearch tool",
 ]
-
-
-def parse_frontmatter_safe(text: str) -> tuple[dict, int]:
-    """Same parser as the validator: handles `>` and `|` block scalars."""
-    if not text.startswith("---"):
-        return {}, 0
-    lines = text.splitlines(keepends=True)
-    if not lines or lines[0].strip() != "---":
-        return {}, 0
-    end = None
-    for i in range(1, len(lines)):
-        if lines[i].strip() == "---":
-            end = i
-            break
-    if end is None:
-        return {}, 0
-    fm = {}
-    i = 1
-    while i < end:
-        raw = lines[i]
-        s = raw.rstrip("\n")
-        if not s.strip() or s.lstrip().startswith("#"):
-            i += 1
-            continue
-        leading = len(s) - len(s.lstrip())
-        key, sep, val = s.partition(":")
-        if not sep:
-            i += 1
-            continue
-        key = key.strip()
-        val = val.strip()
-        if val in (">", "|", ">-", "|-", ">+", "|+"):
-            j = i + 1
-            cont: list[str] = []
-            while j < end:
-                nxt = lines[j].rstrip("\n")
-                if not nxt.strip():
-                    j += 1
-                    continue
-                if len(nxt) - len(nxt.lstrip()) > leading:
-                    cont.append(nxt.strip())
-                    j += 1
-                else:
-                    break
-            sep_join = "\n" if "|" in val and ">" not in val else " "
-            val = sep_join.join(cont).strip()
-            i = j
-        else:
-            i += 1
-        fm[key] = val
-    body_offset = sum(len(l) for l in lines[: end + 1])
-    return fm, body_offset
-
-
-def strip_code_blocks(text: str) -> str:
-    """Same stripper as the validator."""
-    out = re.sub(r"```[^\n]*\n.*?```", "", text, flags=re.DOTALL)
-    out = re.sub(r"`[^`]+`", lambda m: " " * (len(m.group(0))), out)
-    return out
 
 
 def inventory(source_dir: Path) -> dict:

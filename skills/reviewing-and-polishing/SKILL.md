@@ -1,8 +1,8 @@
 ---
 name: reviewing-and-polishing
-description: "Load when reviewing a PR, simplifying complex code, polishing prose, or capturing learnings. Use when the user says 'review this PR', 'simplify this code', or 'polish this doc'. Do NOT use for bug diagnosis (use superpowers' systematic-debugging), creating features (use task-lifecycle), or restructuring tangled code (use restructuring-code)."
+description: "Load when reviewing a PR, simplifying complex code, polishing prose, or capturing learnings. Use when the user says 'review this PR', 'simplify this code', or 'polish this doc'. Do NOT use for bug diagnosis, creating features, restructuring tangled code, or adversarial critique of an artifact."
 allowed-tools: Read, Edit, Write
-when_to_use: "Use for PR reviews, simplifying complex logic, or capturing project learnings. Do NOT use for bug diagnosis (use superpowers' `systematic-debugging`) or creating new features (use task-lifecycle)."
+when_to_use: "Use for PR reviews, simplifying complex logic, or capturing project learnings. Do NOT use for bug diagnosis or creating new features."
 argument-hint: "[mode] [focus-area] [--min-impact critical|high|medium|medium-low|low]"
 license: MIT
 ---
@@ -25,7 +25,6 @@ When this skill produces durable artifacts, write them to `docs/principled/` too
 - IMMEDIATELY when producing documentation, READMEs, or human-readable text (POLISH).
 - When consolidating reflection or critique findings into durable project memory (MEMORIZE).
 - Do NOT use for architectural decisions or greenfield development — use `plan-lifecycle PLAN mode` instead.
-- CONTRAST with update-docs: that updates existing docs; this improves prose quality (POLISH).
 - CONTRAST with restructuring-code: refine improves quality of existing artifacts (present, corrective); restructuring-code performs structural analysis (architecture, quality, transparency, API). Use reviewing-and-polishing when the issue is known and needs fixing; use restructuring-code when a specific structural question surfaces.
 - CONTRAST with kaizen: refine is on-demand quality improvement; kaizen provides continuous guardrails. Use refine after completing work; use applying-guardrails during every code decision.
 - CONTRAST with multi-judge evaluation: refine provides severity-rated self-critique with single review; the multi-judge competitive evaluation pattern (with debate rounds) is the right tool for high-stakes decisions needing independent consensus.

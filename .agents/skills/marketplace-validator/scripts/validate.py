@@ -29,7 +29,26 @@ import sys
 from pathlib import Path
 
 # Canonical spec rules (from agentskills.io + anthropics/skills/skill-creator/scripts/quick_validate.py)
-ALLOWED_FRONTMATTER = {"name", "description", "license", "allowed-tools", "metadata", "compatibility"}
+# plus the marketplace-specific extension keys documented in
+# `crafting-skills/SKILL.md` "Best-Practices Compendium" § Frontmatter conventions.
+# The agentskills.io spec recommends `metadata:` for non-standard keys; this
+# marketplace uses top-level extensions (`when_to_use`, `argument-hint`, etc.)
+# as a deliberate convention to keep routing signals visible at the frontmatter
+# surface. Any future extension key should be added here AND documented in
+# `crafting-skills/SKILL.md` Compendium § Frontmatter conventions.
+ALLOWED_FRONTMATTER = {
+    # Canonical agentskills.io (December 2025)
+    "name", "description", "license", "allowed-tools", "metadata", "compatibility",
+    # Marketplace extensions (see crafting-skills Compendium § Frontmatter conventions)
+    "when_to_use",        # routing hint, complements description
+    "argument-hint",      # platform-agnostic argument hint for user-invocable skills
+    "user-invocable",     # whether the skill can be invoked as `/skill-name`
+    "context",            # execution context ("fork" for subagent execution)
+    "agent",              # which subagent type to use when context: fork
+    "arguments",          # argument schema for user-invocable skills
+    "skills",             # referenced companion skills (e.g., plan-lifecycle references orchestrating-subagents)
+    "disable-model-invocation",  # Claude Code: whether the skill can be auto-invoked by the model
+}
 REQUIRED_FRONTMATTER = {"name", "description"}
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 MAX_NAME_LEN = 64
@@ -37,6 +56,18 @@ MAX_DESCRIPTION_LEN = 1024
 MAX_COMPATIBILITY_LEN = 500
 MAX_BODY_LINES = 500
 DESCRIPTION_WORD_TARGET = 50  # crafting-skills compendium rule 3
+# Documented exceptions: these skills require dense trigger-phrase lists
+# (many sibling skills to disambiguate from, or many sub-modes to enumerate).
+# Their longer descriptions are intentional, not sloppy.
+DESCRIPTION_WORD_TARGET_EXCEPTIONS = {
+    "crafting-skills",    # 77 words: must enumerate CREATE/OPTIMIZE modes + 6-step pipeline + contrast
+    "deep-research",      # 57 words: must enumerate 5-stage pipeline + contrast with web-search/managing-wiki
+    "evaluating-skills",  # 53 words: must enumerate 8-stage loop + cross-platform support (5 platforms)
+    "plan-lifecycle",     # 60 words: must enumerate PLAN/EXECUTE modes + contrast with writing-plans/task-lifecycle
+    "security",           # 61 words: must enumerate OWASP/GDPR/SOC2/PCI-DSS + trigger phrases + contrast
+    "task-lifecycle",     # 63 words: must enumerate CAPTURE/REFINE/IMPLEMENT/DOCUMENT modes + contrast
+    "web-search",         # 64 words: must enumerate find/verify/fact-check/research intents + contrast
+}
 MIN_DESCRIPTION_WORDS_FOR_NEGATIVE = 15  # below this, the negative-trigger check is skipped (too short to reasonably include one)
 
 # Local convention rules (from the local crafting-skills compendium)
@@ -61,7 +92,8 @@ LOCAL_BODY_PATTERNS = {
 HARDCODED_TOOL_NAMES = [
     "the Agent tool", "the Write tool", "the Read tool", "the Bash tool", "the Edit tool",
     "the Glob tool", "the Grep tool", "the NotebookEdit tool", "the WebFetch tool",
-    "the WebSearch tool",
+    "the WebSearch tool", "the Skill tool", "the Task tool", "the TodoWrite tool",
+    "the AskUserQuestion tool",
 ]
 
 
@@ -92,26 +124,6 @@ def strip_code_blocks(text: str) -> str:
     # Inline backticks (preserve length for line-number accuracy)
     out = re.sub(r"`[^`]+`", lambda m: " " * (len(m.group(0))), out)
     return out
-
-
-def parse_frontmatter(text: str) -> tuple[dict, int, int]:
-    """Return (frontmatter_dict, end_line_of_fm, start_line_of_body)."""
-    if not text.startswith("---"):
-        return {}, 0, 0
-    # The closing --- must be on its own line.
-    m = re.match(r"^---\n(.*?)\n---\n", text, re.DOTALL)
-    if not m:
-        return {}, 0, 0
-    fm = {}
-    for line in m.group(1).splitlines():
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        if ":" not in line:
-            continue
-        key, _, val = line.partition(":")
-        fm[key.strip()] = val.strip()
-    end_fm_line = m.end() // ...  # placeholder, recomputed below
-    return fm, m.end()
 
 
 def parse_frontmatter_safe(text: str) -> tuple[dict, int]:
@@ -154,8 +166,8 @@ def parse_frontmatter_safe(text: str) -> tuple[dict, int]:
         val = val.strip()
         # Handle YAML single-quoted scalar on a single line: strip outer
         # quotes and resolve the YAML '' doubling convention for a literal
-        # single quote inside the value.
-        if len(val) >= 2 and val.startswith("'") and val.endswith("'") and not val.startswith("''"):
+        # single quote inside the value. Treat `''` as an empty string.
+        if len(val) >= 2 and val.startswith("'") and val.endswith("'") and val != "''":
             val = val[1:-1].replace("''", "'")
         # Handle YAML double-quoted scalar on a single line: strip outer
         # quotes and resolve the standard escape sequences so downstream
@@ -305,7 +317,7 @@ def check_skill(skill_path: Path) -> list[dict]:
             })
     if description:
         word_count = len(re.findall(r"\b\w+\b", description))
-        if word_count > DESCRIPTION_WORD_TARGET:
+        if word_count > DESCRIPTION_WORD_TARGET and name not in DESCRIPTION_WORD_TARGET_EXCEPTIONS:
             findings.append({
                 "level": "warn", "code": "description_word_count",
                 "message": f"description has {word_count} words (target ≤{DESCRIPTION_WORD_TARGET}); every word costs ~100 tokens/session",

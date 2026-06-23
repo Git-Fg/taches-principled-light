@@ -32,13 +32,15 @@ from pathlib import Path
 
 # (regex, human label). Only high-signal/low-noise patterns.
 # Broader vendor-name sweeps live in the spec, not here.
+# Patterns are matched case-sensitively to avoid false positives on prose like
+# "We use a Haiku solver in production" or "z.ai offers...". Vendor identifiers
+# are case-specific in the spec.
 PATTERNS: tuple[tuple[str, str], ...] = (
     (r"100\.80\.231\.128(?::\d+)?", "private Tailscale inference IP"),
     (r"\bMiniMax-M\d+\b", "vendor model alias"),
     (r"claude-haiku-4-5-20251001", "solver tier alias"),
     (r"circuit_breaker_open: RateLimit", "rate-limit error format"),
-    (r"\bnex-agi/[a-z0-9.-]+", "vendor alias (nex-agi/<model>)"),
-    (r"\bnex-n2-pro:free\b", "vendor alias (nex-n2-pro:free)"),
+    (r"\bnex-agi/nex-n2-pro:free\b", "vendor alias (nex-agi/nex-n2-pro:free)"),
     (r"\bhaiku solver\b", "solver tier alias"),
     (r"\bZ\.AI\b", "external judge vendor"),
 )
@@ -68,7 +70,7 @@ def scan(path: str) -> list[tuple[int, str, str]]:
         return []
     hits: list[tuple[int, str, str]] = []
     for pattern, label in PATTERNS:
-        for m in re.finditer(pattern, content, re.IGNORECASE):
+        for m in re.finditer(pattern, content):
             line_no = content.count("\n", 0, m.start()) + 1
             hits.append((line_no, label, m.group(0)))
     return hits

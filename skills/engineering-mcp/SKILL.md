@@ -1,6 +1,6 @@
 ---
 name: engineering-mcp
-description: "Load when designing, building, or auditing an MCP server — tool decomposition, JSON Schema, Rust with rmcp. Use when the user says 'design an MCP server' or 'write a tool schema'. Do NOT use for general REST API design (use restructuring-code) or general code quality review (use reviewing-and-polishing)."
+description: "Load when designing, building, or auditing an MCP server — tool decomposition, JSON Schema, Rust with rmcp. Use when the user says 'design an MCP server' or 'write a tool schema'. Do NOT use for general REST API design or general code quality review."
 when_to_use: |
   - DESIGN: "design an MCP server", "decompose MCP tools", "1 tool vs N tools", "MCP output contract", "MCP error codes", "MCP security checklist", "capability negotiation", "Claude-Optimal validation"
   - SCHEMA: "write a tool schema", "JSON Schema for MCP", "LLM-friendly schema", "constraint discipline", "enum vs oneOf", "additionalProperties false", "property naming", "tool description writing"

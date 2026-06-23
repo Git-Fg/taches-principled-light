@@ -1,10 +1,10 @@
 ---
 name: typography-guide
-description: "Apply professional typography — font pairing, type scale, line spacing, and visual hierarchy. Use when picking a heading/body pair or calibrating line-height. Do NOT use for color palettes (use design-system-palettes), design principles (use design-principles), or visual examples (use design-good-bad-examples)."
+description: "Load when the user needs typography guidance — font pairing, type scale, line spacing, and visual hierarchy. Use when picking a heading/body pair, calibrating line-height, or fixing a cramped layout. Do NOT use for color palettes, design reasoning, or visual examples."
 when_to_use: |
-  Load for any typography, font, scale, or spacing question. Pair with
-  design-system-palettes for color tokens and design-principles for the
-  reasoning behind readability choices.
+  Load for any typography, font, scale, or spacing question. For color
+  tokens, load `design-system-palettes`; for the reasoning behind
+  readability choices, load `design-principles`.
 allowed-tools: Read
 argument-hint: "[typography-question] [format]"
 license: MIT
@@ -16,10 +16,10 @@ The original font-pairing, scale, and spacing guide.
 
 ## Related skills (load together)
 
-- `design-hub/design-system-palettes` — pick a palette + token scale first
-- `design-hub/pdf-design-guide` — mood-based palette picker, contrast rule
-- `design-hub/design-principles` — the *why* (saccade reading, 60-70% coverage, 1.2-1.45 LH)
-- `design-hub/design-good-bad-examples` — concrete BAD-vs-GOOD before/after
+- `design-system-palettes` — pick a palette + token scale first
+- `pdf-design-guide` — mood-based palette picker, contrast rule
+- `design-principles` — the *why* (saccade reading, 60-70% coverage, 1.2-1.45 LH)
+- `design-good-bad-examples` — concrete BAD-vs-GOOD before/after
 
 ## How to use this skill
 

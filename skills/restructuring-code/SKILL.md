@@ -1,6 +1,6 @@
 ---
 name: restructuring-code
-description: "Load when code structure is tangled — wrong-layer logic, unclear API contracts, fat functions, or deep nesting. Use when the user says 'this file is a mess' or 'logic in the wrong place'. Do NOT use for incremental cleanup (use reviewing-and-polishing) or runtime bugs (use superpowers' systematic-debugging)."
+description: "Load when code structure is tangled — wrong-layer logic, unclear API contracts, fat functions, or deep nesting. Use when the user says 'this file is a mess' or 'logic in the wrong place'. Do NOT use for incremental cleanup or runtime bugs."
 when_to_use: "Use when tangled files, wrong-layer logic, messy API contracts, or deeply nested code appear. Trigger symptoms: 'this file is a mess', 'logic is in the wrong place', 'API contract is unclear', 'too much nesting', 'function does too much', 'business logic in controllers'."
 license: MIT
 ---

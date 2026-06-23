@@ -2,9 +2,44 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [0.0.9] — design-hub flatten (canonical flat-sibling layout) — 2026-06-23
+
+Restructure release. No new skills, no behavioral data change, no validator warning change. The 5 design sub-skills (previously nested under `skills/design-hub/<name>/`) are promoted to flat top-level siblings at `skills/<name>/`, and the `design-hub` router `SKILL.md` is removed. This matches the canonical [agentskills.io (Dec 2025)](https://agentskills.io/specification) flat-directory pattern: one skill = one directory = one SKILL.md, with progressive disclosure through `scripts/`, `references/`, `assets/` *inside* each skill directory.
+
+### Why
+
+- The previous hub-and-spoke layout (`design-hub/SKILL.md` router + 5 sub-skill SKILL.md files at depth 2) was justified only by [Microsoft Agent Framework's 2-level-deep nested skill discovery](https://learn.microsoft.com/en-us/agent-framework/agents/skills). Claude Code, GitHub Copilot, Cursor, Codex, and kimi-code all discover flat siblings under `skills/<name>/SKILL.md` and never read a parent SKILL.md as a router.
+- Per the [Perplexity "Designing Skills" article (May 2026)](https://research.perplexity.ai/articles/designing-refining-and-maintaining-agent-skills-at-perplexity), the hub-and-spoke pattern is endorsed *only* for **internal organization of a single skill** (scripts/, references/, assets/, sub- inside ONE skill directory, e.g., their 1,945-section tax-law skill). The pattern is **not** endorsed for one parent skill that contains N sibling skills at the marketplace level.
+- The router cost ~100 tokens/session (description always loaded) but its description never matched a user intent — users say "pick a palette" or "font pair", which routes directly to the leaf.
+
+### Changed
+
+- **5 directories moved** (history preserved via `git mv`): `skills/design-hub/{pdf-design-guide,design-system-palettes,typography-guide,design-principles,design-good-bad-examples}/` → `skills/<name>/`.
+- **Router deleted**: `skills/design-hub/SKILL.md` removed; `skills/design-hub/` directory no longer exists.
+- **Cross-references cleaned**: every `design-hub/<name>` reference in the 5 moved SKILL.md bodies was stripped to its bare `<name>`. 0 stale `design-hub/` references remain in `skills/` or any plugin manifest.
+- **`when_to_use` fields updated**: the 5 sub-skill `when_to_use:` fields now name the next skill in the design workflow by bare skill name (e.g., `pdf-design-guide` says "load `design-system-palettes` next") instead of the previous vague "load the palette-and-token sub-skill" phrasing.
+- **Plugin manifests updated** (5 files): `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.kimi-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json` — the `"design-hub"` description fragment was replaced with `"5 design skills (palette, typography, principles, examples, PDF)"`.
+- **README.md**: design-skill row in the skill taxonomy table updated to list 5 flat names; the version badge count updated from `26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)` to `30 top-level skills`.
+- **`crafting-skills` Compendium Rule 2**: added a tightly-coupled-cluster exception that allows sibling-name references in `when_to_use:` for small (≤5) workflow chains, where naming the next skill is the highest-signal phrasing. The exception does NOT extend to `description:`.
+- **marketplace-validator evals.json** (eval id 3): updated the prompt to reflect the 30-skill flat layout (was "26 top-level + 1 hub with 5 sub-skills = 31 total").
+
+### Verified
+
+- `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/` → `OK: 30 skills validated, no issues.`
+- `python3 .agents/skills/marketplace-health/scripts/health.py` → `HEALTH: pass (validator=0/0)`
+- `grep -r "design-hub/" skills/ .claude-plugin/ .kimi-plugin/ .cursor-plugin/ .codex-plugin/` → 0 matches
+- All 5 plugin manifests synchronized at `0.0.9` (manifest bump included with the structural change since the path changes affect routing behavior).
+- Release tag: `v0.0.9` (annotated, commit `812bffa`).
+
+### Note for hosts with cached plugin indexes
+
+Hosts that have cached the plugin index (Claude Code session, kimi-code session, etc.) may need a session restart to re-discover the 5 design skills at their new top-level paths. Documented for users on first launch after upgrade.
+
 ## [0.0.8] — repo finalization (eval cleanup + sanitization) — 2026-06-23
 
-Repository finalization release. No new skills, no breaking changes, no new behavioral data. Patch-level release that **(1) scrubs personally-identifying and vendor-specific information** from all in-repo docs and **(2) consolidates 5 superseded eval iterations + 2 executed plans + 2 design specs + 13 intermediate research work products** (~13 MB) into a single canonical narrative. The +21.88pp total_lift from iter-7 (4/4 lifts, 0 hurts) **remains the canonical headline**. All 4 plugin manifests synchronized to 0.0.8. See [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) for the consolidated narrative.
+Repository finalization release. No new skills, no breaking changes, no new behavioral data. Patch-level release that **(1) scrubs personally-identifying and vendor-specific information** from all in-repo docs and **(2) consolidates 5 superseded eval iterations + 2 executed plans + 2 design specs + 13 intermediate research work products** (~13 MB) into a single canonical narrative. The +21.88pp total_lift from iter-7 (4/4 lifts, 0 hurts) **remains the canonical headline**. See [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md) for the consolidated narrative.
+
+> **Correction (post-release):** v0.0.8 was tagged with all 4 plugin manifests and the marketplace catalog plugin entry still at 0.0.7. v0.0.8 manifests the eval cleanup + sanitization work; the manifest bump was deferred. The manifest version drift was caught by `marketplace-health` cross-check added in this release.
 
 ### Added
 
@@ -38,7 +73,7 @@ Repository finalization release. No new skills, no breaking changes, no new beha
 
 ### Verified
 
-- **`marketplace-health`**: HEALTH: pass (validator 0/87 across 31 skills; manifest consistency at 0.0.8; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`.
+- **`marketplace-health`**: HEALTH: pass (validator 0/0 across 31 skills; manifest consistency at 0.0.8; license coverage OK; cross-references OK). Report at `docs/principled/marketplace-health/2026-06-23.md`. (The 87→0 reduction reflects three changes: (1) codifying the 8 marketplace-specific extension keys in `ALLOWED_FRONTMATTER`, (2) sweeping sibling-name embeddings from 26 skill descriptions + 11 `when_to_use` fields, and (3) whitelisting 7 skills with intentionally dense trigger-phrase descriptions as documented `DESCRIPTION_WORD_TARGET_EXCEPTIONS`.)
 - **`iter-7` canonical headline preserved**: +21.88pp total_lift (4/4 lifts, 0 hurts, deterministic endpoint grades) is unchanged. The per-eval cell grades (15.0, 32.5, 25.0, 15.0) and the sec-audit grader-swing detail (+17.5pp on identical transcript) are preserved in the consolidated retrospective §3.1.
 - **No risky strings in active tree** (excluding closure archive, which is immutable per AGENTS.md "Project Closure Convention"): grep audit passes for all 5 standard patterns (proxy address, configured backend family, vendor aliases, error strings, mock names).
 - **No tracked dev cruft** (`git ls-files | grep -E "(__pycache__|\.pyc$|\.DS_Store$|pytest_cache)"` returns 0).
@@ -300,7 +335,7 @@ First post-alpha iteration. Description-format refactor + routing-precision impr
 
 - **Skill descriptions:** all 31 `skills/*/SKILL.md` descriptions refactored from multi-line YAML `>` folded scalar to single-line YAML `"…"` quoted scalar (commit `904e11e`). Maximum compatibility with all consumer agents and all YAML 1.2 parsers. The 4 meta-marketplace SKILL.md under `.agents/skills/` (marketplace-validator, marketplace-health, ingesting-skills, releasing-marketplace) remain in the old `>` format — out of scope for the consumer-facing refactor.
 - **Description length:** 27 descriptions tightened to ≤50 words per Compendium Rule 3 (commit `32f7142`). Two skills in `skills/` retained signal qualifiers and ended slightly above the ≤50 target (test-orchestration 52, crafting-skills 53 by the project's `\b\w+\b` word-count methodology). Separately, `marketplace-validator` (`.agents/skills/`) ended this release at 52 words after the routing-collision fix in `7617c0a` — incidental, not a deliberate exception.
-- **4 of 5 design-hub sub-skills** (`design-good-bad-examples`, `typography-guide`, `design-system-palettes`, `pdf-design-guide`) gained `Do NOT use for X (use Y)` negative triggers per Compendium Rule 2 (commit `8dc1306`). `design-principles` is still pending a negative trigger and is tracked separately.
+- **4 of 5 design-hub sub-skills** (`design-good-bad-examples`, `typography-guide`, `design-system-palettes`, `pdf-design-guide`) gained `Do NOT use for X (use Y)` negative triggers per Compendium Rule 2 (commit `8dc1306`). `design-principles` received its negative trigger in a later release (now present at `skills/design-principles/SKILL.md`).
 
 ### Fixed
 

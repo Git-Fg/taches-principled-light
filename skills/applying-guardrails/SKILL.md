@@ -1,7 +1,7 @@
 ---
 name: applying-guardrails
-description: "Load when making design decisions that resist over-engineering — incremental improvement, error-proofing, standardization, or YAGNI. Use when the user says 'should I add this feature' or 'apply YAGNI'. Do NOT use for improving an existing artifact (use reviewing-and-polishing) or correctness checks (use superpowers' systematic-debugging)."
-when_to_use: "Use when user wants to avoid over-engineering, apply YAGNI, or make architectural and code design decisions. Background guardrails applied to every code change; pair with the restructuring-code skill for deep structural analysis."
+description: "Load when making design decisions that resist over-engineering — incremental improvement, error-proofing, standardization, or YAGNI. Use when the user says 'should I add this feature' or 'apply YAGNI'. Do NOT use for improving an existing artifact or correctness checks."
+when_to_use: "Use when user wants to avoid over-engineering, apply YAGNI, or make architectural and code design decisions. Background guardrails applied to every code change; for deep structural analysis on tangled files, invoke a separate structural-analysis workflow as needed."
 argument-hint: Applied automatically when implementing, refactoring, designing, or handling errors
 user-invocable: false
 license: MIT

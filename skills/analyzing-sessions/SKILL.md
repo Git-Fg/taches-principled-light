@@ -1,8 +1,8 @@
 ---
 name: analyzing-sessions
-description: "Load when analyzing agent session transcripts — extracting metrics, diagnosing anti-patterns, or filing issues. Use for 'parse session log', 'session metrics', or 'review anti-patterns'. Do NOT use for bug diagnosis in code (use superpowers' systematic-debugging), improving an artifact (use reviewing-and-polishing), or managing rules (use managing-rules)."
+description: "Load when analyzing agent session transcripts — extracting metrics, diagnosing anti-patterns, or filing issues. Use for 'parse session log', 'session metrics', or 'review anti-patterns'. Do NOT use for bug diagnosis in code, improving an artifact, or managing rules."
 allowed-tools: Read, Glob, Grep, Bash, Agent
-when_to_use: "Use for session metrics, anti-pattern review, or creating issues from findings. Examples: \"parse debug log\", \"analyze hooks\". CONTRAST: No code analysis (use reviewing-and-polishing); no general project bugs (use meta-issue)."
+when_to_use: "Use for session metrics, anti-pattern review, or creating issues from findings. Examples: \"parse debug log\", \"analyze hooks\". CONTRAST: No source-code review (this skill reads session transcripts, not code); no general project bugs (no sibling skill — file as a fresh session capture via INSPECT or REVIEW mode)."
 argument-hint: "<inspect|review|issue> [session-id|--dry-run] [--filter errors|tools|cost|skills] [--full|--summary]"
 license: MIT
 ---
@@ -248,7 +248,7 @@ The user can override with explicit confirmation.
 **Default: subagent delegation.** For privacy audit and body construction, spawn a subagent generalist with the prompt:
   "You are an isolated reviewer. Review through this lens: ''.
   Return findings with severity (HIGH/MEDIUM/LOW), file:line, and fix.
-  Do NOT implement — identify what to change and why.". For issue creation, use the Bash tool directly with `gh issue create`.
+  Do NOT implement — identify what to change and why.". For issue creation, run `gh issue create` from a shell command.
 
 **Spawn pattern:**
 - Scope: `docs/principled/scratch/meta-review-{session_id}.md`

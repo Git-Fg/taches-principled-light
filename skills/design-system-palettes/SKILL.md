@@ -1,9 +1,10 @@
 ---
 name: design-system-palettes
-description: "Apply a color palette and token scale. Use when picking a palette, mapping a brand color to a 25-1000 scale, or unifying hex to tokens. Do NOT use for typography (use typography-guide), visual examples (use design-good-bad-examples), or mood picking (use pdf-design-guide)."
+description: "Load when the user needs a palette or token scale — 18 mood-based palettes and the Platinum White-Gold token set. Use when picking a palette, mapping a brand color to a 25-1000 scale, or unifying hex to tokens. Do NOT use for typography, visual examples, or mood picking."
 when_to_use: |
-  Load for any palette or token-system question. Pair with pdf-design-guide
-  for mood-based palette selection and typography-guide for font pairing.
+  Load for any palette or token-system question. For mood-based palette
+  selection, load `pdf-design-guide` first; for font pairing, load
+  `typography-guide` next.
 allowed-tools: Read
 argument-hint: "[palette-or-token-question] [context]"
 license: MIT
@@ -15,15 +16,15 @@ The original 18 mood-based palettes and the Platinum White-Gold token set.
 
 ## Related skills (load together)
 
-- `design-hub/pdf-design-guide` — **start here** for the 1-accent rule, 4.5:1 contrast
+- `pdf-design-guide` — **start here** for the 1-accent rule, 4.5:1 contrast
   check, and the anti-pattern list (purple gradient, navy+gold, all-black)
-- `design-hub/typography-guide` — pair fonts once the palette is picked
-- `design-hub/design-principles` — the *why* behind white space, contrast, hierarchy
-- `design-hub/design-good-bad-examples` — concrete BAD-vs-GOOD reference
+- `typography-guide` — pair fonts once the palette is picked
+- `design-principles` — the *why* behind white space, contrast, hierarchy
+- `design-good-bad-examples` — concrete BAD-vs-GOOD reference
 
 ## How to use this skill
 
-1. If the user said "what color should this be?", load `design-hub/pdf-design-guide`
+1. If the user said "what color should this be?", load `pdf-design-guide`
    first and pick a mood palette from the 18 below.
 2. Use the 25-1000 color scales (white / blue / gray / gold) to map the
    primary accent to 5-10 derived tokens (hover, active, disabled, etc.).

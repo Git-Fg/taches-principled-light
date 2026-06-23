@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 0.0.8 · 26 top-level skills (5 design-hub sub-skills = 31 SKILL.md total)
+**Version:** 0.0.9 · 30 top-level skills
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 
@@ -41,7 +41,7 @@ claude plugin install https://github.com/Git-Fg/taches-principled-light
 Pin to a specific branch/tag/commit:
 ```bash
 /plugins install https://github.com/Git-Fg/taches-principled-light/tree/main
-/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.8
+/plugins install https://github.com/Git-Fg/taches-principled-light/releases/tag/v0.0.9
 ```
 
 ### Codex
@@ -70,14 +70,14 @@ https://github.com/Git-Fg/taches-principled-light
 | **Reasoning** | `reasoning-from-principles`, `solving-competitively`, `web-search`, `deep-research` |
 | **Domain** | `engineering-mcp`, `rust`, `security`, `git`, `managing-wiki`, `managing-rules`, `claude-cli` |
 | **Meta** | `crafting-skills`, `evaluating-skills`, `orchestrating-subagents`, `analyzing-sessions`, `project-maintenance` |
-| **Design** | `design-hub` (hub) with 5 sub-skills: `pdf-design-guide`, `design-system-palettes`, `typography-guide`, `design-principles`, `design-good-bad-examples` |
+| **Design** | `pdf-design-guide`, `design-system-palettes`, `typography-guide`, `design-principles`, `design-good-bad-examples` |
 | **Idea** | `generating-ideas` |
 
 All skills use platform-agnostic subagent spawns — "spawn a subagent explorer" (read-only) or "spawn a subagent generalist" (edit access). See the `orchestrating-subagents` skill for the canonical reference.
 
 ## What's New in 0.0.8
 
-**Repo finalization (eval cleanup + sanitization).** No new skills; no new behavioral data; no breaking changes. Patch-level release that **scrubs personally-identifying and vendor-specific information** from in-repo docs, **consolidates 5 superseded eval iterations + 2 executed plans + 2 design specs + 13 intermediate research work products** (~13 MB) into a single canonical narrative in [`docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`](docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md), and **removes the v0.0.7 release-gate CI** (`.github/workflows/eval-regression.yml` + `release-gate.py`). All 4 plugin manifests synchronized to 0.0.8. Active tree at ~2.4 MB; closure archive at `docs/principled/attic/2026-06-23-closure/` (~2.2 MB). **`iter-7` remains the canonical headline** (+21.88pp total_lift, 4/4 lifts, 0 hurts). See CHANGELOG for the long-form breakdown and the closure archive's `STATUS.md` for the full closure record.
+**Repo finalization (eval cleanup + sanitization).** No new skills; no new behavioral data; no breaking changes. Patch-level release that **scrubs personally-identifying and vendor-specific information** from in-repo docs, **consolidates 5 superseded eval iterations + 2 executed plans + 2 design specs + 13 intermediate research work products** (closure archive at `docs/principled/attic/2026-06-23-closure/`, ~13 MB dominated by eval JSONL transcripts), and **removes the v0.0.7 release-gate CI** (`.github/workflows/eval-regression.yml` + `release-gate.py`). All 4 plugin manifests synchronized to 0.0.8. Active tree (excluding the closure archive) at ~6 MB. **`iter-7` remains the canonical headline** (+21.88pp total_lift, 4/4 lifts, 0 hurts). See CHANGELOG for the long-form breakdown and the closure archive's `STATUS.md` for the full closure record.
 
 ## What's New in 0.0.7
 

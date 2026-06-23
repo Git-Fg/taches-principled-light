@@ -1,9 +1,10 @@
 ---
 name: pdf-design-guide
-description: "Pick a palette by mood — 10 named moods with WCAG check + anti-patterns. Use when the user asks what color to use or when the design looks generic. Do NOT use for token scales (use design-system-palettes), typography (use typography-guide), or visual examples (use design-good-bad-examples)."
+description: "Load when the user needs a mood-based palette pick — 11 named moods with WCAG contrast check and anti-patterns. Use when the user asks what color to use or when the design looks generic. Do NOT use for token scales, typography, or visual examples."
 when_to_use: |
-  Load first when the user asks for a color system or palette. Pair with
-  design-system-palettes for the actual palette and token scale.
+  Load first when the user asks for a color system or palette. For the
+  actual palette table and 25-1000 step scales, load `design-system-palettes`
+  next.
 allowed-tools: Read
 argument-hint: "[content-or-mood] [format]"
 license: MIT
@@ -15,9 +16,9 @@ The original mood-to-palette table, accent rules, and anti-patterns.
 
 ## Related skills (load together)
 
-- `design-hub/design-system-palettes` — **use this next** to pick the actual palette
+- `design-system-palettes` — **use this next** to pick the actual palette
   and map it to 25-1000 step scales
-- `design-hub/typography-guide` — pair fonts once the palette is picked
+- `typography-guide` — pair fonts once the palette is picked
 - `security` — actual WCAG audit + fix pass
 
 ## How to use this skill
@@ -30,14 +31,13 @@ The original mood-to-palette table, accent rules, and anti-patterns.
    contrast checker works; the WebAIM one is in the references).
 4. Apply the **anti-pattern check** below — if anything in the draft
    matches a "Avoid" row, fix it before shipping.
-5. For the 18 named palettes + token scales, jump to `design-hub/design-system-palettes`.
+5. For the 18 named palettes + token scales, jump to `design-system-palettes`.
 
 ---
 
 The aesthetic layer. Read this before authoring any HTML report.
-This file answers "what should it look like and why." For *how* to wire the
-HTML so it survives Chromium's print snapshot, see
-[`html-pdf-spec.md`](html-pdf-spec.md).
+This file answers "what should it look like and why" at the palette and
+mood level.
 
 ---
 
@@ -233,6 +233,5 @@ These are the tells that a reader spots in 2 seconds:
 | Generic "Q3 2024 Strategy Review" cover with stock subtitle | Pull a real signal from the content for the subtitle |
 | All charts in the same orientation | Mix horizontal / vertical / radar / scatter to match data shape |
 
-When in doubt, look at the [`templates/`](../templates/) catalogue — every
-skeleton there has been tuned for a real bench-trace; copy the closest one
-and re-skin rather than starting from the generic blueprint.
+When in doubt, copy the closest palette + cover archetype from the tables
+above and re-skin rather than starting from the generic blueprint.

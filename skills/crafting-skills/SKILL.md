@@ -1,8 +1,7 @@
 ---
 name: crafting-skills
-description: "Load when creating, optimizing, reviewing, or post-iterating an agent skill — including its description and frontmatter. Use when the user says 'create a skill', 'write a new skill', 'review this skill', 'tweak the description', 'self-review', 'optimize routing', 'validate frontmatter', 'I just used it — propose updates', 'rewrite the trigger phrases', or 'fix the skill description'. Do NOT use for collaborative skill creation dialogue (use superpowers' writing-skills), single-skill linting (use marketplace-validator), or pre-commit validation (use marketplace-validator precommit mode)."
+description: "Load when creating, optimizing, reviewing, or post-iterating an agent skill — including its description and frontmatter. Use when the user says 'create a skill', 'write a new skill', 'review this skill', 'tweak the description', 'self-review', 'optimize routing', 'validate frontmatter', 'I just used it — propose updates', 'rewrite the trigger phrases', or 'fix the skill description'. Do NOT use for collaborative skill creation dialogue, pre-commit spec lint, behavioral skill evaluation, or adversarial critique of non-skill artifacts."
 allowed-tools: Read, Edit, Write, Grep, Glob, Agent
-when_to_use: "Use when creating a new skill or optimizing an existing skill's routing."
 argument-hint: "[create|optimize|review|post-create] [target-skill-path]"
 license: MIT
 ---
@@ -255,8 +254,12 @@ These 16 rules encode findings from SkillsBench (7,308 trajectories, 7 model-har
    ✓ `Load when the user needs to extract text and tables from PDF files.`
    ✗ `Processes PDF files and extracts text.`
 
-2. **Include negative triggers.** Every description must state what NOT to use the skill for, referencing sibling skills by exact name.
-   ✓ `Do NOT use for Vue, Svelte, or vanilla CSS projects.`
+2. **Include negative triggers.** Every description must state what NOT to use the skill for. Describe adjacent domains by intent (what the user wants to do), not by sibling skill names. **Do NOT name other skills in your description** — sibling-name embedding creates stale-reference risk when a target skill is renamed/removed/deprecated, asymmetric awareness (skill A knows about B but B doesn't know about A), and trigger-phrase pollution (the model routes on the embedded name, not the intent).
+   ✓ `Do NOT use for adversarial critique of non-skill artifacts.` (intent-based)
+   ✗ `Do NOT use for adversarial critique (use general-critic).` (sibling-name embedding)
+   ✗ `Do NOT use for Vue, Svelte, or vanilla CSS projects.` (this is fine — Vue/Svelte/CSS are technologies, not skills)
+
+   **Exception — tightly-coupled skill clusters:** within a small (≤5) group of skills that form a single workflow chain (e.g., palette → typography → examples in the 5 design skills), the `when_to_use:` field MAY name the next skill in the chain by its bare name. This is the highest-signal phrasing for that field, the alternative ("load the palette sub-skill") is vague, and the cluster is bounded enough that stale-reference risk is contained. **The exception does NOT extend to `description:`** — routing-trigger descriptions must always be intent-based.
 
 3. **Target ≤50 words.** Every word costs ~100 tokens per session across all users. If the model already knows it, delete it.
 
@@ -291,7 +294,7 @@ These 16 rules encode findings from SkillsBench (7,308 trajectories, 7 model-har
     | Category | What it is | Citation form | Example |
     |---|---|---|---|
     | **Dynamic** | CLIs, libraries, web APIs, `--help` output | Imperative command + `BEFORE` | `You MUST run \`agent-browser skills get core\` BEFORE running any \`agent-browser\` command.` |
-    | **Static intra-skill** | `references/X.md`, `scripts/Y.py`, `assets/Z.json` | Audience-aware imperative (Rule 7) | `You MUST read \`references/execute.md\` BEFORE writing the invocation.` |
+    | **Static intra-skill** | `references/X.md`, `scripts/Y.py`, `assets/Z.json` | Audience-aware imperative (Rule 7) | `You MUST read \`<reference-file>\` BEFORE writing the invocation.` |
     | **Cross-skill** | Other marketplace skills (`evaluating-skills`, `general-critic`, etc.) | `read and apply` (canonical verb form) | `You MUST read \`evaluating-skills\` and apply its protocol BEFORE running the post-creation loop.` |
 
     Cross-skill references MUST use the canonical verb form: **"read and apply"**. (Variations like "consult and follow" or "read the protocol" are acceptable synonyms but "read and apply" is canonical.)
@@ -333,6 +336,23 @@ skill-name/
 ├── references/           # Heavy docs — one level deep, loaded on demand
 └── assets/               # Templates, JSON schemas — copied and filled
 ```
+
+**Frontmatter keys (canonical + marketplace extensions):**
+
+The canonical [agentskills.io spec (December 2025)](https://agentskills.io/specification) defines 6 keys: `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`. This marketplace extends the schema with 8 additional keys documented here. The validator's `ALLOWED_FRONTMATTER` set is the single source of truth; the canonical allowlist is `marketplace-validator/scripts/validate.py`.
+
+| Extension key | Purpose | Convention |
+|---|---|---|
+| `when_to_use` | Routing hint that complements `description`. Use when the description already covers the *what* but a tighter *when-to-trigger* list adds signal. | Drop if the description already says it. Keep when the trigger phrases are non-obvious or contradict the description's positive framing. |
+| `argument-hint` | Platform-agnostic argument hint for user-invocable skills (e.g., `"[create\|optimize\|review] [path]"`). | Use `\|` separators, not `/`. Avoid the platform-specific `$ARGUMENTS` variable. |
+| `user-invocable: false` | Marks skills that should never be invoked as `/skill-name` (background helpers like `applying-guardrails`). | Default is `true` (user-invocable); set `false` to suppress CLI slash-command exposure. |
+| `context: fork` | Indicates the skill executes in a subagent context. Required for skills whose body talks to a subagent. | Always pair with `agent: <agent-type>`. |
+| `agent` | Which subagent type to use when `context: fork` (typically `general-purpose`). | Mirrors the platform's subagent-type catalog. |
+| `arguments` | Argument schema for user-invocable skills (e.g., `[problem-statement, mode]`). | Order matches the `argument-hint` positionally. |
+| `skills` | Companion skills referenced from this skill's body (e.g., `plan-lifecycle` lists `orchestrating-subagents`). | Avoid duplicating siblings already named in the description's `Do NOT use for` clause. |
+| `disable-model-invocation` | Suppresses auto-loading by the model; skill only fires on explicit `/name` invocation. **Reserved for one-off skills.** | **Do NOT use on marketplace skills.** This marketplace's value model is implicit, model-invoked skills that work across any codebase — see AGENTS.md "Skill Activation Discipline". Only maintainer-facing meta-skills (`.agents/skills/`) may opt out. |
+
+**Migration note:** the canonical spec recommends placing non-standard keys under `metadata: { ... }`. This marketplace uses top-level extensions for visibility — the routing signal is in the frontmatter surface where the agent discovers it, not nested under a generic `metadata` umbrella. If you port a skill to a different marketplace, fold the 8 extension keys under `metadata:` to satisfy strict canonical parsers.
 
 **File reference conventions:**
 1. **Path resolution:** Paths resolve within the skill's folder. Use clean relative paths: `references/file.md`.
@@ -385,12 +405,12 @@ Exception: MCP fully-qualified names (`BigQuery:bigquery_schema`) must stay exac
 | Pitfall | Fix |
 |---|---|
 | Vague description | Add explicit "Use when user says 'X'" phrases |
-| Missing negative trigger | Add "Do NOT use for…" referencing sibling skills by name |
+| Missing negative trigger | Add "Do NOT use for…" describing adjacent intent (do NOT name sibling skills — see Rule 2) |
 | Guidelines-only `context:fork` | A forked skill without actionable tasks wastes the subagent. Use forks for executing workflows, not injecting reference knowledge. |
 | Brittle path reference | Use clean relative paths — paths resolve within the skill's folder |
 | Passive file citations | "You MUST read `references/X.md` BEFORE proceeding" — never "You can read" |
 | Skill never triggers | Check for `disable-model-invocation: true`; add explicit trigger phrases |
-| Skill triggers at wrong time | Add negative triggers; narrow the action verb |
+| Skill triggers at wrong time | Add intent-based negative triggers; narrow the action verb |
 | Too long (>500 lines) | NOT a hard fail. Meta-skills and universally-applicable content may legitimately exceed. Consider splitting ONLY if some content is mode-specific. |
 | Self-generated content | Don't ask the model to write a skill for itself — inject human judgment |
 | Uniform-imperative skill | Apply MUST to INTERNAL contracts only; relax to descriptive for EXTERNAL framing. Reading 8 rows of "You MUST…" is fatiguing and dilutes the imperative signal. |

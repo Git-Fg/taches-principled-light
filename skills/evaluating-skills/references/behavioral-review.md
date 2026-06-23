@@ -58,7 +58,7 @@ Score 1–5 per dimension per run. Cite transcript evidence for every score.
 | Skill type | Drop | Add | Why |
 |---|---|---|---|
 | **Workflow** (e.g. `pdf`, `code-review`) | — | (use all 5 defaults) | Steps + patterns + output are the natural axes |
-| **Reference** (e.g. `design-hub/pdf-design-guide`, `typography-guide`) | `followed-step-ordering` | `applied-correct-pattern`, `pattern-completeness` | Reference skills are lookup tables; there's no "step order" — the question is whether the right pattern was applied |
+| **Reference** (e.g. `pdf-design-guide`, `typography-guide`) | `followed-step-ordering` | `applied-correct-pattern`, `pattern-completeness` | Reference skills are lookup tables; there's no "step order" — the question is whether the right pattern was applied |
 | **Content generation** (e.g. `general-critic` writing outputs, design `canvas-design`) | `tool-discipline` | `style-adherence`, `voice-consistency` | Content generation is judged on the output artifact, not tool use |
 | **Methodology / framework** (e.g. `crafting-skills`, `evaluating-skills`) | `followed-step-ordering` | `framework-applied`, `step-coverage` | The skill teaches a methodology; the question is whether the framework was applied end-to-end, not whether steps were followed literally |
 

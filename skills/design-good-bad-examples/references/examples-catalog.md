@@ -1,41 +1,6 @@
----
-name: design-good-bad-examples
-description: "Show BAD-vs-GOOD before/after examples for document and UI design. Use when reviewing a UI, teaching design taste, or answering \"what's wrong with this layout?\". Do NOT use for general design critique (use general-critic), palette selection (use design-system-palettes), or typography (use typography-guide)."
-when_to_use: |
-  Load for design review or taste coaching. Pair with browser automation when
-  checking whether the issues appear in a live app.
-allowed-tools: Read
-argument-hint: "[artifact-or-design-review] [criteria]"
-license: MIT
----
+# Examples Catalog — BAD vs GOOD Design Pairs
 
-# Good vs Bad Design Examples
-
-A side-by-side reference showing common design mistakes and their fixes, with exact OpenXML parameter values. Use this to develop an intuitive sense of what makes a document look professional versus amateur.
-
-## Related skills (load together)
-
-- `design-hub/design-principles` — the *why* behind the bad-vs-good
-- `design-hub/typography-guide` — the *what* (specs, sizes)
-- Browser automation — find these problems in a running app
-- `design-hub/pdf-design-guide` — mood + contrast anti-patterns
-
-## How to use this skill
-
-1. When reviewing a UI, compare each section to the closest BAD example
-   here. If it matches, cite the example number in the finding.
-2. When teaching, show the BAD then the GOOD side. Never show the GOOD
-   alone — the contrast is the point.
-3. For OpenXML / Word / PowerPoint / Excel work, the exact XML snippets
-   are copy-pasteable. Strip namespaces if the target schema differs.
-
----
-
-A side-by-side reference showing common design mistakes and their fixes, with exact OpenXML parameter values. Use this to develop an intuitive sense of what makes a document look professional versus amateur.
-
-Format: Each comparison shows the **BAD** version first (the mistake), then the **GOOD** version (the fix), with OpenXML markup and a short explanation.
-
----
+This catalog collects 10 categories of common design mistakes and their fixes, with exact OpenXML parameter values. Read the relevant section when reviewing a UI, teaching design taste, or answering "what's wrong with this layout?"
 
 ## 1. Font Size Disasters
 
@@ -835,26 +800,3 @@ For 公文 (government documents) at 三号/16pt body:
 
 ---
 
-## Quick Reference: Safe Defaults
-
-A cheat sheet of values that produce a professional result for most Western business documents:
-
-| Element | Value | OpenXML |
-|---------|-------|---------|
-| Body font | Calibri 11pt | `w:sz="22"` |
-| H1 | Calibri Light 20pt | `w:sz="40"` |
-| H2 | Calibri Light 16pt | `w:sz="32"` |
-| H3 | Calibri 13pt bold | `w:sz="26"`, `w:b` |
-| Body color | #333333 | `w:color="333333"` |
-| Heading color | #1F4E79 | `w:color="1F4E79"` |
-| Line spacing | 1.15x | `w:line="276" w:lineRule="auto"` |
-| Para spacing after | 8pt | `w:after="160"` |
-| H1 spacing | 24pt before, 10pt after | `w:before="480" w:after="200"` |
-| H2 spacing | 16pt before, 6pt after | `w:before="320" w:after="120"` |
-| Margins | 1in all around | `w:pgMar` all `"1440"` |
-| Table cell padding | 0.08in / 0.12in | `w:w="115"` / `w:w="173"` |
-| Header/footer size | 9pt gray | `w:sz="18" w:color="808080"` |
-| List indent | 0.25in per level | `w:left="360" w:hanging="360"` |
-| List item spacing | 2pt after | `w:after="40"` |
-
-For CJK documents, adjust: body font to SimSun/YaHei, line spacing to 1.5x (`w:line="360"`), and set `w:eastAsia` on all `w:rFonts`.

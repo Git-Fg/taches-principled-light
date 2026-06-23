@@ -1,9 +1,8 @@
 ---
 name: reasoning-from-principles
-description: "Load when a decision needs first-principles reasoning — competing hypotheses evaluated against evidence, or FPF knowledge base queries. Use when the user says 'reason from first principles', 'compare solutions', or 'evaluate hypotheses'. Do NOT use for open-ended brainstorming (use generating-ideas) or code architecture decisions (use restructuring-code)."
+description: "Load when a decision needs first-principles reasoning — competing hypotheses evaluated against evidence, or FPF knowledge base queries. Use when the user says 'reason from first principles', 'compare solutions', or 'evaluate hypotheses'. Do NOT use for open-ended brainstorming or code architecture decisions."
 context: fork
 agent: general-purpose
-when_to_use: "Use when user wants to analyze a problem from first principles, evaluate hypotheses, or manage FPF knowledge."
 user-invocable: false
 argument-hint: "[problem-statement] [PROPOSE|MAINTAIN|QUERY]"
 arguments: [problem-statement, mode]

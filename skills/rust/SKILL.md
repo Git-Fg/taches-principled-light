@@ -1,6 +1,6 @@
 ---
 name: rust
-description: "Load when managing the Rust project lifecycle — scaffolding crates/workspaces, configuring CI/clippy/nextest, auditing dependencies, publishing, or hardening supply chain. Use when the user says 'Rust', 'cargo publish', 'clippy', or 'cargo-deny'. Do NOT use for design reasoning (use reasoning-from-principles) or runtime bugs (use superpowers' systematic-debugging)."
+description: "Load when managing the Rust project lifecycle — scaffolding crates/workspaces, configuring CI/clippy/nextest, auditing dependencies, publishing, or hardening supply chain. Use when the user says 'Rust', 'cargo publish', 'clippy', or 'cargo-deny'. Do NOT use for design reasoning or runtime bugs."
 when_to_use: |
   - User wants to scaffold a new Rust crate or workspace
   - User wants to set up CI, clippy, nextest, coverage, or cargo-deny

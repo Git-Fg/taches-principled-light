@@ -17,7 +17,7 @@
     },
     {
       "id": 3,
-      "prompt": "Our marketplace has 26 top-level skills + 1 hub (design-hub) with 5 sub-skills. CI broke because someone added a 27th top-level skill that the marketplace.json doesn't know about. Run the validator to find the orphan. Also: are all 4 plugin manifests (.claude-plugin/, .codex-plugin/, .cursor-plugin/, .kimi-plugin/) at the same version?",
+      "prompt": "Our marketplace has 30 top-level skills (5 of which are the design skills: pdf-design-guide, design-system-palettes, typography-guide, design-principles, design-good-bad-examples — previously nested under a `design-hub` router that has been removed). CI broke because someone added a 31st top-level skill that the marketplace.json doesn't know about. Run the validator to find the orphan. Also: are all 4 plugin manifests (.claude-plugin/, .codex-plugin/, .cursor-plugin/, .kimi-plugin/) at the same version?",
       "expected_output": "(a) The orphan skill name. (b) The four manifests' versions, side by side, with a consistency verdict (all equal, or which are stale). (c) Optionally: how to fix each. Should be deterministic — same input always produces the same output.",
       "files": [],
       "expectations": []

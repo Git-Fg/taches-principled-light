@@ -1,13 +1,13 @@
 ---
 name: managing-wiki
-description: "Load when searching, querying, or ingesting into a personal wiki or notes. Use when the user mentions 'wiki', 'knowledge base', or 'look up in my notes'. Do NOT use for looking up info on the public web (use web-search) or researching an unfamiliar library/API (use a subagent explorer)."
+description: "Load when searching, querying, or ingesting into a personal wiki or notes. Use when the user mentions 'wiki', 'knowledge base', or 'look up in my notes'. Do NOT use for looking up info on the public web or researching an unfamiliar library/API."
 when_to_use: |
   - "Find something in my wiki / KB / notes"
   - "Search the wiki for X"
   - "Lint / verify / check consistency of the wiki"
   - "Add to the wiki / ingest into the wiki / populate the wiki"
   - "Build the wiki from a URL / file / notes"
-  - NOT for: general web search (use web-search), code search, reading project documentation outside the wiki, real-time meeting notes
+  - NOT for: general web search on the public internet, code search, reading project documentation outside the wiki, or real-time meeting notes
 argument-hint: "[query|ingest|lint] [args...]"
 license: MIT
 ---

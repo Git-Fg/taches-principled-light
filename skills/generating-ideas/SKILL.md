@@ -1,10 +1,10 @@
 ---
 name: generating-ideas
-description: "Load when the user needs creative alternatives — 3 anchors plus 3 tail ideas. Use for 'generate ideas for X', 'what are the options', or 'show me different approaches'. Do NOT use for collaborative idea-to-design dialogue (use superpowers' brainstorming) or scoring competitive solutions (use solving-competitively)."
+description: "Load when the user needs creative alternatives — 3 anchors plus 3 tail ideas. Use for 'generate ideas for X', 'what are the options', or 'show me different approaches'. Do NOT use for collaborative idea-to-design dialogue or scoring competitive solutions."
 when_to_use: |
   - User needs a list of creative alternatives or diverse approaches to a problem.
   - Use for early-stage conceptualization before architecture or implementation begins.
-  - NOT for: collaborative idea-to-design dialogue (use superpowers' `brainstorming`).
+  - NOT for: collaborative idea-to-design dialogue that refines a vague concept through Q&A (separate workflow that produces an approved design doc with spec self-review).
 argument-hint: "[feature concept, problem, or topic]"
 license: MIT
 ---

@@ -26,7 +26,10 @@ from pathlib import Path
 
 # Where the marketplace's skills/ root lives (relative to repo root).
 SKILLS_ROOT = Path("skills")
-# The 4 plugin manifest paths.
+# The 5 marketplace files: 1 catalog (marketplace.json) + 4 plugin manifests.
+# The 4 plugin manifests must declare the same version; the catalog's top-level
+# has no version (it's the catalog's metadata, not a plugin's). The catalog's
+# plugins[0] does declare a version and must match the 4 plugin manifests.
 MANIFESTS = [
     Path(".claude-plugin/marketplace.json"),
     Path(".claude-plugin/plugin.json"),
@@ -55,11 +58,50 @@ def run_validator(skills_root: Path) -> dict:
         return {"summary": {"fail": -1, "warn": -1}, "skills": {}, "_error": f"validator JSON parse: {e}"}
 
 
+def get_manifest_version(repo_root: Path) -> str | None:
+    """Return the canonical version (the unique value across the 4 plugin manifests
+    and marketplace.json's plugins[0]). Returns None if versions diverge, are missing,
+    or no plugin manifest exists.
+    """
+    versions: set[str] = set()
+    missing: list[str] = []
+    for m in MANIFESTS:
+        p = repo_root / m
+        if not p.exists():
+            continue
+        try:
+            data = json.loads(p.read_text())
+        except json.JSONDecodeError:
+            continue
+        if m.name == "marketplace.json":
+            # Catalog version lives in plugins[0].version, not at the top level.
+            plugins = data.get("plugins", [])
+            v = plugins[0].get("version") if plugins else None
+        else:
+            v = data.get("version")
+        if v:
+            versions.add(v)
+        else:
+            missing.append(str(m))
+    # If any manifest lacks a version, the canonical version is undefined —
+    # return None so downstream checks (e.g., CHANGELOG cross-check) treat
+    # this as "not all manifests agree" instead of trusting a partial set.
+    if missing:
+        return None
+    if len(versions) == 1:
+        return versions.pop()
+    return None
+
+
 def check_manifest_consistency(repo_root: Path) -> list[dict]:
-    """All 5 manifests should have the same version and a consistent description."""
+    """All 5 manifests should have the same version. Descriptions are checked
+    for non-emptiness (a missing or very short description is a real bug);
+    cross-platform differences in phrasing are intentional and not enforced.
+    """
     findings: list[dict] = []
     versions: dict[str, str] = {}
     descriptions: dict[str, str] = {}
+    missing: list[str] = []
     for m in MANIFESTS:
         p = repo_root / m
         if not p.exists():
@@ -72,10 +114,20 @@ def check_manifest_consistency(repo_root: Path) -> list[dict]:
             findings.append({"check": "manifest_consistency", "level": "fail",
                              "path": str(m), "message": f"JSON parse error: {e}"})
             continue
-        v = data.get("version", "(no version)")
-        # marketplace.json has no top-level version; that's expected
+        if m.name == "marketplace.json":
+            plugins = data.get("plugins", [])
+            v = plugins[0].get("version", "(no version)") if plugins else "(no version)"
+        else:
+            v = data.get("version", "(no version)")
         if v != "(no version)":
             versions[str(m)] = v
+        else:
+            # Missing version is a real bug — emit a finding so it doesn't
+            # silently pass when only some manifests have it.
+            missing.append(str(m))
+            findings.append({"check": "manifest_consistency", "level": "fail",
+                             "path": str(m),
+                             "message": f"{m.name} is missing the 'version' field"})
         # Description: top-level for plugin.json, in plugins[0] for marketplace.json
         d = data.get("description") or ""
         if not d and "plugins" in data and data["plugins"]:
@@ -87,9 +139,21 @@ def check_manifest_consistency(repo_root: Path) -> list[dict]:
         if len(unique) > 1:
             findings.append({"check": "manifest_consistency", "level": "fail",
                              "message": f"manifest versions diverge: {versions}"})
-        else:
+        elif not missing:
+            # Only emit the aggregate "all manifests at version X" pass when
+            # every manifest provided a version. If any are missing, the
+            # per-manifest fail findings above carry the signal and a pass
+            # summary would contradict them.
             findings.append({"check": "manifest_consistency", "level": "pass",
                              "message": f"all manifests at version {unique.pop()}"})
+
+    # Description sanity: missing or very short descriptions are a real bug,
+    # even if cross-platform phrasing differs intentionally.
+    short_or_missing = {p: d for p, d in descriptions.items() if len(d.strip()) < 80}
+    if short_or_missing:
+        findings.append({"check": "manifest_consistency", "level": "warn",
+                         "message": f"{len(short_or_missing)} manifest(s) have short or missing descriptions",
+                         "details": [{"path": p, "len": len(d.strip())} for p, d in short_or_missing.items()]})
     return findings
 
 
@@ -97,13 +161,16 @@ def check_license_coverage(skills_root: Path) -> list[dict]:
     """Each skill should declare `license:` in frontmatter."""
     findings: list[dict] = []
     missing: list[str] = []
+    # Reuse the validator's parser: it handles single/double-quoted scalars,
+    # block scalars, and inline comments correctly. Importing avoids drift.
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parent.parent.parent / "marketplace-validator" / "scripts"))
+    from validate import parse_frontmatter_safe  # type: ignore  # noqa: E402
+
     for skill_md in sorted(skills_root.rglob("SKILL.md")):
         text = skill_md.read_text()
-        if not text.startswith("---"):
-            continue
-        # Naive parse: look for `license:` within the frontmatter block.
-        m = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
-        if not m or "license:" not in m.group(1):
+        fm, _ = parse_frontmatter_safe(text)
+        if "license" not in fm:
             missing.append(str(skill_md.parent.relative_to(skills_root.parent)))
     if missing:
         findings.append({"check": "license_coverage", "level": "warn",
@@ -160,10 +227,11 @@ def check_cross_references(skills_root: Path) -> list[dict]:
                 continue
             if in_fence:
                 continue
-            # Skip lines with inline backticks (documentation, not citations).
-            if "`" in line:
-                continue
-            for m in re.finditer(r"\b(references|scripts)/([\w./-]+\.(?:md|py|json))\b", line):
+            # Strip inline backticks rather than skipping the line entirely.
+            # This catches real citations like `references/foo.md` mentioned
+            # alongside backticked prose like `code` on the same line.
+            line_stripped = re.sub(r"`[^`]+`", lambda mm: " " * len(mm.group(0)), line)
+            for m in re.finditer(r"\b(references|scripts)/([\w./-]+\.(?:md|py|json))\b", line_stripped):
                 rel = m.group(0)
                 # Skip placeholder patterns (X.md, Y.py) which are
                 # documentation examples, not real citations.
@@ -217,7 +285,12 @@ def check_orphan_skills(skills_root: Path, repo_root: Path) -> list[dict]:
 
 
 def check_docs_reflect_state(skills_root: Path, repo_root: Path) -> list[dict]:
-    """README and CHANGELOG should reflect current skill count."""
+    """README, AGENTS.md, and CHANGELOG should reflect current state.
+
+    Specifically: README should mention the current skill count, and the
+    CHANGELOG's latest version must match the canonical manifest version.
+    A version mismatch between CHANGELOG and shipped manifests is a hard fail.
+    """
     findings: list[dict] = []
     actual = sum(1 for _ in skills_root.rglob("SKILL.md"))
     readme = repo_root / "README.md"
@@ -241,12 +314,20 @@ def check_docs_reflect_state(skills_root: Path, repo_root: Path) -> list[dict]:
     cl = repo_root / "CHANGELOG.md"
     if cl.exists():
         text = cl.read_text()
-        # CHANGELOG should mention the most-recent version. Check that the
-        # latest version line matches the manifests.
-        cl_versions = re.findall(r"##\s*\[(\d+\.\d+\.\d+)\]", text)
+        # Match both bracketed `## [X.Y.Z]` and unbracketed `## X.Y.Z` headers.
+        cl_versions = re.findall(r"##\s*\[?(\d+\.\d+\.\d+)\]?", text)
         if cl_versions:
-            findings.append({"check": "docs_reflect_state", "level": "info",
-                             "message": f"CHANGELOG latest version: {cl_versions[0]}"})
+            cl_latest = cl_versions[0]
+            manifest_version = get_manifest_version(repo_root)
+            if manifest_version is None:
+                findings.append({"check": "docs_reflect_state", "level": "fail",
+                                 "message": f"manifests disagree on version (cannot cross-check CHANGELOG {cl_latest})"})
+            elif cl_latest != manifest_version:
+                findings.append({"check": "docs_reflect_state", "level": "fail",
+                                 "message": f"CHANGELOG latest is {cl_latest} but manifests are at {manifest_version}"})
+            else:
+                findings.append({"check": "docs_reflect_state", "level": "pass",
+                                 "message": f"CHANGELOG latest ({cl_latest}) matches manifest version"})
     return findings
 
 

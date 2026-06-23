@@ -5,7 +5,7 @@ You have both **superpowers** and **taches-principled-light** installed. They ar
 ## How They Fit Together
 
 - **superpowers** is your foundation — brainstorming, TDD, systematic debugging, code review, git worktrees, verification, plan execution, skill writing.
-- **taches-principled-light** adds specialist skills — code restructuring, first-principles reasoning, competitive solving, guardrails, MCP engineering, security, wiki management, session analysis, design systems (via `design-hub`), and skill evaluation methodology (via `evaluating-skills` and `general-critic`).
+- **taches-principled-light** adds specialist skills — code restructuring, first-principles reasoning, competitive solving, guardrails, MCP engineering, security, wiki management, session analysis, design systems (5 skills), and skill evaluation methodology (via `evaluating-skills` and `general-critic`).
 
 ## When Both Cover a Topic
 
@@ -61,6 +61,10 @@ Use for: implementation, review, judgment, auditing, fixes.
 1. Create `skills/<name>/SKILL.md` with frontmatter + body.
 2. Follow `crafting-skills` CREATE mode for authoring new skills; use OPTIMIZE mode for routing improvements.
 3. No other files to touch.
+
+## Skill Activation Discipline
+
+**Never set `disable-model-invocation` on marketplace skills.** The field is a valid frontmatter key (and is allowed by the validator), but it is reserved for one-off skills that should never auto-load. This marketplace's entire value model is **implicit, model-invoked skills that work across any codebase** — every skill must remain auto-loadable so the agent can discover and apply it when the user's intent matches the description. A skill that is gated behind an explicit `/name` invocation will never fire on real user requests and is dead weight in the index. Only the maintainer-facing meta-skills in `.agents/skills/` (which are not shipped to users) may opt out of model invocation.
 
 ## Marketplace Maintenance (.agents/skills/)
 

@@ -1,10 +1,10 @@
 ---
 name: plan-lifecycle
-description: "Load when planning or executing multi-phase projects — PLAN.md files with critic checkpoints and deviation tracking. Use when the user says 'plan this project', 'plan this multi-phase', 'run a plan', 'execute phase N', 'start the next phase', 'where do I start', 'build it', 'roadmap', or 'milestone tracking'. Do NOT use for single-task plans (use superpowers' writing-plans), small features (use task-lifecycle), or brainstorming (use generating-ideas)."
+description: "Load when planning or executing multi-phase projects — PLAN.md files with critic checkpoints and deviation tracking. Use when the user says 'plan this project', 'plan this multi-phase', 'run a plan', 'execute phase N', 'start the next phase', 'where do I start', 'build it', 'roadmap', or 'milestone tracking'. Do NOT use for single-task plans, small features, or brainstorming."
 context: fork
 agent: general-purpose
 allowed-tools: Read, Write, Bash, Grep
-when_to_use: "Use for multi-phase projects, feature breakdowns, running PLAN.md files, or building out planned phases. Examples: 'plan this project', 'add a feature', 'where do I start', 'run the plan', 'build it'. NOT for: single-plan documents (use superpowers' `writing-plans` + `executing-plans`)."
+when_to_use: "Use for multi-phase projects, feature breakdowns, running PLAN.md files, or building out planned phases. Examples: 'plan this project', 'add a feature', 'where do I start', 'run the plan', 'build it'. NOT for: single-plan documents for a focused feature (separate workflow that produces bite-sized 2-5 minute task lists without multi-phase decomposition)."
 argument-hint: "<PLAN|EXECUTE> [path|--phase N]"
 arguments: [mode, plan-path]
 skills:

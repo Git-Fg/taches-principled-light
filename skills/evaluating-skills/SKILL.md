@@ -1,6 +1,6 @@
 ---
 name: evaluating-skills
-description: "Load when evaluating an agent skill — writing evals, comparing with-skill vs baseline, grading outputs, or iterating. Use when the user says 'test this skill', 'benchmark', or 'improve it from the evals'. Do NOT use for authoring (use crafting-skills) or generic critique (use general-critic)."
+description: "Load when evaluating an agent skill — writing evals, comparing with-skill vs baseline, grading outputs, or iterating. Use when the user says 'test this skill', 'benchmark', or 'improve it from the evals'. Do NOT use for authoring or pre-commit spec lint, and do NOT use for adversarial critique of non-skill artifacts."
 when_to_use: |
   Use to measure whether a skill improves agent behavior via with-skill vs
   baseline behavioral comparison. Works across Claude Code, claude -p, Codex,

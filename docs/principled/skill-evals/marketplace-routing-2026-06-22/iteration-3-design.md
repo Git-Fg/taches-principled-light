@@ -89,10 +89,17 @@ Runs the with-skill and without-skill configurations identically to iteration-2 
 For each `(eval, config)` pair, grades the final response against the eval's `assertions[]`. Each assertion is graded PASS / FAIL with a one-line justification. The grader is itself an LLM call. **Judge model choice**: Tessl uses Sonnet 4.6 as the fixed judge across all experiments (rationale: a strong frontier model gives the most reliable grades). We deliberately deviate to **Haiku 4.5** (same chain as the solver, per project convention to target the VPS port-3456 proxy) — this is a *trade-off*, not an optimization:
 
 - **Lower grading quality** vs Sonnet 4.6 (smaller model, less nuanced on `compliance`/`quality`).
-- **Self-grading bias**: Haiku judging Haiku's own solver output. The bias is roughly symmetric between with-skill and without-skill runs (same judge), so the *delta* signal should be more reliable than the absolute scores. But absolute scores may be inflated.
-- **Cost**: ~10× cheaper than Sonnet 4.6 at 60 grader calls/eval.
+- **Self-attribution bias**: Haiku judging Haiku's own solver output. Per [Self-Attribution Bias: When AI Monitors Go Easy on Themselves](https://arxiv.org/abs/2603.04582) (Khullar et al., ICML 2026), this is a documented failure mode: in their code-review setting, self-attributed monitors were **5× more likely** to approve insecure code patches compared to off-policy baselines. The bias is **not mitigated by reasoning** (they tested reasoning models). The effect is strongest in *on-policy* self-monitoring (model judges its own output) and weakest in *off-policy* settings (judges fixed artifacts by other models/humans).
+- **Same-family bias** ([Wataoka et al. 2024](https://arxiv.org/abs/2410.21819)): models prefer outputs from architecturally similar systems. Haiku 4.5 grading Haiku 4.5's output is the worst case for this. Mitigating by using a different-family judge (e.g., Sonnet 4.5 → Haiku solver) reduces but does not eliminate bias.
+- **Bias is roughly symmetric between with-skill and without-skill runs** (same judge in both configs), so the *delta* signal should be more reliable than absolute scores. But absolute scores may be inflated by 5–15 points based on the self-attribution literature.
+- **Cost**: ~10× cheaper than Sonnet 4.6 at ~60 grader calls/eval.
 
-**Mitigation**: run a calibration subset of 5-10 evals with both Haiku and Sonnet 4.5 judges before the full iter-3 run. If the deltas agree within ±5 points, proceed with Haiku; if not, switch to Sonnet.
+**Mitigation strategy (revised after literature review)**:
+
+1. **First-choice judge**: Sonnet 4.5 (different family or different model in the same family) — even though it's slower and more expensive, the self-attribution bias makes Haiku-judges-Haiku a serious methodology risk for any conclusion that depends on absolute scores (not just deltas).
+2. **Calibration fallback**: if cost prohibits Sonnet for all 18 evals × 2 configs, run a calibration subset of 5-10 evals with both Haiku 4.5 and Sonnet 4.5 judges. If the *deltas* (with-skill minus without-skill) agree within ±5 points, proceed with Haiku for the remaining evals and report the bias caveat. If they disagree, switch to Sonnet 4.5.
+3. **Off-policy test**: re-grade 5 randomly selected with-skill transcripts where the solver ran on a different model (e.g., Sonnet 4.5). If Haiku's grades on those differ significantly from the same-model grades, the bias is active and the calibration is invalidated.
+4. **Report**: every iter-3 result must include the judge model used + bias caveat. The benchmark.json schema (per `skills/evaluating-skills/references/schemas.md`) should add a `judge_model` field for this.
 
 The judge receives:
 
@@ -104,6 +111,7 @@ Grading output schema (per Anthropic's `references/schemas.md`):
 
 ```json
 {
+  "judge_model": "claude-haiku-4-5",
   "expectations": [
     {"text": "...", "passed": true, "evidence": "...", "points_awarded": 30}
   ],

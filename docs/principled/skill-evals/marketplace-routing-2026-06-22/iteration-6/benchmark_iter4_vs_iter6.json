@@ -1,0 +1,42 @@
+{
+  "purpose": "Rule out same-family bias (sonnet over haiku) by re-grading with vendor-disjoint glm-5.2",
+  "rows": [
+    {
+      "eval_id": "eval-skill",
+      "iter4_total_lift_sonnet": 15.0,
+      "iter7_filesystem_access_lift_sonnet": 15.0,
+      "iter7_total_lift_sonnet": 15.0,
+      "iter6_filesystem_access_lift_glm5-2": 15.0,
+      "iter6_total_lift_glm5-2": 15.0,
+      "delta_sonnet_vs_glm5-2_total_lift": 0.0
+    },
+    {
+      "eval_id": "sec-audit",
+      "iter4_total_lift_sonnet": 17.5,
+      "iter7_filesystem_access_lift_sonnet": 0.0,
+      "iter7_total_lift_sonnet": 32.5,
+      "iter6_filesystem_access_lift_glm5-2": 0.0,
+      "iter6_total_lift_glm5-2": 15.0,
+      "delta_sonnet_vs_glm5-2_total_lift": 17.5
+    },
+    {
+      "eval_id": "lint-1",
+      "iter4_total_lift_sonnet": 25.0,
+      "iter7_filesystem_access_lift_sonnet": 25.0,
+      "iter7_total_lift_sonnet": 25.0,
+      "iter6_filesystem_access_lift_glm5-2": 0.0,
+      "iter6_total_lift_glm5-2": 0.0,
+      "delta_sonnet_vs_glm5-2_total_lift": 25.0
+    },
+    {
+      "eval_id": "release-2",
+      "iter4_total_lift_sonnet": 15.0,
+      "iter7_filesystem_access_lift_sonnet": 15.0,
+      "iter7_total_lift_sonnet": 15.0,
+      "iter6_filesystem_access_lift_glm5-2": 0.0,
+      "iter6_total_lift_glm5-2": 0.0,
+      "delta_sonnet_vs_glm5-2_total_lift": 15.0
+    }
+  ],
+  "verdict": "computed below"
+}

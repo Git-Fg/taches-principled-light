@@ -1,0 +1,52 @@
+{
+  "eval_id": "lint-1",
+  "iter4_mechanism": "file-access",
+  "expected_skill": "marketplace-validator",
+  "baseline": {
+    "overall_score": 0.0,
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "plugin_only": {
+    "overall_score": 0.0,
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "plugin_with_add_dir": {
+    "overall_score": 25.0,
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 50.0,
+    "passed": 1,
+    "failed": 4,
+    "unknown": 0,
+    "total": 5
+  },
+  "lifts": {
+    "consultation_lift": {
+      "instruction_following_delta": 0.0,
+      "goal_completion_delta": 0.0,
+      "overall_delta": 0.0,
+      "verdict": "skill_neutral"
+    },
+    "filesystem_access_lift": {
+      "instruction_following_delta": 0.0,
+      "goal_completion_delta": 50.0,
+      "overall_delta": 25.0,
+      "verdict": "skill_lifts_quality"
+    },
+    "total_lift": {
+      "instruction_following_delta": 0.0,
+      "goal_completion_delta": 50.0,
+      "overall_delta": 25.0,
+      "verdict": "skill_lifts_quality"
+    }
+  }
+}

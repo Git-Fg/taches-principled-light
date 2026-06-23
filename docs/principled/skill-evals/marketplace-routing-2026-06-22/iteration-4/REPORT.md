@@ -1,10 +1,12 @@
 # Iteration 4 — Cache-Refreshed Re-Run (Phase A)
 
-**Status:** ✅ complete
+**Status:** ✅ complete, **SUPERSEDED by iter-7** for headline numbers
 **Started:** 2026-06-23 14:24
 **Ended:** 2026-06-23 15:35 (≈71 min wall)
 **Judge:** sonnet (heterogeneous over haiku solver)
 **Cache state:** fresh (cleared 2026-06-23, smoke test confirmed `craft-create` picks `taches-principled-light:crafting-skills`)
+
+> **iter-7 supersedes this headline (2026-06-23).** iter-4's `without_skill` baseline was contaminated: the marketplace plugin auto-loads into the agent's `slash_commands` regardless of `--add-dir`. iter-4's "+4.94pp" is the **filesystem_access_lift only**, not the total lift vs a no-plugin baseline. The true total lift on the 4-eval subset is **+21.88pp** (4 lifts / 0 neutrals / 0 hurts). See [`../iteration-7/REPORT.md`](../iteration-7/REPORT.md) and [`../iteration-6/REPORT.md`](../iteration-6/REPORT.md) for the follow-up campaign.
 
 ## Headline
 
@@ -161,8 +163,8 @@ Recommended actions:
 1. **Release v0.0.3 as-is** — no skill changes needed.
 2. **Document the cache workaround** in `AGENTS.md` and `README.md` so other marketplaces avoid the iter-3 trap.
 3. **Plan iter-5 (REQUIRED, not optional)** — N=3 reliability study to measure the noise floor and confirm the +1.81pp consultation-driven lower bound is stable. Yagubyan 2026 shows ±13.6% flip rate for single trials; a 3-trial mean would tighten the CI enough to claim a publishable magnitude.
-4. **Plan iter-6 (REQUIRED, not optional)** — sonnet solver + sonnet judge (homogeneous) to rule out same-family bias from Wataoka 2024. The current heterogeneous judge could be inflating the consultation-driven lifts relative to the file-access-driven ones.
-5. **Plan iter-7 (defer)** — harness fix: separate `--add-dir` (file access) from `--marketplace-plugin` (skill listing) to isolate the two mechanisms. Without this, future iterations will keep conflating them.
+4. **Plan iter-6 (COMPLETE with proxy caveat)** — vendor-disjoint validation via glm-5.2 judge. **Outcome:** blocked by proxy architecture (haiku/sonnet/opus/nex-agi all silently map to MiniMax-M3; only glm-5.2 is vendor-disjoint and is rate-limited). Re-purposed as code-only lift decomposition (+7.5pp mean across 4 evals). See [`../iteration-6/REPORT.md`](../iteration-6/REPORT.md).
+5. **Plan iter-7 (COMPLETE)** — 3-config lift disambiguation. **Outcome:** canonical headline is **+21.88pp total_lift** (4 lifts / 0 neutrals / 0 hurts) on 4-eval subset. See [`../iteration-7/REPORT.md`](../iteration-7/REPORT.md).
 
 ## Methodology notes
 
@@ -172,10 +174,11 @@ Recommended actions:
 
 ## Caveats
 
-1. **N=1 per (eval, config)**: single-trial noise is high (Yagubyan 2026: ±13.6% flip rate). The +4.94pp headline has wide confidence intervals and is plausibly within the noise floor. **iter-5 N=3 study is required to validate the magnitude** before treating it as publishable.
-2. **Solver/judge family**: haiku solver + sonnet judge is heterogeneous. Wataoka 2024 shows LLM-judge same-family bias can swing scores by single-digit pp. **iter-6 sonnet-on-sonnet is required** to rule out the bias.
+1. **N=1 per (eval, config)**: single-trial noise is high (Yagubyan 2026: ±13.6% flip rate). The +4.94pp headline has wide confidence intervals and is plausibly within the noise floor. **iter-5 N=11 study is deferred** (see iter-7 REPORT "iter-5 future work" for rationale).
+2. **Solver/judge family**: haiku solver + sonnet judge is heterogeneous. Wataoka 2024 shows LLM-judge same-family bias can swing scores by single-digit pp. **iter-6 vendor-disjoint validation: blocked by proxy architecture** (haiku/sonnet/opus/nex-agi all silently map to MiniMax-M3; only glm-5.2 is vendor-disjoint and is rate-limited). See [`../iteration-6/REPORT.md`](../iteration-6/REPORT.md).
 3. **Timeouts**: 4/36 runs hit the 300s cap (lint-2, audit-2, critic with-skill; research without-skill). The grader runs on the partial transcript and scores whatever work is present (does NOT auto-zero). For `research/without_skill` this produced 32.5 pts, equal to `with_skill`, which masks a potential +32.5 lift in the headline. See "Key pattern #4" above for the sensitivity analysis.
-4. **Cache freshness single-shot**: iter-4 measures one snapshot of the cache. iter-5 should re-run to confirm +4.94pp is stable.
+4. **Cache freshness single-shot**: iter-4 measures one snapshot of the cache. iter-5 would re-run to confirm +4.94pp is stable; deferred.
 5. **UNKNOWN verdict**: 1 UNKNOWN judge verdict emitted (research/with_skill, `surfaced_disagreement` assertion — truncated transcript, no evidence to grade). Treated as FAIL per the iter-3 `evaluating-skills` convention. Logged in `unknowns.md`.
-6. **Lift mechanism confound**: 3 of 5 lifts (lint-1, audit-1, release-2) are file-access-driven, not skill-body consultation. The agent ran the marketplace skill's colocated scripts without reading the SKILL.md. The +4.94pp headline therefore measures "(file access to marketplace) + (skill body consultation)" combined. Pure skill-body lift, isolated, is closer to **+1.81pp** (average of the 2 consultation-driven lifts only).
-7. **Contaminated baseline**: the without_skill baseline still has all marketplace skills in slash_commands (global plugin loading). The iter-4 number is a **marginal** lift over an already-contaminated baseline. The true lift over a no-skill-at-all baseline is likely higher but unmeasurable in the current harness (no way to disable plugin loading per-call).
+6. **Lift mechanism confound**: 3 of 5 lifts (lint-1, audit-1, release-2) are file-access-driven, not skill-body consultation. The agent ran the marketplace skill's colocated scripts without reading the SKILL.md. The +4.94pp headline therefore measures "(file access to marketplace) + (skill body consultation)" combined. Pure skill-body lift, isolated, is closer to **+1.81pp** (average of the 2 consultation-driven lifts only). **iter-7 disambiguates this**: filesystem_access_lift = +13.75pp, consultation_lift = +8.12pp (noisy), total_lift = +21.88pp.
+7. **Contaminated baseline**: the without_skill baseline still has all marketplace skills in slash_commands (global plugin loading). The iter-4 number is a **marginal** lift over an already-contaminated baseline. **iter-7 resolves this** via `--disable-slash-commands` for the true no-plugin baseline.
+8. **Cross-iteration noise check (added 2026-06-23)**: iter-7 cross-checked iter-4 grading on bit-for-bit identical transcripts (md5 verified). Result: 3 of 4 evals (eval-skill, lint-1, release-2) produced identical grading across iter-4 and iter-7. **sec-audit without_skill graded 15.0 in iter-4 but 32.5 in iter-7 — a +17.5pp swing on the same input.** This proves the grader has non-deterministic noise on at least one assertion (model-judge based). The sec-audit lift magnitude in this REPORT (+17.5pp) is one realization; the expected value is bracketed between +0 and +35 (the IF-delta range). The lift DIRECTION (positive) is robust. See `../iteration-7/REPORT.md` "Caveats #3" for the full analysis. iter-5 (N=11) is deferred (not blocking); iter-6 (vendor-disjoint judge) is structurally blocked on this proxy.

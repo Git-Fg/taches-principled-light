@@ -1,0 +1,60 @@
+{
+  "judge_model": "glm-5.2",
+  "config": "with",
+  "eval_id": "sec-audit",
+  "expectations": [
+    {
+      "id": "consulted_security",
+      "text": "the agent should read skills/security/SKILL.md before auditing; the skill defines the SAST/dependency-audit/secrets-detection/compliance modes",
+      "passed": true,
+      "evidence": "agent read ; Skill tool: taches-principled-light:security",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "ran_secrets_scan",
+      "text": "the agent should run a secrets-detection scan (Grep/ripgrep for common patterns: API_KEY=, AWS_SECRET, Bearer tokens, etc.) and report findings with file:line",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "owasp_categories_covered",
+      "text": "the audit should cover at least 5 of the OWASP Top 10 categories (injection, broken auth, sensitive data exposure, XXE, broken access control, security misconfig, XSS, insecure deserialization, vulnerable components, insufficient logging)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "selected_appropriate_modes",
+      "text": "the agent should select the right modes for the request (OWASP top 10 \u2192 SAST mode; 'secrets' \u2192 secrets-detection mode; per the routing table in security/SKILL.md)",
+      "passed": false,
+      "evidence": "judge parse error: KeyError('choices')",
+      "points_awarded": 0,
+      "unknown": true
+    },
+    {
+      "id": "named_real_vulnerabilities",
+      "text": "the response should identify \u22651 real vulnerability or risk (with file:line + remediation), not a generic 'looks fine' or 'consider OWASP training'",
+      "passed": false,
+      "evidence": "judge parse error: KeyError('choices')",
+      "points_awarded": 0,
+      "unknown": true
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 15.0,
+    "passed": 1,
+    "failed": 2,
+    "unknown": 2,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

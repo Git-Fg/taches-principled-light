@@ -1,0 +1,64 @@
+{
+  "judge_model": "sonnet",
+  "config": "baseline",
+  "eval_id": "sec-audit",
+  "expectations": [
+    {
+      "id": "consulted_security",
+      "text": "the agent should read skills/security/SKILL.md before auditing; the skill defines the SAST/dependency-audit/secrets-detection/compliance modes",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'security' (paths=['.agents/skills/security/SKILL.md', 'skills/security/SKILL.md'], observed_reads=[], observed_skills=[])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "ran_secrets_scan",
+      "text": "the agent should run a secrets-detection scan (Grep/ripgrep for common patterns: API_KEY=, AWS_SECRET, Bearer tokens, etc.) and report findings with file:line",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "owasp_categories_covered",
+      "text": "the audit should cover at least 5 of the OWASP Top 10 categories (injection, broken auth, sensitive data exposure, XXE, broken access control, security misconfig, XSS, insecure deserialization, vulnerable components, insufficient logging)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "selected_appropriate_modes",
+      "text": "the agent should select the right modes for the request (OWASP top 10 \u2192 SAST mode; 'secrets' \u2192 secrets-detection mode; per the routing table in security/SKILL.md)",
+      "passed": false,
+      "evidence": "The agent never read security/SKILL.md, never invoked SAST or secrets-detection modes, and only ran `ls`/`find` to check for files before declaring the project empty.",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "named_real_vulnerabilities",
+      "text": "the response should identify \u22651 real vulnerability or risk (with file:line + remediation), not a generic 'looks fine' or 'consider OWASP training'",
+      "passed": false,
+      "evidence": "The agent identified zero vulnerabilities, stating 'The project is empty \u2014 no code to audit. I won't fabricate findings,' and did not provide any file:line or remediation.",
+      "points_awarded": 0,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 5,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  },
+  "iter7_config_translation": {
+    "iter7": "baseline",
+    "grader": "without"
+  }
+}

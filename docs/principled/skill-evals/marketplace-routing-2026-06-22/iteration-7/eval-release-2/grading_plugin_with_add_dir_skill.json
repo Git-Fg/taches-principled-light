@@ -1,0 +1,64 @@
+{
+  "judge_model": "sonnet",
+  "config": "plugin_with_add_dir",
+  "eval_id": "release-2",
+  "expectations": [
+    {
+      "id": "consulted_releasing_marketplace",
+      "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md to confirm the canonical tag/push sequence",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'releasing-marketplace' (paths=['.agents/skills/releasing-marketplace/SKILL.md', 'skills/releasing-marketplace/SKILL.md'], observed_reads=['/Users/felix/Documents/AutoPluginClaw/taches-principled-light/CHANGELOG.md'], observed_skills=['taches-principled-light:git'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "tag_message_matches_changelog",
+      "text": "the tag message should match the latest CHANGELOG.md entry (top entry) verbatim or with minor summary edits \u2014 not a fresh improvisation",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "remote_tag_exists",
+      "text": "after the run, git ls-remote --tags origin should show the new tag",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "created_annotated_tag",
+      "text": "the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes",
+      "passed": true,
+      "evidence": "The agent ran `git tag -a v0.0.4 -m \"v0.0.4 \u2014 iter-4 runner + timeout fix + stale cache docs\"`, using the -a flag for an annotated tag with a message summarizing the changes since v0.0.3.",
+      "points_awarded": 30,
+      "unknown": false
+    },
+    {
+      "id": "no_force_push_used",
+      "text": "the agent should not use --force or --force-with-lease to push tags; if the tag already exists, it should refuse and ask for confirmation rather than overwrite",
+      "passed": true,
+      "evidence": "The push command was `git push origin main --tags` with no --force or --force-with-lease flag; v0.0.4 was a new tag (not pre-existing) and pushed successfully as `[new tag] v0.0.4 -> v0.0.4`.",
+      "points_awarded": 50,
+      "unknown": false
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 30.0,
+    "goal_completion_score": 50.0,
+    "overall_score": 40.0,
+    "passed": 2,
+    "failed": 3,
+    "unknown": 0,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  },
+  "iter7_config_translation": {
+    "iter7": "plugin_with_add_dir",
+    "grader": "with"
+  }
+}

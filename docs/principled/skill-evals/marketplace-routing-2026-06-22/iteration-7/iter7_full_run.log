@@ -1,0 +1,70 @@
+[iter-7] 4-eval subset x 3 configs = 12 grading cells
+[iter-7] judge model: sonnet
+[iter-7] solver model: haiku
+[iter-7] baseline run timeout: 300s
+[iter-7] baseline wall budget: ~20 min worst case
+[iter-7] preflight: /Users/felix/.local/bin/claude --model haiku --disable-slash-commands
+[iter-7] preflight OK (--disable-slash-commands works)
+
+[iter-7] phase 1a: copy iter-4 transcripts
+  eval-skill: copied ['plugin_only_skill.jsonl', 'plugin_with_add_dir_skill.jsonl']
+  sec-audit: copied ['plugin_only_skill.jsonl', 'plugin_with_add_dir_skill.jsonl']
+  lint-1: copied ['plugin_only_skill.jsonl', 'plugin_with_add_dir_skill.jsonl']
+  release-2: copied ['plugin_only_skill.jsonl', 'plugin_with_add_dir_skill.jsonl']
+
+[iter-7] phase 1b: generate baseline transcripts (--disable-slash-commands)
+
+[1/4] eval-skill baseline
+  utterance: write evals for this skill and grade the outputs
+  baseline:     completed dur=78716ms events=6
+
+[2/4] sec-audit baseline
+  utterance: audit code for OWASP top 10 vulnerabilities and secrets
+  baseline:     completed dur=35932ms events=12
+
+[3/4] lint-1 baseline
+  utterance: lint the marketplace and check the frontmatter
+  baseline:     completed dur=29364ms events=13
+
+[4/4] release-2 baseline
+  utterance: tag and push the new version
+  baseline:     completed dur=16668ms events=9
+
+[iter-7] phase 2: grading (4 evals x 3 configs = 12 cells)
+
+[1/4] grading eval-skill (iter-4 mechanism: consultation)
+              baseline: overall=  0.0 IF=  0.0 GC=  0.0
+           plugin_only: overall=  0.0 IF=  0.0 GC=  0.0
+   plugin_with_add_dir: overall= 15.0 IF= 30.0 GC=  0.0
+  consultation_lift: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+  filesystem_access_lift: IF=+30.0 GC= +0.0 overall=+15.0 → skill_lifts_quality
+  total_lift: IF=+30.0 GC= +0.0 overall=+15.0 → skill_lifts_quality
+
+[2/4] grading sec-audit (iter-4 mechanism: consultation)
+              baseline: overall=  0.0 IF=  0.0 GC=  0.0
+           plugin_only: overall= 32.5 IF= 65.0 GC=  0.0
+   plugin_with_add_dir: overall= 32.5 IF= 65.0 GC=  0.0
+  consultation_lift: IF=+65.0 GC= +0.0 overall=+32.5 → skill_lifts_quality
+  filesystem_access_lift: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+  total_lift: IF=+65.0 GC= +0.0 overall=+32.5 → skill_lifts_quality
+
+[3/4] grading lint-1 (iter-4 mechanism: file-access)
+              baseline: overall=  0.0 IF=  0.0 GC=  0.0
+           plugin_only: overall=  0.0 IF=  0.0 GC=  0.0
+   plugin_with_add_dir: overall= 25.0 IF=  0.0 GC= 50.0
+  consultation_lift: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+  filesystem_access_lift: IF= +0.0 GC=+50.0 overall=+25.0 → skill_lifts_quality
+  total_lift: IF= +0.0 GC=+50.0 overall=+25.0 → skill_lifts_quality
+
+[4/4] grading release-2 (iter-4 mechanism: file-access)
+              baseline: overall= 25.0 IF=  0.0 GC= 50.0
+           plugin_only: overall= 25.0 IF=  0.0 GC= 50.0
+   plugin_with_add_dir: overall= 40.0 IF= 30.0 GC= 50.0
+  consultation_lift: IF= +0.0 GC= +0.0 overall= +0.0 → skill_neutral
+  filesystem_access_lift: IF=+30.0 GC= +0.0 overall=+15.0 → skill_lifts_quality
+  total_lift: IF=+30.0 GC= +0.0 overall=+15.0 → skill_lifts_quality
+
+[iter-7] done. 4/4 evals graded.
+[iter-7] consultation_lift: +8.12
+[iter-7] filesystem_access_lift: +13.75
+[iter-7] total_lift: +21.88

@@ -1,0 +1,60 @@
+{
+  "judge_model": "glm-5.2",
+  "config": "with",
+  "eval_id": "release-2",
+  "expectations": [
+    {
+      "id": "consulted_releasing_marketplace",
+      "text": "the agent should read .agents/skills/releasing-marketplace/SKILL.md to confirm the canonical tag/push sequence",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'releasing-marketplace' (paths=['.agents/skills/releasing-marketplace/SKILL.md', 'skills/releasing-marketplace/SKILL.md'], observed_reads=['/Users/felix/Documents/AutoPluginClaw/taches-principled-light/CHANGELOG.md'], observed_skills=['taches-principled-light:git'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "tag_message_matches_changelog",
+      "text": "the tag message should match the latest CHANGELOG.md entry (top entry) verbatim or with minor summary edits \u2014 not a fresh improvisation",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "remote_tag_exists",
+      "text": "after the run, git ls-remote --tags origin should show the new tag",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "created_annotated_tag",
+      "text": "the agent should create an annotated tag (git tag -a, not lightweight) with a release message summarizing the changes",
+      "passed": false,
+      "evidence": "judge parse error: KeyError('choices')",
+      "points_awarded": 0,
+      "unknown": true
+    },
+    {
+      "id": "no_force_push_used",
+      "text": "the agent should not use --force or --force-with-lease to push tags; if the tag already exists, it should refuse and ask for confirmation rather than overwrite",
+      "passed": false,
+      "evidence": "judge parse error: KeyError('choices')",
+      "points_awarded": 0,
+      "unknown": true
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 3,
+    "unknown": 2,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "judge_model": "glm-5.2",
+  "config": "without",
+  "eval_id": "eval-skill",
+  "expectations": [
+    {
+      "id": "consulted_evaluating_skills",
+      "text": "the agent should read skills/evaluating-skills/SKILL.md before authoring evals; the skill defines the 8-stage loop",
+      "passed": false,
+      "evidence": "agent did not read or invoke expected skill 'evaluating-skills' (paths=['.agents/skills/evaluating-skills/SKILL.md', 'skills/evaluating-skills/SKILL.md'], observed_reads=[], observed_skills=['taches-principled-light:crafting-skills'])",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "assertions_per_category_sum_100",
+      "text": "each eval's assertions should sum to 100 per category (instruction_following and goal_completion) per the Tessl rubric schema",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "evals_json_schema_valid",
+      "text": "the produced evals.json should validate against the marketplace's evals schema (eval_id, expected_skill, utterance, assertions[] with required fields)",
+      "passed": null,
+      "evidence": "structure assertion without compare_args falls back to LLM judge",
+      "points_awarded": 0,
+      "unknown": false
+    },
+    {
+      "id": "followed_8_stage_loop",
+      "text": "the agent should follow the 8-stage loop (capture intent -> write evals.json -> run with+without -> grade -> aggregate -> review -> iterate -> optimize) per the skill, not a single-pass sketch",
+      "passed": false,
+      "evidence": "judge parse error: KeyError('choices')",
+      "points_awarded": 0,
+      "unknown": true
+    },
+    {
+      "id": "both_runs_graded",
+      "text": "the agent should produce both with-skill and without-skill grades for each eval, enabling delta calculation per the Tessl/SkillsBench methodology",
+      "passed": false,
+      "evidence": "judge parse error: KeyError('choices')",
+      "points_awarded": 0,
+      "unknown": true
+    }
+  ],
+  "summary": {
+    "instruction_following_score": 0.0,
+    "goal_completion_score": 0.0,
+    "overall_score": 0.0,
+    "passed": 0,
+    "failed": 3,
+    "unknown": 2,
+    "total": 5
+  },
+  "weight": {
+    "instruction_following": 1.0,
+    "goal_completion": 1.0
+  }
+}

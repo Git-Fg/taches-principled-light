@@ -1,0 +1,6 @@
+cmd: /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3/scripts/grader.py --assertions /Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-3/assertions/release-2.json --transcript /Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-6/eval-release-2/plugin_with_add_dir_skill.jsonl --eval-dir /Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-6/eval-release-2 --config with --judge-model glm-5.2
+returncode: 0
+--- stdout ---
+[grader] /Users/felix/Documents/AutoPluginClaw/taches-principled-light/docs/principled/skill-evals/marketplace-routing-2026-06-22/iteration-6/eval-release-2/grading_with_skill.json: overall=0.0 IF=0.0 GC=0.0 P/F/U=0/3/2
+
+--- stderr ---

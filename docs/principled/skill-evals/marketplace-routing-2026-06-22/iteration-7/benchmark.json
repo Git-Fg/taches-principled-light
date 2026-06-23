@@ -1,0 +1,275 @@
+{
+  "iteration": 7,
+  "phase": "A",
+  "scope": "4 of 4 evals (4-eval subset)",
+  "judge_model": "sonnet",
+  "solver_model": "haiku",
+  "cache_state": "fresh (cleared 2026-06-23)",
+  "harness_design": {
+    "configs": {
+      "baseline": "--disable-slash-commands --add-dir /tmp/empty",
+      "plugin_only": "(default plugin) --add-dir /tmp/empty",
+      "plugin_with_add_dir": "(default plugin) --add-dir REPO"
+    },
+    "rationale": "iter-4 baseline contamination finding: --add-dir only controls filesystem access, not plugin auto-load. --disable-slash-commands gives a true no-plugin baseline."
+  },
+  "results": [
+    {
+      "eval_id": "eval-skill",
+      "iter4_mechanism": "consultation",
+      "expected_skill": "evaluating-skills",
+      "baseline": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_only": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_with_add_dir": {
+        "overall_score": 15.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 0.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "lifts": {
+        "consultation_lift": {
+          "instruction_following_delta": 0.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 0.0,
+          "verdict": "skill_neutral"
+        },
+        "filesystem_access_lift": {
+          "instruction_following_delta": 30.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 15.0,
+          "verdict": "skill_lifts_quality"
+        },
+        "total_lift": {
+          "instruction_following_delta": 30.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 15.0,
+          "verdict": "skill_lifts_quality"
+        }
+      }
+    },
+    {
+      "eval_id": "sec-audit",
+      "iter4_mechanism": "consultation",
+      "expected_skill": "security",
+      "baseline": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_only": {
+        "overall_score": 32.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 0.0,
+        "passed": 2,
+        "failed": 3,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_with_add_dir": {
+        "overall_score": 32.5,
+        "instruction_following_score": 65.0,
+        "goal_completion_score": 0.0,
+        "passed": 2,
+        "failed": 2,
+        "unknown": 1,
+        "total": 5
+      },
+      "lifts": {
+        "consultation_lift": {
+          "instruction_following_delta": 65.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 32.5,
+          "verdict": "skill_lifts_quality"
+        },
+        "filesystem_access_lift": {
+          "instruction_following_delta": 0.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 0.0,
+          "verdict": "skill_neutral"
+        },
+        "total_lift": {
+          "instruction_following_delta": 65.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 32.5,
+          "verdict": "skill_lifts_quality"
+        }
+      }
+    },
+    {
+      "eval_id": "lint-1",
+      "iter4_mechanism": "file-access",
+      "expected_skill": "marketplace-validator",
+      "baseline": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_only": {
+        "overall_score": 0.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 0.0,
+        "passed": 0,
+        "failed": 5,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_with_add_dir": {
+        "overall_score": 25.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 50.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "lifts": {
+        "consultation_lift": {
+          "instruction_following_delta": 0.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 0.0,
+          "verdict": "skill_neutral"
+        },
+        "filesystem_access_lift": {
+          "instruction_following_delta": 0.0,
+          "goal_completion_delta": 50.0,
+          "overall_delta": 25.0,
+          "verdict": "skill_lifts_quality"
+        },
+        "total_lift": {
+          "instruction_following_delta": 0.0,
+          "goal_completion_delta": 50.0,
+          "overall_delta": 25.0,
+          "verdict": "skill_lifts_quality"
+        }
+      }
+    },
+    {
+      "eval_id": "release-2",
+      "iter4_mechanism": "file-access",
+      "expected_skill": "releasing-marketplace",
+      "baseline": {
+        "overall_score": 25.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 50.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_only": {
+        "overall_score": 25.0,
+        "instruction_following_score": 0.0,
+        "goal_completion_score": 50.0,
+        "passed": 1,
+        "failed": 4,
+        "unknown": 0,
+        "total": 5
+      },
+      "plugin_with_add_dir": {
+        "overall_score": 40.0,
+        "instruction_following_score": 30.0,
+        "goal_completion_score": 50.0,
+        "passed": 2,
+        "failed": 3,
+        "unknown": 0,
+        "total": 5
+      },
+      "lifts": {
+        "consultation_lift": {
+          "instruction_following_delta": 0.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 0.0,
+          "verdict": "skill_neutral"
+        },
+        "filesystem_access_lift": {
+          "instruction_following_delta": 30.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 15.0,
+          "verdict": "skill_lifts_quality"
+        },
+        "total_lift": {
+          "instruction_following_delta": 30.0,
+          "goal_completion_delta": 0.0,
+          "overall_delta": 15.0,
+          "verdict": "skill_lifts_quality"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total_evals": 4,
+    "consultation_lift": {
+      "mean_instruction_following_delta": 16.25,
+      "mean_goal_completion_delta": 0.0,
+      "mean_overall_delta": 8.12
+    },
+    "filesystem_access_lift": {
+      "mean_instruction_following_delta": 15.0,
+      "mean_goal_completion_delta": 12.5,
+      "mean_overall_delta": 13.75
+    },
+    "total_lift": {
+      "mean_instruction_following_delta": 31.25,
+      "mean_goal_completion_delta": 12.5,
+      "mean_overall_delta": 21.88
+    },
+    "verdict_distribution": {
+      "consultation_lift": {
+        "skill_neutral": 3,
+        "skill_lifts_quality": 1
+      },
+      "filesystem_access_lift": {
+        "skill_lifts_quality": 3,
+        "skill_neutral": 1
+      },
+      "total_lift": {
+        "skill_lifts_quality": 4
+      }
+    },
+    "per_mechanism_consult_lift": {
+      "consultation": 16.25,
+      "file-access": 0.0
+    },
+    "per_mechanism_total_lift": {
+      "consultation": 23.75,
+      "file-access": 20.0
+    }
+  },
+  "iter4_reference": {
+    "mean_overall_delta": 4.94,
+    "verdict_distribution": {
+      "skill_lifts_quality": 5,
+      "skill_neutral": 13,
+      "skill_hurts": 0
+    },
+    "caveat": "iter-4 measured FILESYSTEM ACCESS lift only (plugin_only -> plugin_with_add_dir), NOT the total lift vs no-plugin baseline."
+  },
+  "notes": "Phase A: 3-config harness to resolve the 2026-06-23 baseline contamination finding. Reuses iter-4 transcripts for the 2 non-baseline configs (the relabeling is bit-for-bit the same). Generates fresh baseline runs only (4 runs \u2248 20 min)."
+}

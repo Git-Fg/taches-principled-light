@@ -33,7 +33,7 @@ Produce a finalized repo where:
 2. The active tree contains **no** eval artifacts (no raw transcripts, no grading JSONs, no harness scripts, no eval task definitions, no per-eval directories, no logs, no eval JSONL files, no eval-regression CI).
 3. The active tree contains **no** risky/personal information (no private IPs, no real model names, no vendor aliases, no proxy URLs, no `circuit_breaker_open` strings).
 4. The `iteration-8-PLAN.md` and `iter-8 design supplements` notes remain as forward-looking design notes, scrubbed of proxy-specific and model-specific identifiers.
-5. The repo can still pass `marketplace-health` and the release-gate contract is documented in CHANGELOG and the retrospective.
+5. The repo can still pass `marketplace-health` and the release-gate contract is documented in CHANGELOG and the retrospective. Per AGENTS.md "Project Closure Convention," v0.0.8's durable closure marker is a `CHANGELOG.md [0.0.8]` entry + the v0.0.8 release tag. No `SUMMARY.md` is required for this documentation-only release.
 
 ## Non-Goals
 
@@ -135,12 +135,12 @@ The following risky strings are replaced consistently across all retained files.
 | Risky string pattern | Replacement | Notes |
 |---|---|---|
 | `MiniMax-M3` | `the configured backend` | Narrative + config files |
-| `http://100.80.231.128:3456` | `<private inference gateway>` or removed | Comment strings and MANIFEST URLs |
+| `http://100.80.231.128:3456` | `<private inference gateway>` | In code/config: `<private inference gateway>`. In narrative: remove the URL entirely. |
 | `claude-haiku-4-5-20251001` | `<solver tier alias>` | MANIFEST, REPORTs (now deleted) |
 | `nex-agi/nex-n2-pro:free` | `<vendor alias>` | iter-6 REPORT (deleted) |
-| `qwen`, `llama`, `gpt-4o`, `gemini-*`, `deepseek-*`, `mistral-*`, `claude-3*`, `doubao`, `kimi`, `minimax`, `phi-4`, `mixtral`, `command-r`, `jamba`, `cerebras`, `fireworks`, `deepinfra` | `<vendor alias>` or removed | iter-6 REPORT (deleted) |
+| `qwen`, `llama`, `gpt-4o`, `gemini-*`, `deepseek-*`, `mistral-*`, `claude-3*`, `doubao`, `kimi`, `minimax`, `phi-4`, `mixtral`, `command-r`, `jamba`, `cerebras`, `fireworks`, `deepinfra` | `<vendor alias>` | iter-6 REPORT (deleted) — these all mapped to the same backend; in the retrospective, replace the full list with the phrase `<vendor alias>` (or, where brevity matters, with the count "18+ tier aliases"). |
 | `circuit_breaker_open: RateLimit` | `rate-limited` | iter-6 REPORT (deleted), RETROSPECTIVE, CHANGELOG |
-| `haiku solver` (in eval context) | `the configured solver` | README, CHANGELOG, INDEX, REPORTs |
+| `haiku solver` | `the configured solver` | In eval-context (README's "haiku solver" eval summary line, CHANGELOG, INDEX, REPORTs) replace. In skills-reference context (`skills/crafting-skills/references/frontmatter-complete.md:154` lists `sonnet, opus, haiku` as Claude Code model ID values) **KEEP** — that is a Claude Code CLI reference, not an eval-iteration reference. |
 | `bda20918d4b7d0b7245bd12b59b09e58` | KEEP | iter-7 REPORT (deleted), RETROSPECTIVE — hash, not risky |
 | `+21.88pp`, `+8.12pp`, `+13.75pp`, `+17.5pp`, `+4.94pp`, `+4.37pp` | KEEP | Numbers are findings |
 | `--disable-slash-commands`, `--add-dir`, `--mcp-config`, `--bare` | KEEP | CLI flags, not risky |
@@ -200,6 +200,13 @@ Aggressive consolidation of the iteration-phase documentation surface. The retro
 - `docs/principled/research/vendor-disjoint-grader-mock-2026-06-23.md`
 - All references to: `MiniMax-M3`, `http://100.80.231.128:3456`, `claude-haiku-4-5-20251001`, `nex-agi/nex-n2-pro:free`, `circuit_breaker_open: RateLimit`, and 17 other vendor aliases
 
+### Fixed
+- Private Tailscale IP `100.80.231.128:3456` no longer in active tree
+- Real backend model name `MiniMax-M3` no longer in active tree
+- 18+ vendor aliases no longer in active tree
+- 2.3 MB of eval artifacts no longer shipped in the public repo
+- `iter-7/benchmark.json` dependency on the private proxy removed
+
 ### Verified
 - `marketplace-health`: pass (validator 0/87)
 - `git grep` for risky patterns: 0 matches in active tree
@@ -210,9 +217,12 @@ Aggressive consolidation of the iteration-phase documentation surface. The retro
 
 If v0.0.8 needs to be reverted, the v0.0.7 release tag and the closure archive at `docs/principled/attic/2026-06-23-closure/` preserve the iteration phase. Note: v0.0.8 is a documentation-only change; reverting it reverts no behavioral contracts. The v0.0.7 CHANGELOG entry can be un-scrubbed from git history if needed.
 
-## Open Questions (resolved)
+## Resolved Design Decisions
 
 - **What about `.github/RELEASE-v0.0.6.md` (historical)?** → Scrubbed. Reasoning: the user's directive removes risky info from the repo, not just from current docs. Even historical release notes that still ship in the public repo should be sanitized.
 - **What about the `evaluating-skills` skill itself?** → Kept. It is a marketplace *capability*, not an eval *artifact*. Removing it would remove a shipped product feature.
 - **What about the bit-identical transcript md5 `bda20918d4b7d0b7245bd12b59b09e58`?** → Kept. It is a SHA256-style hash, not risky, and it is the canonical evidence for the grader-non-determinism finding.
-- **What about the v0.0.7 closure archive at `docs/principled/attic/2026-06-23-closure/`?** → Not modified. Per AGENTS.md "Project Closure Convention" the archive is the historical record and is immutable.
+- **What about the v0.0.7 closure archive at `docs/principled/attic/2026-06-23-closure/`?** → Not modified. Per AGENTS.md "Project Closure Convention" the archive is the historical record and is immutable. v0.0.8 follows the same closure convention: CHANGELOG `[0.0.8]` entry + v0.0.8 tag are the durable closure markers; no `SUMMARY.md` is required for a documentation-only release.
+- **What about `skills/crafting-skills/references/frontmatter-complete.md` reference to `sonnet, opus, haiku`?** → Kept. That reference documents the Claude Code CLI model ID format. It is not an eval-iteration reference and does not name the marketplace's configured backend.
+- **What about the `100.80.231.128` reference in `baselines/MANIFEST.json`?** → Whole `baselines/` directory is deleted; no scrub needed.
+- **What if the marketplace-health report flags a post-cleanup issue?** → Fix inline. The cleanup must pass `validator=0/87`; if any validator fails, the cleanup is incomplete.

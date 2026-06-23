@@ -15,7 +15,7 @@ Route to the right design sub-skill based on user intent.
 
 ## Hub Contract (cross-agent compatibility)
 
-This file is a **router** that documents a recommended workflow order; the file itself is not a workflow to execute. Each of the 5 sub-skills below is a self-contained, independently-discoverable skill per the [Agent Skills open standard](https://agentskills.io/). Recursive agents (Claude Code, Cursor, Codex, Gemini CLI, VS Code) see all 6 skills in their startup index and route directly to the right leaf — they don't need this body. The hub exists for non-recursive agents and humans that want the routing table and companion-skill links in one place.
+This file is a **router** that documents a recommended workflow order; the file itself is not a workflow to execute. Each of the 5 sub-skills below is a self-contained, independently-discoverable skill per the [Agent Skills open standard](https://agentskills.io/), with a `Do NOT use for X (use Y)` clause in its description that disambiguates it from sibling leaves. Recursive agents (Claude Code, Cursor, Codex, Gemini CLI, VS Code) see all 6 skills in their startup index and route directly to the right leaf — they don't need this body. The hub exists for non-recursive agents and humans that want the routing table and companion-skill links in one place.
 
 ## Workflow Order
 

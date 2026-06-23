@@ -17,7 +17,7 @@ The headline is **direction-robust** (4/4 evals positive) but **magnitude-noisy*
 Three structural findings emerged that the rest of this retrospective explains:
 
 1. **Baseline contamination** (iter-4.1, 2026-06-23): `--add-dir /tmp/empty` does not prevent marketplace plugin auto-load. The "without_skill" baseline in iter-3 and iter-4 is contaminated. The true no-plugin baseline requires `--disable-slash-commands`. iter-4's headline of +4.94pp is the **filesystem_access lift only**, not the total.
-2. **Proxy is single-model** (iter-6, 2026-06-23): the inference-gateway at `100.80.231.128:3456` serves all 18+ advertised aliases (haiku, sonnet, opus, nex-agi, gpt-4o, gemini, etc.) from a single `MiniMax-M3` backend. The only genuinely vendor-disjoint option, `glm-5.2`, is rate-limited (HTTP 503 `circuit_breaker_open: RateLimit`). Vendor-disjoint validation is **structurally blocked** on this proxy.
+2. **Proxy is single-model** (iter-6, 2026-06-23): the inference-gateway serves all 18+ advertised aliases (the configured solver tier aliases plus 16+ external-vendor aliases) from a single backend. The only genuinely vendor-disjoint option is an external judge vendor, and that option is rate-limited on the public endpoint. Vendor-disjoint validation is **structurally blocked** on this proxy.
 3. **Grader non-determinism** (iter-7 + GRADER-NOISE-INVESTIGATION, 2026-06-23): the sec-audit `plugin_only` cell produced grade 15.0 in iter-4 and 32.5 in iter-7 on a bit-for-bit identical transcript (md5 `bda20918d4b7d0b7245bd12b59b09e58`). `temperature=0` does **not** make the model deterministic (reasoning-model floating-point, batch composition, or proxy-internal sampling). The +21.88pp headline is robust because the dominant component (filesystem_access_lift = +13.75pp) is on **deterministic endpoint grades**.
 
 The iteration phase is **closed** at v0.0.7. Future work is captured in iter-8 (mock-based vendor-disjoint + deterministic grader + multi-run averaging) and the broader v0.0.6+ roadmap (LiteLLM multi-model gateway, heterogeneous judge matrix, SkillsBench/SoK alignment).
@@ -52,11 +52,11 @@ No new runs. Inspection of the iter-4 `without_skill.jsonl` transcript for `craf
 
 ### iter-5 (2026-06-23) — N=11 reliability, **deferred**
 
-Designed to measure intra-rater noise at N=11 trials per (eval, config) per Yagubyan 2026. **Deferred for two reasons**: (a) iter-7 already lifts 4/4 with 0 hurts, so the directional finding is robust without N=11; (b) the proxy is structurally single-model, so N=11 same-vendor would characterize intra-rater noise but not vendor-disjoint noise. Re-evaluate when the proxy gets a working non-MiniMax-M3 judge available.
+Designed to measure intra-rater noise at N=11 trials per (eval, config) per Yagubyan 2026. **Deferred for two reasons**: (a) iter-7 already lifts 4/4 with 0 hurts, so the directional finding is robust without N=11; (b) the proxy is structurally single-model, so N=11 same-vendor would characterize intra-rater noise but not vendor-disjoint noise. Re-evaluate when a vendor-disjoint judge becomes available.
 
 ### iter-6 (2026-06-23) — Code-only lift decomposition (proxy architecture finding)
 
-Reused iter-7's 4-eval transcripts and re-graded with `--judge-model glm-5.2` (vendor-disjoint per CoEval 2026). **Every model-based assertion hit the glm-5.2 503** (`circuit_breaker_open: RateLimit`) and returned 0. So iter-6 is effectively a **code-only grade** — only the deterministic consultation + structure-with-compare_args assertions scored. Result: **+7.5pp mean code-only lift** across 4 evals (3 lifts / 1 zero / 0 hurts). The +14.4pp gap from iter-7's +21.88pp is the LLM-judgment contribution. iter-6 also surfaced the **proxy architecture finding**: the proxy serves all 18+ advertised aliases from `MiniMax-M3`; only `glm-5.2` is vendor-disjoint and is rate-limited.
+Reused iter-7's 4-eval transcripts and re-graded with `--judge-model <external judge>` (vendor-disjoint per CoEval 2026). **Every model-based assertion hit the external judge endpoint 503** (`rate-limited`) and returned 0. So iter-6 is effectively a **code-only grade** — only the deterministic consultation + structure-with-compare_args assertions scored. Result: **+7.5pp mean code-only lift** across 4 evals (3 lifts / 1 zero / 0 hurts). The +14.4pp gap from iter-7's +21.88pp is the LLM-judgment contribution. iter-6 also surfaced the **proxy architecture finding**: the proxy serves all 18+ advertised aliases from the configured backend; the external judge is vendor-disjoint and is rate-limited.
 
 ### iter-7 (2026-06-23) — Three-config lift disambiguation, **CANONICAL**
 
@@ -64,9 +64,29 @@ The corrected headline measurement. Used `--disable-slash-commands` for the true
 
 ### iter-8 (2026-06-23) — Designed, not yet run
 
-Designed but not executed. Three sub-experiments to close the two open follow-ups: (8A) mock-based vendor-disjoint validation via `zerob13/mock-openai-api`; (8B) grader-noise root-cause for the sec-audit +17.5pp swing; (8C) N=11 multi-run averaging. Wall time budget: ~3 hours parallel. See `iteration-8-PLAN.md`.
+Designed but not executed. Three sub-experiments to close the two open follow-ups: (8A) mock-based vendor-disjoint validation via a local mock grader; (8B) grader-noise root-cause for the sec-audit +17.5pp swing; (8C) N=11 multi-run averaging. Wall time budget: ~3 hours parallel. See `iteration-8-PLAN.md`.
 
 ---
+
+## 2.5 Standalone summaries (TL;DR for the deleted findings-docs)
+
+The following four one-paragraph summaries condense the unique content of the findings-docs that were subsumed into this retrospective. The full evidence trail is in the v0.0.7 closure archive at `docs/principled/attic/2026-06-23-closure/skill-evals/`.
+
+### 2.5.1 Proxy architecture (subsumes iter-6 REPORT § "Headline finding: proxy architecture")
+
+The configured backend is a **single-model gateway**: all 18+ advertised tier aliases (the configured solver tier aliases plus 16+ external-vendor aliases) silently route to the same configured backend. The only genuinely vendor-disjoint option is an external judge vendor, and that option is **rate-limited** on the public endpoint. Same-family bias is therefore real but unmitigable on this proxy. The iter-7 +21.88pp headline is **conservative** (a single-model judge cannot apply self-bias), but same-family bias is plausible and unquantified.
+
+### 2.5.2 Grader non-determinism (subsumes iter-7 GRADER-NOISE-INVESTIGATION)
+
+The same `sec-audit` transcript md5 `bda20918d4b7d0b7245bd12b59b09e58` graded 15.0 in iter-4 and 32.5 in iter-7 by the same judge on bit-for-bit identical input — a +17.5pp swing on a deterministic input. Root cause: the grader does not set `temperature`; the configured backend's reasoning model is non-deterministic at any temperature (floating-point arithmetic, kernel scheduling, batch composition, or proxy-internal sampling). Mitigation: median-of-N grading. The +21.88pp iter-7 headline is still robust because the dominant +13.75pp filesystem_access_lift is on endpoint-deterministic assertions (3 of 3 evals deterministic).
+
+### 2.5.3 SKILL discovery architecture (subsumes SKILL-DISCOVERY-ARCHITECTURE)
+
+The marketplace plugin auto-loads its skills into the agent's `slash_commands` globally, regardless of `--add-dir`. The only CLI flag that prevents auto-load is `--disable-slash-commands`. The 4-bucket routing taxonomy is: **A1** proxy errors (proxy 503s), **A2** partial discovery (some skills surfaced), **A3** true discovery failures (zero skills invoked — a routing-heuristic failure upstream of description quality), **A4** baseline (no-skill config). Marketplace can only mitigate A3 through anti-shadowing markers in descriptions, not eliminate it. H1 (plugin shadowing) is the dominant cause of A3; H2 (description surface) and H3 (choice paralysis from 26+ skills) are secondary.
+
+### 2.5.4 Routing-vs-validator distinction (subsumes methodology-note)
+
+This is a **behavioral evaluation** (measuring agent routing behavior in real eval runs), not a static validator run (checking skill outputs against expected JSON). The two require different instrumentation: behavioral evals use stream-json transcripts and judge scoring; static validators use the marketplace-validator script. The marketplace-validator scripts are part of the marketplace itself; they are not the eval harness. iter-7's 3-config harness (baseline / plugin_only / plugin_with_add_dir) is the behavioral-eval design, and the iter-4 baseline contamination finding is what motivated extending the 2-config (with/without-skill) iter-3 harness to the 3-config iter-7 design.
 
 ## 3. Canonical findings (the durable record)
 
@@ -103,15 +123,15 @@ Source: `iteration-7/REPORT.md` § "The baseline contamination finding"; `SKILL-
 
 ### 3.3 The proxy architecture finding (iter-6)
 
-The inference-gateway at `http://100.80.231.128:3456` is a **single-model gateway**. All 18+ advertised aliases silently map to `MiniMax-M3`:
+The private inference gateway is a **single-model gateway**. All 18+ advertised aliases silently map to the configured backend:
 
-| Alias | Real backend | Status |
+| Alias class | Real backend | Status |
 |---|---|---|
-| `haiku`, `sonnet`, `opus`, `nex-agi/nex-n2-pro:free` | `MiniMax-M3` | working (silently aliased) |
-| `glm-5.2` | Z.AI (real) | **HTTP 503 `circuit_breaker_open: RateLimit`** |
-| `qwen`, `llama`, `gpt-4o`, `gemini`, `deepseek`, `mistral`, `claude-3*`, `doubao`, `kimi`, `minimax`, `phi-4`, `mixtral`, `command-r`, `jamba`, `cerebras`, `fireworks`, `deepinfra` | `MiniMax-M3` | silently aliased |
+| the configured solver tier aliases (sonnet, opus, etc.) | the configured backend | working (silently aliased) |
+| an external judge vendor (the one vendor-disjoint option) | an external judge vendor (real) | **rate-limited** on the public endpoint |
+| 16+ external-vendor aliases (commercial and open-source model families) | the configured backend | silently aliased |
 
-**Consequence:** every iter-4/iter-5/iter-7 grade is "haiku solver over MiniMax-M3, sonnet judge over MiniMax-M3." Same-family bias is real but unmitigable on this proxy. The +21.88pp number is therefore **conservative** (a single-model judge cannot apply Anthropic self-bias), but same-family bias is plausible and unquantified.
+**Consequence:** every iter-4/iter-5/iter-7 grade is "the configured solver over the configured backend, the configured judge over the configured backend." Same-family bias is real but unmitigable on this proxy. The +21.88pp number is therefore **conservative** (a single-model judge cannot apply self-bias), but same-family bias is plausible and unquantified.
 
 **Unblock:** LiteLLM multi-model gateway as the v0.0.6+ replacement proxy. See iter-8 design supplements § "LiteLLM multi-model gateway."
 
@@ -121,7 +141,7 @@ Source: `iteration-6/REPORT.md` § "Headline finding: proxy architecture."
 
 The same `sec-audit` transcript md5 `bda20918d4b7d0b7245bd12b59b09e58` (iter-4 `without_skill.jsonl` relabeled as iter-7 `plugin_only_skill.jsonl`) graded **15.0 in iter-4** and **32.5 in iter-7** by the same `sonnet` judge. Δ = +17.5pp on bit-identical input. Root cause: `grader.py` does not set `temperature`. The proxy uses its default sampling temperature.
 
-**Empirical test:** `temperature=0` does **not** make `MiniMax-M3` deterministic. 5 runs at default and 5 at `temperature=0` on a deterministic prompt produced 7, 4, 7, 3, 7 (default) and 3, 3, 7, 7, 5 (temp=0). Both distributions are stochastic. This is consistent with reasoning models exhibiting non-determinism at temp=0 due to floating-point arithmetic, kernel scheduling, batch composition, or proxy-internal sampling.
+**Empirical test:** `temperature=0` does **not** make the configured backend deterministic. 5 runs at default and 5 at `temperature=0` on a deterministic prompt produced 7, 4, 7, 3, 7 (default) and 3, 3, 7, 7, 5 (temp=0). Both distributions are stochastic. This is consistent with reasoning models exhibiting non-determinism at temp=0 due to floating-point arithmetic, kernel scheduling, batch composition, or proxy-internal sampling.
 
 **Why the headline is still robust:** the +21.88pp total_lift is dominated by the +13.75pp filesystem_access_lift (3 of 3 evals endpoint-deterministic). The consultation_lift contributes only +8.12pp and is bracketed at +4.37pp (if iter-4 grading was right) to +8.12pp (if iter-7 grading was right). Even at the lower bracket, **total_lift ≥ +18.12pp with 4/4 evals lifting**.
 
@@ -158,7 +178,7 @@ The same `sec-audit` transcript md5 `bda20918d4b7d0b7245bd12b59b09e58` (iter-4 `
 
 ### 4.2 `temperature=0` does not make reasoning models deterministic
 
-Empirically tested on `MiniMax-M3`. 5/5 at default and 5/5 at temp=0 both produced stochastic outputs on a "pick a digit 0-9" prompt. The cause is upstream of temperature: floating-point arithmetic, kernel scheduling, batch composition, or proxy-internal sampling. For grader robustness, prefer **multi-run averaging** (median-of-3 or median-of-11) over `temperature=0`. This is consistent with Norman/Rivera/Hughes 2026 ([arxiv:2606.19544](https://arxiv.org/abs/2606.19544)) finding κ deflation 33.8-41.2pp universal across 21 judges.
+Empirically tested on the configured backend. 5/5 at default and 5/5 at temp=0 both produced stochastic outputs on a "pick a digit 0-9" prompt. The cause is upstream of temperature: floating-point arithmetic, kernel scheduling, batch composition, or proxy-internal sampling. For grader robustness, prefer **multi-run averaging** (median-of-3 or median-of-11) over `temperature=0`. This is consistent with Norman/Rivera/Hughes 2026 ([arxiv:2606.19544](https://arxiv.org/abs/2606.19544)) finding κ deflation 33.8-41.2pp universal across 21 judges.
 
 ### 4.3 Bit-for-bit transcript identity does not guarantee identical grading
 
@@ -178,7 +198,7 @@ iter-3.1's H4 finding: 6 of 9 runs in the per-skill experiment invoked **zero sk
 
 ### 4.7 Lift direction is the publishable claim, not magnitude
 
-The robust claim across all 7 iterations is: **the marketplace produces a positive lift on every eval we measured in the consultation + file-access subset, with no observed hurts.** The exact +21.88pp number is one noisy realization. The directional claim (4/4 positive, 0 hurts) is robust to grader noise, to cache state, to proxy backend (any MiniMax-M3 variant), and to the `--add-dir` mechanism. Future releases can ship on direction; magnitude claims require N=11 (iter-8C).
+The robust claim across all 7 iterations is: **the marketplace produces a positive lift on every eval we measured in the consultation + file-access subset, with no observed hurts.** The exact +21.88pp number is one noisy realization. The directional claim (4/4 positive, 0 hurts) is robust to grader noise, to cache state, to proxy backend (any configured backend variant), and to the `--add-dir` mechanism. Future releases can ship on direction; magnitude claims require N=11 (iter-8C).
 
 ---
 
@@ -186,11 +206,11 @@ The robust claim across all 7 iterations is: **the marketplace produces a positi
 
 ### 5.1 iter-5 deferred (not blocking)
 
-Decision: do not run N=11 multi-trial at this time. Rationale: (a) iter-7 already lifts 4/4 with 0 hurts, so the directional finding is robust; (b) the proxy is structurally single-model, so N=11 same-vendor would characterize intra-rater noise but not vendor-disjoint noise. Re-evaluate when the proxy gets a working non-MiniMax-M3 judge available, or when the +21.88pp number is challenged in a release review.
+Decision: do not run N=11 multi-trial at this time. Rationale: (a) iter-7 already lifts 4/4 with 0 hurts, so the directional finding is robust; (b) the proxy is structurally single-model, so N=11 same-vendor would characterize intra-rater noise but not vendor-disjoint noise. Re-evaluate when a vendor-disjoint judge becomes available, or when the +21.88pp number is challenged in a release review.
 
 ### 5.2 iter-6 repurposed as code-only lift decomposition
 
-Decision: when glm-5.2 returned 503 for all 12 grading cells, treat the partial result as a **code-only lift decomposition** (consultation + structure-with-compare_args) rather than abandon the run. Rationale: the code-only grade is a clean lower bound on the true total lift. The +7.5pp code-only lift is the conservative number to cite when a working vendor-disjoint judge would need to be deployed. The +14.4pp gap from iter-7's +21.88pp is the LLM-judgment contribution that same-family bias could in principle suppress.
+Decision: when the external judge returned 503 for all 12 grading cells, treat the partial result as a **code-only lift decomposition** (consultation + structure-with-compare_args) rather than abandon the run. Rationale: the code-only grade is a clean lower bound on the true total lift. The +7.5pp code-only lift is the conservative number to cite when a working vendor-disjoint judge would need to be deployed. The +14.4pp gap from iter-7's +21.88pp is the LLM-judgment contribution that same-family bias could in principle suppress.
 
 ### 5.3 iter-7 reuses iter-4 transcripts (shutil.copy2, not re-run)
 
@@ -198,7 +218,7 @@ Decision: for `plugin_only` and `plugin_with_add_dir` configs, copy iter-4's tra
 
 ### 5.4 iter-8 mock-based, not real-proxy-based
 
-Decision: route the iter-7 harness through a local OpenAI-API-compatible mock grader (zerob13/mock-openai-api, B-grade) for iter-8A/8B/8C rather than waiting for a real vendor-disjoint proxy. Rationale: (a) the real proxy is structurally single-model; vendor-disjoint validation cannot run against it; (b) the mock gives vendor-disjoint semantics **for testing the grader harness** (not the model); (c) mock-based multi-run averaging (8C) costs ~3 hours vs the real proxy's 33 hours for N=11; (d) when the LiteLLM gateway is deployed (v0.0.6+), iter-8 results can be re-validated against the real vendor-disjoint judge.
+Decision: route the iter-7 harness through a local OpenAI-API-compatible mock grader (<mock grader>, B-grade) for iter-8A/8B/8C rather than waiting for a real vendor-disjoint proxy. Rationale: (a) the real proxy is structurally single-model; vendor-disjoint validation cannot run against it; (b) the mock gives vendor-disjoint semantics **for testing the grader harness** (not the model); (c) mock-based multi-run averaging (8C) costs ~3 hours vs the real proxy's 33 hours for N=11; (d) when the LiteLLM gateway is deployed (v0.0.6+), iter-8 results can be re-validated against the real vendor-disjoint judge.
 
 ### 5.5 The 4-eval subset is intentionally narrow
 
@@ -212,23 +232,23 @@ Decision: do not write a `SUMMARY.md` for the iteration phase closure. Rationale
 
 ## 6. Open follow-ups
 
-### 6.1 iter-8 (designed, not yet run)
+### 6.1 Methodology improvement program (iter-8 design, not yet run)
 
-Three sub-experiments, ~3 hours parallel wall time:
+Three sub-experiments target the iteration-phase's two open follow-ups, framed as a methodology improvement program rather than a proxy-specific fix:
 
-- **8A vendor-disjoint validation**: route iter-7's 4-eval subset through the mock configured to return haiku-shaped responses when called as `sonnet-judge` (simulating vendor-disjoint judge). Compare against iter-7's +21.88pp. Decision rule: if |iter-8A − iter-7| < 2pp, the iter-7 headline is robust to vendor-disjoint substitution. If the gap is > 5pp, iter-7 needs a vendor-disjoint re-run before next release.
-- **8B grader noise root-cause**: replay the sec-audit iter-7 grading against the mock 10 times. If mock replays give stddev < 0.5pp, the original 17.5pp swing is harness-side (grader.py state machine or evaluation criteria, not the model). If stddev > 0.5pp, the mock is non-deterministic and not safe for iter-8C.
-- **8C N=11 multi-run averaging**: 4 evals × 3 configs × 11 trials = 132 runs ≈ 2.5 hours. Isolates **agent-side variance** from **judge-side variance** (which the mock removes). Publishes per-eval CIs for the +21.88pp headline.
+- **8A mock-based vendor-disjoint validation**: route a 4-eval subset through a local OpenAI-API-compatible mock grader that returns canned responses per `(model_name, prompt_hash)`. This simulates vendor-disjoint judge semantics for testing the grader harness without requiring a second-model proxy. Decision rule: if |iter-8A − iter-7| < 2pp on `total_lift`, the iter-7 headline is robust to vendor-disjoint substitution. If the gap is > 5pp, iter-7 needs a vendor-disjoint re-run before the next release.
+- **8B grader-noise root-cause**: replay the sec-audit grading against the mock 10 times. If mock replays give stddev < 0.5pp, the original 17.5pp swing is harness-side (grader state machine or evaluation criteria, not the model). If stddev > 0.5pp, the mock is non-deterministic and not safe for 8C.
+- **8C N=11 multi-run averaging**: 4 evals × 3 configs × 11 trials = 132 runs. Isolates agent-side variance from judge-side variance (which the mock removes). Publishes per-eval CIs for the +21.88pp headline.
 
-Source: `iteration-8-PLAN.md`, plus the design supplements note in the closure archive (two-layer MCP stack for `secret_detection`, Claude Code CLI flag inventory, LiteLLM multi-model gateway).
+Wall time budget: ~3 hours parallel. Full design at `iteration-8-PLAN.md`; supplements at `docs/principled/research/2026-06-23-iter8-design-supplements.md` (MCP mocking for `secret_detection`, Claude Code CLI flag inventory, LiteLLM multi-model gateway for v0.0.6+).
 
 ### 6.2 LiteLLM multi-model gateway (v0.0.6+ prerequisite)
 
-The `100.80.231.128:3456` proxy is structurally single-model. iter-6 is structurally blocked until a vendor-disjoint proxy is available. The recommended replacement is **LiteLLM** (51,259 stars, native MCP + A2A, drop-in OpenAI compat, 8ms P95 at 1k RPS) deployed as a self-hosted multi-model gateway. When deployed, iter-6 can be re-run with a working glm-5.2 judge; the iter-7 +21.88pp headline can be re-validated against a true vendor-disjoint judge. Track as v0.0.6+ prerequisite.
+The private inference gateway proxy is structurally single-model. iter-6 is structurally blocked until a vendor-disjoint proxy is available. The recommended replacement is **LiteLLM** (51,259 stars, native MCP + A2A, drop-in OpenAI compat, 8ms P95 at 1k RPS) deployed as a self-hosted multi-model gateway. When deployed, iter-6 can be re-run with a working external judge; the iter-7 +21.88pp headline can be re-validated against a true vendor-disjoint judge. Track as v0.0.6+ prerequisite.
 
 ### 6.3 Heterogeneous judge matrix (iter-9)
 
-iter-4 used sonnet over haiku (heterogeneous but not vendor-disjoint). iter-7 reused iter-4's grading for time reasons. iter-9 should re-grade iter-7's transcripts with a **heterogeneous judge matrix** (sonnet / haiku / opus in rotation) to measure judge-side variance directly. This is independent of iter-8's mock-based approach and addresses the same-family bias concern from a different angle.
+iter-4 used a heterogeneous judge (a higher-tier alias over the configured solver). iter-7 reused iter-4's grading for time reasons. iter-9 should re-grade iter-7's transcripts with a **heterogeneous judge matrix** (3+ tier aliases in rotation) to measure judge-side variance directly. This is independent of iter-8's mock-based approach and addresses the same-family bias concern from a different angle.
 
 ### 6.4 SkillsBench / SoK alignment (v0.1.0 scope)
 
@@ -244,14 +264,10 @@ The Bucket A3 failures (ingest-1, ingest-2, lint-2, craft-create, craft-review) 
 
 ### Canonical (in active tree)
 
-- **This document** — `docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md`
-- **INDEX** — `docs/principled/skill-evals/INDEX.md` (the iteration timeline, per-row links to archived iters)
-- **iter-6 REPORT** — `marketplace-routing-2026-06-22/iteration-6/REPORT.md` (proxy architecture, code-only lift decomposition)
-- **iter-7 REPORT** — `marketplace-routing-2026-06-22/iteration-7/REPORT.md` (canonical headline, 3-config harness, baseline contamination)
-- **GRADER-NOISE-INVESTIGATION** — `marketplace-routing-2026-06-22/iteration-7/GRADER-NOISE-INVESTIGATION.md` (sec-audit +17.5pp swing root-cause)
-- **iter-8 PLAN** — `marketplace-routing-2026-06-22/iteration-8-PLAN.md` (3 sub-experiments, mock-based design)
-- **SKILL-DISCOVERY-ARCHITECTURE** — `marketplace-routing-2026-06-22/SKILL-DISCOVERY-ARCHITECTURE.md` v1.4 (how Claude Code actually loads skills, stale cache finding, plugin shadowing)
-- **methodology note** — `marketplace-routing-2026-06-22/methodology-note-routing-vs-validator.md` (validator word count vs routing-test word count divergence by design)
+- **This document** — `docs/principled/skill-evals/ITERATION-PHASE-RETROSPECTIVE.md` (sole narrative entry point)
+- **INDEX** — `docs/principled/skill-evals/INDEX.md` (pointer to the retrospective)
+- **iter-8 PLAN** — `marketplace-routing-2026-06-22/iteration-8-PLAN.md` (methodology improvement program: mock infrastructure, grader non-determinism root-cause, N=11 averaging)
+- **iter-8 design supplements** — `docs/principled/research/2026-06-23-iter8-design-supplements.md` (MCP mocking for `secret_detection`, Claude Code CLI flag inventory, LiteLLM multi-model gateway for v0.0.6+)
 
 ### Archived (in closure bundle, full audit trail)
 
@@ -284,8 +300,8 @@ Two independent 2026 studies bracket the +21.88pp number:
 ## 9. Known limitations (unchanged across v0.0.5/v0.0.6/v0.0.7)
 
 1. **sec-audit consultation_lift is non-deterministic** on the current judge. Mitigation in iter-8B. The directional finding is robust (4/4 evals lift, 0 hurts); the headline is dominated by deterministic filesystem_access_lift (+13.75pp mean).
-2. **Vendor-disjoint validation is structurally blocked** on the current `100.80.231.128:3456` proxy. iter-8A unblocks this via a local mock; v0.0.6+ LiteLLM deployment unblocks it for the real proxy.
-3. **Same-family judge bias is plausible but unquantified.** The proxy serves all aliases from `MiniMax-M3`; a vendor-disjoint judge could in principle suppress or amplify the LLM-judgment contribution. iter-8A's mock-based vendor-disjoint substitution is the test-harness simulation of this concern.
+2. **Vendor-disjoint validation is structurally blocked** on the current `<private inference gateway>` proxy. iter-8A unblocks this via a local mock; v0.0.6+ LiteLLM deployment unblocks it for the real proxy.
+3. **Same-family judge bias is plausible but unquantified.** The proxy serves all aliases from the configured backend; a vendor-disjoint judge could in principle suppress or amplify the LLM-judgment contribution. iter-8A's mock-based vendor-disjoint substitution is the test-harness simulation of this concern.
 4. **N=4 below Yagubyan 2026's N=11 reliability threshold.** iter-7 is a Phase A (proof-of-concept) run, not a final verdict on magnitude. Direction is robust; magnitude is one noisy realization. iter-8C will publish per-eval CIs.
 
 ---

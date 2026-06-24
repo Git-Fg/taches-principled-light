@@ -78,7 +78,26 @@ Use for: implementation, review, judgment, auditing, fixes.
 6. **Test with adversarial siblings.** For every description, generate one shadow skill that is topically similar but functionally distinct. If both descriptions match the same query set, your description is too vague — sharpen the boundary, do not add keywords. This is how `design-hub` failed: its router description matched the design domain broadly but the sub-skills were the actual trigger targets.
 7. **Measure, do not reason.** Build a 20-query eval set per skill (8–10 should-trigger, 8–10 near-miss should-not-trigger). Run 3 times minimum. Threshold 0.5 for should-trigger. Split 60/40 train/val to avoid overfitting the description to the eval set. Five iterations max; pick the description with the best validation pass rate, not the best train pass rate.
 
-**Trigger-stealing is the diagnostic failure mode.** When a new skill's description is too broad, it saps trigger rate from siblings. Detection: rerun the should-trigger eval set on every skill before and after adding a new one. If a sibling's trigger rate drops >10pp, the new skill is stealing — narrow its description or merge it into the sibling. Marketplace recall degrades past ~8 simultaneously-active skills per request, so the 8-skill ceiling is a per-session budget, not just a guideline.
+**Trigger-stealing is the diagnostic failure mode.** When a new skill's description is too broad, it saps trigger rate from siblings. Detection: rerun the should-trigger eval set on every skill before and after adding a new one. If a sibling's trigger rate drops >10pp, the new skill is stealing — narrow its description or merge it into the sibling.
+
+## Marketplace Scaling
+
+Routing quality degrades as the catalog grows. The constraint is **character-based, not count-based**: Claude Code's `skillListingBudgetFraction` defaults to 0.01 of context (8,000 chars at 200K). Per-skill name + description costs ~50 tokens; the budget caps a marketplace at **~16 skills at 500-char descriptions, ~40 at 200-char, ~80 at 100-char** — scale linearly with description length. (`skillListingBudgetFraction` and `skillListingMaxDescChars` are user-tunable overrides; `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var takes precedence.)
+
+| Catalog size | Symptom | Action |
+|---|---|---|
+| <50 skills | Progressive disclosure works as designed. | Continue adding; run the trigger-eval harness on each new description. |
+| 50–100 skills | Descriptions start getting silently truncated when any one skill approaches its 1,536-char cap, or when the cumulative listing exceeds the budget. Anthropic's `formatCommandsWithinBudget` falls back to "truncate" then "names-only" mode. | Tighten descriptions toward the 50-word soft target; split long skills into hub + on-demand references. |
+| 100–200 skills | Practical ceiling with default settings. Wrong-pick symptoms start appearing around 7–8 simultaneously-active skills per request (community observation, not a documented Anthropic cap). | Consolidate tightly-coupled clusters (Compendium Rule 2) or move to a tool-facade pattern: ~14 router skills that load on-demand sub-skills. |
+| >1,000 skills | Attention quality degrades continuously even with full body access — the agent starts making wrong picks on hand-eye-distinguishable cases. The curve does not plateau before catastrophic failure. | External routing required: semantic search over descriptions, or a trained reranker (SkillRouter-style). |
+
+**Three scaling patterns** that cover 50–80,000 skills without restructuring the skill format itself:
+
+1. **In-place tightening** (≤200 skills): keep the flat catalog, run SkillReducer-style compression to shorten descriptions ~48%, doubling the per-budget cap. Discipline cost: every addition must be re-evaluated.
+2. **Tool-facade hub** (~200–2,000 skills): collapse the catalog into ~14 router skills; each router loads on-demand sub-skills. Engineering cost: a registry layer + a routing policy per hub.
+3. **External retrieval** (≥2,000 skills): keep descriptions as a corpus, train or prompt a semantic-search index, return top-K descriptions at session start. Cost: an extra model call per turn; SkillRouter reports a 31–44pp Hit@1 drop if you remove the body, so the corpus alone is not enough.
+
+When the marketplace crosses 50 skills, choose which pattern fits before adding more — adding past the knee without a scaling plan turns description-tuning into a treadmill.
 
 ## Marketplace Maintenance (.agents/skills/)
 

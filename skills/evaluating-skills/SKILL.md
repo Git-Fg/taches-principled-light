@@ -109,7 +109,7 @@ You already have `with_skill.jsonl` and `without_skill.jsonl` (user-supplied, or
 
 ## OPTIMIZE Mode
 
-Improve the skill's `description` frontmatter for correct triggering.
+Improve the skill's `description` frontmatter for correct triggering. The numeric floors below (≥3 runs, 0.5 threshold, 60/40 train/val stratified, 10pp sibling-stealing threshold) come from **AGENTS.md → Description as Routing Signal → rule 7** and **rule 6** — do not loosen them.
 
 ### TRIGGER-EVAL PRE-STEP (scriptable, preferred)
 
@@ -132,7 +132,7 @@ If `trigger_rate_should.mean ≥ 0.5` AND `trigger_rate_should_not.mean ≤ 0.5`
 
 ### Body-iteration loop (behavioral)
 
-When trigger rate is acceptable, run the full behavioral trigger eval: write 20 trigger-eval queries (≈10 should-trigger, ≈10 should-not, weighted to *near-misses* not obvious negatives — see `references/behavioral-review.md` §trigger-evals). Then:
+Reuse the trigger-eval queries scaffolded in the TRIGGER-EVAL PRE-STEP above (do not re-author them). If the PRE-STEP was skipped because the runtime lacks transcript capture, scaffold an equivalent set inline (≈10 should-trigger, ≈10 should-not, weighted to *near-misses* not obvious negatives — see `references/behavioral-review.md` §trigger-evals). Then:
 
 1. For each query, run with-skill-available vs not, capture both transcripts.
 2. The reviewer subagent judges, per query: did the with-skill run behave as the skill intends, and did the without-skill run not? (Behavioral, not load-event.)
@@ -142,7 +142,7 @@ If the runtime can't be driven as a subprocess or can't capture transcripts, **s
 
 ### Sibling-stealing regression check
 
-When adding or modifying any skill in the catalog, run a `stealing` regression check on the before/after trigger-rate reports of every sibling in the same thematic cluster:
+When adding or modifying any skill in the catalog, run a `stealing` regression check on the before/after trigger-rate reports of every sibling in the same thematic cluster (**AGENTS.md → Description as Routing Signal → rule 6**):
 
 ```bash
 python scripts/trigger_eval.py stealing before.json after.json --threshold 0.10

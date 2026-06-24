@@ -40,7 +40,7 @@ PATTERNS: tuple[tuple[str, str], ...] = (
     # exists in intentional correction-history contexts (research notes
     # / CHANGELOG), which are in META prefixes.
     (
-        r"\bdefault raised from 1% to 2%\b",
+        r"\bdefault raised from 1% to 2%",
         "inverted-direction claim (default rose 1% to 2%; actual: lowered 2% to 1%)",
     ),
     # The original (now-superseded) Codex claim before the d18aef4 fix.
@@ -84,6 +84,9 @@ META_PREFIXES: tuple[str, ...] = (
 
 
 def is_meta(path: str) -> bool:
+    # Normalize path: strip leading ./ if present (find output format)
+    if path.startswith("./"):
+        path = path[2:]
     if path in META_FILES:
         return True
     return any(path.startswith(prefix) for prefix in META_PREFIXES)

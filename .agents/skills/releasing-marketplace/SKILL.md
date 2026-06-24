@@ -58,7 +58,7 @@ The `git rev-parse --show-toplevel` anchor removes the cwd-fragility of `Path.cw
 > - The commit diff touches `AGENTS.md` Marketplace Scaling (anywhere in the section, including the audit-trail paragraph)
 > - The commit diff touches the cross-platform table (any cell)
 > - The commit diff touches `skills/crafting-skills/references/context-management.md` (this doc ships to users via the plugin and historically propagated the same class of error)
-> - The commit diff touches any research note that establishes or modifies a version-anchored claim
+> - The commit diff touches any research note in `research/` that modifies a version-anchored claim in the Marketplace Scaling section or its tables
 >
 > **Minimal critic prompt:** *"Verify the changes against primary sources (Anthropic docs at `code.claude.com/docs/en/settings`, claudefa.st, anthropics/claude-code#64606). Specifically check for: (a) the v2.1.105 vs v2.1.129 distinction is preserved everywhere a Claude Code budget claim appears; (b) 'silently truncated' or 'silently dropped' framing has not been reintroduced; (c) the cross-platform table cells are mutually consistent; (d) the version reference in `context-management.md` line 79 matches the corrected 'silent AT v2.1.159; non-silent in post-v2.1.159 releases' framing. Report findings as HIGH/MEDIUM/LOW."*
 

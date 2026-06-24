@@ -2,9 +2,9 @@
 
 All notable changes to the taches-principled-light marketplace.
 
-## [Unreleased] — evaluating-skills trigger-eval harness — 2026-06-24
+## [0.1.0] — marketplace scaling + cross-platform research + evaluating-skills trigger-eval harness — 2026-06-24
 
-Description-quality eval harness for the `evaluating-skills` skill. Adds a scriptable, stdlib-only loop for the OPTIMIZE mode that was previously described inline-only. No new skills, no behavioral data change, no validator warning change.
+Description-quality eval harness for the `evaluating-skills` skill. Adds a scriptable, stdlib-only loop for the OPTIMIZE mode that was previously described inline-only. Major Marketplace Scaling section work: corrected Claude Code `skillListingBudgetFraction` default direction (1%, not 2%); added cross-platform comparison table (Claude Code, Cursor, Codex, MAF, kimi-code); codified 5-round critic-arc lessons into pre-commit safety nets. No new skills, no behavioral data change, no validator warning change.
 
 ### Added
 
@@ -71,6 +71,9 @@ Post-implementation self-critic pass + deep-research codification. 8 atomic fix 
 - `5e26e36` — fourth-critic follow-up: clears residual "since v2.1.129" framing that the third-critic propagation sweep missed in three places (AGENTS.md cross-platform table cell, cross-platform note snapshot line, cross-platform note line 42). Also reframes the research note's open-questions bullet (line 53) which directly contradicted the corrected timeline 28 lines above it.
 - `a39e334` — fifth-critic follow-up: fixes HIGH version-reference error in `skills/crafting-skills/references/context-management.md` line 79 ("no longer silent as of v2.1.159+" — wrong; bug #64606 was filed AT v2.1.159 documenting silent behavior; non-silent behavior came in post-v2.1.159 releases). Refines attribution parentheticals in AGENTS.md line 87 + cross-platform note line 29 to distinguish v2.1.105 (Anthropic docs source) from v2.1.129 (claudefa.st docs source). Adds "Source tension on the v2.1.105 vs v2.1.129 introduction date" section to the research note documenting the Anthropic-docs-vs-binary-analysis discrepancy. Removes accidentally-duplicated trailing sentence from research note line 53. Updates `document.md:53` upstream research to use the v2.1.105+ behavior-split framing consistent with the marketplace's canonical timeline. Refreshes verification report to document all 5 critic passes.
 - `5667490` — `feat`: codifies the 5-round critic arc lessons learned. Adds `scripts/check-stale-skill-fragments.py` (pre-commit hook scanning for 4 high-signal patterns the critic arc caught: "default raised from 1% to 2%", "no exclude config", "silent pre-v2.1.159", "5,440 chars"). Registers the new hook in `.pre-commit-config.yaml` alongside the existing `check-risky-strings` hook. Adds a high-risk-path recommendation blockquote to `.agents/skills/releasing-marketplace` Step 1 (spawn an independent subagent critic before any release cut that touches AGENTS.md Marketplace Scaling / cross-platform table / research notes / context-management.md). The hook immediately caught a residual "5,440 chars" reference in AGENTS.md line 127 — fixed inline in the same commit.
+- `d6283a6` — sixth-critic follow-up: fixes Pattern 1 regex bug in `check-stale-skill-fragments.py` (`\b` after `%` non-word char never matches; trailing `\b` removed). Narrows the `releasing-marketplace` Step 1 trigger condition 4 from "any research note that establishes or modifies a version-anchored claim" to "any research note in `research/` that modifies a version-anchored claim in the Marketplace Scaling section or its tables" (the original was too broad and could fire on typo fixes in unrelated research notes).
+- `73863cc` — CHANGELOG amendment for the `a39e334` and `5667490` commits.
+- `7604edc` — final-critic-residual follow-up: fixes 2 MEDIUM residuals the 6th-round self-critic caught. (1) `skills/crafting-skills/references/context-management.md` line 79: "silent at v2.1.159" → "silent in v2.1.159" (bug #64606 was filed *against* v2.1.159 documenting silent behavior; non-silent came in post-v2.1.159 releases — the phrasing matters because "at" vs "in" flips the meaning for readers tracking version semantics). (2) AGENTS.md line 124 cross-platform table cell: clarifies the recency+frequency protection limit ("protects actively-used skills up to ~50; past 50 the protection breaks down") to match the body text at line 102.
 
 ### Verified (post-fixes, 2026-06-24)
 
@@ -81,6 +84,9 @@ Post-implementation self-critic pass + deep-research codification. 8 atomic fix 
 - `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/` → `OK: 30 skills validated, no issues.`
 - `python3 .agents/skills/marketplace-health/scripts/health.py` → `HEALTH: pass (validator=0/0)`
 - `python3 scripts/check-risky-strings.py <modified-files>` → clean
+- `python3 scripts/check-stale-skill-fragments.py <modified-files>` → clean
+- Full active-tree sweep: `find . -name "*.md" -not -path "./.git/*" -not -path "./docs/principled/attic/*" -not -path "./docs/principled/specs/*" -not -path "./docs/superpowers/*" -not -path "./scripts/*" -not -path "./research/*" -not -path "./docs/principled/marketplace-health/*" | xargs python3 scripts/check-stale-skill-fragments.py` → exit 0
+- 6-round independent subagent self-critic arc converged. Final convergence verdict (5/6/7th critic passes): "Converged with minor residuals" → all residuals fixed.
 
 ## [0.0.9] — design-hub flatten (canonical flat-sibling layout) — 2026-06-23
 

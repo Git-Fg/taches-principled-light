@@ -1,6 +1,6 @@
 {
   "name": "taches-principled-light",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Specialist Cursor plugin — DDD, first-principles reasoning, structured agent-driven dev, Rust lifecycle, MCP expertise, git workflow, security audit, wiki management, session analytics, full task lifecycle, 5 design skills (palette, typography, principles, examples, PDF), and evaluating-skills. Pairs with superpowers for the complete development toolkit.",
   "author": { "name": "Felix" },
   "skills": "./skills/",

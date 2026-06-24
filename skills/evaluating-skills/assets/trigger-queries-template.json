@@ -1,0 +1,127 @@
+{
+  "skill_name": "example-skill",
+  "n_queries": 20,
+  "queries": [
+    {
+      "id": 1,
+      "query": "Replace this with a realistic, substantive prompt that should trigger the skill. Include a file path, context, and the kind of detail a real user would type. e.g. 'i have a python script at ./scripts/migrate.py that needs to convert the legacy JSON schema to the new one - fields are getting lost on the nested objects'",
+      "should_trigger": true,
+      "notes": "Realistic, substantive, near-miss territory. Should-trigger but not obvious — adjacent to a few other skills in the marketplace."
+    },
+    {
+      "id": 2,
+      "query": "",
+      "should_trigger": false,
+      "notes": "Should-NOT-trigger: a near-miss that shares keywords with the skill but is actually for a sibling. Fill in something like 'i just need to add a single line to my README' — adjacent but not for this skill."
+    },
+    {
+      "id": 3,
+      "query": "",
+      "should_trigger": true,
+      "notes": "Should-trigger: substantive, realistic, the kind of thing a real user types."
+    },
+    {
+      "id": 4,
+      "query": "",
+      "should_trigger": false,
+      "notes": "Should-NOT-trigger: near-miss for a sibling in the same thematic cluster."
+    },
+    {
+      "id": 5,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 6,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 7,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 8,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 9,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 10,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 11,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 12,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 13,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 14,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 15,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 16,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 17,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 18,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    },
+    {
+      "id": 19,
+      "query": "",
+      "should_trigger": true,
+      "notes": ""
+    },
+    {
+      "id": 20,
+      "query": "",
+      "should_trigger": false,
+      "notes": ""
+    }
+  ],
+  "_notes": "Fill in `query` for every entry; preserve `should_trigger`. 10 true / 10 false alternating. Per AGENTS.md Description-as-Routing-Signal rule 7: weighted to near-misses not obvious negatives. See references/trigger-eval-guide.md for query-writing discipline. After filling, run: python3 scripts/trigger_eval.py split trigger-queries.json train.json val.json --seed 42 to get a reproducible 60/40 train/val split."
+}

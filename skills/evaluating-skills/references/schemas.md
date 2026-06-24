@@ -150,6 +150,162 @@ Output from stage 5. Located at `<workspace>/iteration-N/benchmark.json`.
 
 ---
 
+## trigger_evals.json
+
+Declares the 20 trigger-eval queries for a skill's description. Sibling of `evals.json` but for the description-quality loop (OPTIMIZE mode) instead of the execution-quality loop (8-stage loop). Located at `<workspace>/trigger-eval/queries.json`. Use `assets/trigger-queries-template.json` as the skeleton, or scaffold via `python scripts/trigger_eval.py init --out queries.json`.
+
+```json
+{
+  "skill_name": "example-skill",
+  "n_queries": 20,
+  "queries": [
+    {
+      "id": 1,
+      "query": "Realistic, substantive prompt that should trigger the skill — include file paths, context, the kind of detail a real user types.",
+      "should_trigger": true,
+      "notes": "Optional annotation: what makes this a should-trigger?"
+    },
+    {
+      "id": 2,
+      "query": "Realistic, near-miss prompt that shares keywords with the skill but is for a sibling domain.",
+      "should_trigger": false,
+      "notes": "Optional annotation: what makes this a near-miss?"
+    }
+  ]
+}
+```
+
+**Fields:**
+- `skill_name`: Name matching the skill's frontmatter
+- `queries[].id`: Unique integer identifier
+- `queries[].query`: The prompt to test (must be realistic and substantive — see `references/trigger-eval-guide.md` §discipline)
+- `queries[].should_trigger`: `true` if the skill SHOULD trigger on this query; `false` if it should NOT
+- `queries[].notes`: Optional annotation; the script ignores it
+
+**Discipline** (per AGENTS.md Description-as-Routing-Signal rule 7 + `references/behavioral-review.md` §trigger-evals): 8–10 should-trigger, 8–10 should-not, weighted to *near-misses* not obvious negatives. Trivial one-step queries don't trigger any skill and are vacuous tests.
+
+---
+
+## results.jsonl
+
+Per-run trigger-detection results. One JSON object per line, emitted by the orchestrator as it runs the queries through the agent. Located at `<workspace>/trigger-eval/results.jsonl`.
+
+```json
+{"query_id": 1, "run_number": 1, "triggered": true,  "transcript": "/path/to/run.jsonl", "notes": ""}
+{"query_id": 1, "run_number": 2, "triggered": true,  "transcript": "/path/to/run.jsonl", "notes": ""}
+{"query_id": 1, "run_number": 3, "triggered": false, "transcript": "/path/to/run.jsonl", "notes": ""}
+{"query_id": 2, "run_number": 1, "triggered": false, "transcript": "/path/to/run.jsonl", "notes": ""}
+```
+
+**Fields:**
+- `query_id`: Matches `trigger_evals.json` query id
+- `run_number`: 1-based run index (≥3 per query for stable rate; AGENTS.md rule 7 floor)
+- `triggered`: `true` if `trigger_eval.py detect` returned exit 0; `false` if exit 1
+- `transcript`: Optional path to the raw transcript for forensic review
+- `notes`: Optional annotation (e.g. "judge was offline, fallback used")
+
+---
+
+## trigger-rate-report.json
+
+Aggregate output of `trigger_eval.py score`. Located at `<workspace>/trigger-eval/trigger-rate-report.json` (or wherever `--out-json` points).
+
+```json
+{
+  "metadata": {
+    "skill_name": "example-skill",
+    "timestamp": "2026-06-23T20:00:00Z",
+    "threshold": 0.5,
+    "n_queries": 20,
+    "n_results": 60
+  },
+  "per_query": [
+    {
+      "query_id": 1,
+      "should_trigger": true,
+      "runs": 3,
+      "trigger_count": 3,
+      "trigger_rate": 1.0,
+      "pass": true
+    },
+    {
+      "query_id": 2,
+      "should_trigger": false,
+      "runs": 3,
+      "trigger_count": 0,
+      "trigger_rate": 0.0,
+      "pass": true
+    }
+  ],
+  "aggregate": {
+    "trigger_rate_should":     { "mean": 0.85, "stddev": 0.10, "min": 0.50, "max": 1.00 },
+    "trigger_rate_should_not": { "mean": 0.10, "stddev": 0.08, "min": 0.00, "max": 0.30 },
+    "threshold_pass": true
+  },
+  "notes": [
+    "2 should-trigger queries below threshold (ids: 7, 13) — broaden the description."
+  ]
+}
+```
+
+**Fields:**
+- `metadata.skill_name`: Skill being evaluated
+- `metadata.threshold`: Pass threshold (default 0.5)
+- `metadata.n_results`: Total result lines consumed (should equal sum of `per_query[].runs`)
+- `per_query[].pass`: `true` if trigger_rate on the right side of threshold given `should_trigger`; `null` if no results
+- `aggregate.trigger_rate_should.mean`: Mean trigger rate across should-trigger queries
+- `aggregate.trigger_rate_should_not.mean`: Mean trigger rate across should-not queries
+- `aggregate.threshold_pass`: `true` if should-mean ≥ threshold AND should-not-mean ≤ (1 − threshold)
+
+---
+
+## stealing-alerts.json
+
+Output of `trigger_eval.py stealing`. Compares two trigger-rate reports (before vs after a skill change) and flags siblings whose should-trigger rate dropped by more than the threshold. Located at `<workspace>/trigger-eval/stealing-alerts.json`.
+
+```json
+{
+  "metadata": {
+    "timestamp": "2026-06-23T20:00:00Z",
+    "threshold": 0.10,
+    "before_path": "/path/to/before.json",
+    "after_path":  "/path/to/after.json"
+  },
+  "before_per_skill": {
+    "sibling-skill-a": 0.85,
+    "sibling-skill-b": 0.90
+  },
+  "after_per_skill": {
+    "sibling-skill-a": 0.85,
+    "sibling-skill-b": 0.65
+  },
+  "alerts": [
+    {
+      "skill_name": "sibling-skill-b",
+      "before": 0.90,
+      "after":  0.65,
+      "delta":  -0.25,
+      "pp_drop": 25.0,
+      "verdict": "STOLEN"
+    }
+  ],
+  "summary": {
+    "n_shared": 2,
+    "n_alerts": 1
+  }
+}
+```
+
+**Input format** (the `before` and `after` arguments): each input may be either a single-skill `trigger-rate-report.json` (has an `aggregate` block) OR a multi-skill aggregator report (a dict of `skill_name → trigger-rate-report`). The `per_skill_mean` helper detects which shape and extracts the `(skill_name, trigger_rate_should.mean)` pairs.
+
+**Fields:**
+- `before_per_skill` / `after_per_skill`: `skill_name → trigger_rate_should.mean` for every skill in the comparison
+- `alerts[].pp_drop`: Percentage-point drop (positive number = drop in trigger rate)
+- `alerts[].verdict`: `STOLEN` (the only verdict — every alert is a routing regression)
+- `summary.n_shared`: Number of skills present in both reports
+
+---
+
 ## history.json
 
 Tracks version progression across iterations. Located at workspace root.

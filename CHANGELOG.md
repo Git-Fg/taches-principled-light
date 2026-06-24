@@ -2,6 +2,43 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [Unreleased] — evaluating-skills trigger-eval harness — 2026-06-23
+
+Description-quality eval harness for the `evaluating-skills` skill. Adds a scriptable, stdlib-only loop for the OPTIMIZE mode that was previously described inline-only. No new skills, no behavioral data change, no validator warning change.
+
+### Added
+
+- **`scripts/trigger_eval.py`** (656 lines, stdlib only): five-subcommand CLI that codifies the AGENTS.md Description-as-Routing-Signal rules 6+7. Subcommands: `init` (scaffold 20-query set), `split` (stratified 60/40 train/val, ratio-preserving for imbalanced sets), `detect` (per-transcript trigger detection with per-runtime event-shape rules for claude/codex/kimi/reasonix/cursor; kimi uses prefix-anchored matching to avoid false positives on short skill names), `score` (per-query + aggregate trigger rate + threshold breach report; warns on orphan query_ids), `stealing` (sibling-stealing detector per the AGENTS.md >10pp rule; warns when the before/after skill sets differ).
+- **`assets/trigger-queries-template.json`**: 20-query skeleton (10 should-trigger, 10 should-not) with empty query text for human curation; structure enforces the agentskills.io discipline (realistic, near-miss not obvious, substantive).
+- **`assets/shadow-skill-scaffold.md`**: template for LLM-driven adversarial shadow-skill generation. Per AGENTS.md rule 6, the shadow should be topically similar to the target but functionally distinct; if the shadow matches the same queries as the target, the target's description is too vague.
+- **`references/trigger-eval-guide.md`**: author-side reference covering the 20-query discipline, the 60/40 / 3-runs / 0.5-threshold rationale, how to read the report, and the sibling-stealing regression check.
+- **`references/schemas.md`**: 4 new schemas documented — `trigger_evals.json` (input), `results.jsonl` (per-run results), `trigger-rate-report.json` (score output), `stealing-alerts.json` (sibling-stealing output).
+- **`SKILL.md` OPTIMIZE mode**: split into three sub-sections — TRIGGER-EVAL PRE-STEP (scriptable, preferred, references the new scripts), Body-iteration loop (behavioral, the original loop), Sibling-stealing regression check (cites the AGENTS.md >10pp rule).
+
+### Cross-references
+
+- AGENTS.md "Description as Routing Signal" rules 6 (adversarial siblings) + 7 (20-query eval set, 60/40 train/val, 3-runs floor, 0.5 threshold) — the new harness codifies these.
+- `crafting-skills` Compendium Rule 2 (tightly-coupled-cluster exception) — referenced from the sibling-stealing section; when stealing is detected, merge is a valid response.
+- `references/behavioral-review.md` §trigger-evals — the existing 3-paragraph query discipline is now the single-source-of-truth and the new guide cross-references it.
+- `references/runtime-adapters.md` — the per-runtime event shapes documented there are now implemented as `DETECTORS` in the script; the new guide cross-references both.
+
+### Verified (post-implementation)
+
+- `python3 scripts/trigger_eval.py init --out /tmp/test.json` → writes 20-entry file, 10 should-trigger / 10 should-not
+- `python3 scripts/trigger_eval.py split /tmp/test.json /tmp/train.json /tmp/val.json --seed 42` → both halves have 10/10 ratio preserved
+- `python3 scripts/trigger_eval.py detect <transcript> <name> --runtime claude` → exit 0/1 with JSON evidence on stdout
+- `python3 scripts/trigger_eval.py score <queries> <results> --threshold 0.5` → writes report.json + report.md
+- `python3 scripts/trigger_eval.py stealing before.json after.json --threshold 0.10` → flags synthetic >10pp drop
+- `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/` → `OK: 31 skills validated, no issues.`
+- `python3 .agents/skills/marketplace-health/scripts/health.py` → `HEALTH: pass (validator=0/0)`
+- `python3 scripts/check-risky-strings.py <new-files>` → clean
+
+### Out of scope (deferred)
+
+- LLM-driven shadow-skill generation — provided as a scaffold instead of an automated generator. A fully automated generator would need LLM API access and ratify-tooling discipline outside a stdlib script.
+- Cross-runtime transcript normalizer — `detect` handles the 5 supported runtimes' event shapes inline; a separate normalizer would duplicate `references/runtime-adapters.md` and is premature.
+- Auto-running trigger evals in CI — the trigger-eval loop is interactive (LLM-dependent at the score step), not a CI gate. `marketplace-health` remains the pre-release gate.
+
 ## [0.0.9] — design-hub flatten (canonical flat-sibling layout) — 2026-06-23
 
 Restructure release. No new skills, no behavioral data change, no validator warning change. The 5 design sub-skills (previously nested under `skills/design-hub/<name>/`) are promoted to flat top-level siblings at `skills/<name>/`, and the `design-hub` router `SKILL.md` is removed. This matches the canonical [agentskills.io (Dec 2025)](https://agentskills.io/specification) flat-directory pattern: one skill = one directory = one SKILL.md, with progressive disclosure through `scripts/`, `references/`, `assets/` *inside* each skill directory.

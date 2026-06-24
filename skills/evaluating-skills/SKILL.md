@@ -109,13 +109,46 @@ You already have `with_skill.jsonl` and `without_skill.jsonl` (user-supplied, or
 
 ## OPTIMIZE Mode
 
-Improve the skill's `description` frontmatter for correct triggering. Write 20 trigger-eval queries (≈10 should-trigger, ≈10 should-not, weighted to *near-misses* not obvious negatives — see `references/behavioral-review.md` §trigger-evals). Then:
+Improve the skill's `description` frontmatter for correct triggering.
+
+### TRIGGER-EVAL PRE-STEP (scriptable, preferred)
+
+Before iterating the description, scaffold a 20-query trigger-eval set (8–10 should-trigger, 8–10 should-not, weighted to *near-misses* not obvious negatives), split 60/40 train/val, and score it:
+
+```bash
+python scripts/trigger_eval.py init --out /tmp/queries.json --skill-name <name>
+# Fill in `query` for every entry, preserving should_trigger.
+python scripts/trigger_eval.py split /tmp/queries.json /tmp/train.json /tmp/val.json --seed 42
+# Run each query ≥3 times against the agent, capture the transcript, then:
+python scripts/trigger_eval.py detect <transcript.jsonl> <name> --runtime {claude,codex,kimi,reasonix,cursor}
+# Append {"query_id": N, "run_number": K, "triggered": bool} to results.jsonl
+# Train run (iterate the description using these failures):
+python scripts/trigger_eval.py score /tmp/train.json /tmp/results.jsonl --threshold 0.5 --out-json /tmp/train-report.json --out-md /tmp/train-report.md
+# Validation run (score best description on held-out val set):
+python scripts/trigger_eval.py score /tmp/val.json /tmp/results.jsonl --threshold 0.5 --out-json /tmp/val-report.json --out-md /tmp/val-report.md
+```
+
+If `trigger_rate_should.mean ≥ 0.5` AND `trigger_rate_should_not.mean ≤ 0.5` on the **validation** set, the description is fine — skip the iteration loop and run the body-iteration loop (next section) instead. Otherwise, iterate the description, re-score the train set to surface new failures, and re-validate on the val set. Cap at 5 iterations. The train/val split is mandatory — picking best by train score overfits to the train queries. See `references/trigger-eval-guide.md` for the full methodology, `assets/trigger-queries-template.json` for the skeleton, and `assets/shadow-skill-scaffold.md` for adversarial-shadow testing.
+
+### Body-iteration loop (behavioral)
+
+When trigger rate is acceptable, run the full behavioral trigger eval: write 20 trigger-eval queries (≈10 should-trigger, ≈10 should-not, weighted to *near-misses* not obvious negatives — see `references/behavioral-review.md` §trigger-evals). Then:
 
 1. For each query, run with-skill-available vs not, capture both transcripts.
 2. The reviewer subagent judges, per query: did the with-skill run behave as the skill intends, and did the without-skill run not? (Behavioral, not load-event.)
 3. Split 60/40 train/test (stratified by `should_trigger`). Use the train failures to propose description improvements via your editor LLM; re-evaluate on both; pick best by **held-out test** score (avoids overfitting). Cap at 5 iterations.
 
 If the runtime can't be driven as a subprocess or can't capture transcripts, **skip OPTIMIZE** — matching Anthropic's own Claude.ai guidance. Trigger quality then relies on `crafting-skills` OPTIMIZE mode + `skill-self-testing.md`'s grep-based check.
+
+### Sibling-stealing regression check
+
+When adding or modifying any skill in the catalog, run a `stealing` regression check on the before/after trigger-rate reports of every sibling in the same thematic cluster:
+
+```bash
+python scripts/trigger_eval.py stealing before.json after.json --threshold 0.10
+```
+
+A >10pp drop in any sibling's `trigger_rate_should.mean` is a routing regression — the new or changed description is stealing signal. Narrow the new description, or merge the skills per `crafting-skills` Compendium Rule 2 (tightly-coupled-cluster exception). Do not raise the threshold to hide the alert; the threshold is a discipline, not a knob.
 
 ---
 

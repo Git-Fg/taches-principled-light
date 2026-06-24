@@ -38,25 +38,34 @@ If the report has any hard failure (✗), the release is **blocked**. The skill 
 
 If the report passes (✓ with warnings allowed), proceed.
 
-**Scaling knee check.** Count shipped skills (excluding `.agents/skills/` meta-skills and the 4 marketplace maintainer skills in AGENTS.md):
+**Scaling-knee check.** Count shipped skills under `skills/`:
 
 ```bash
+MARKETPLACE_ROOT="$(git rev-parse --show-toplevel)"
 python3 -c "
-import pathlib
-n = sum(1 for p in pathlib.Path('skills').glob('*/SKILL.md')
-         if p.parent.name not in {'marketplace-validator', 'marketplace-health', 'ingesting-skills', 'releasing-marketplace'})
-print(f'{n} shipped skills (excluding the 4 .agents/skills/ meta-skills)')
+import pathlib, sys
+root = pathlib.Path('$MARKETPLACE_ROOT') / 'skills'
+n = sum(1 for _ in root.glob('*/SKILL.md'))
+print(f'{n} shipped skills in {root}')
+sys.exit(0 if n < 50 else 1)
 "
 ```
 
-Cross-reference the count against the AGENTS.md → Marketplace Scaling table:
+The `git rev-parse --show-toplevel` anchor removes the cwd-fragility of `Path.cwd()` (which would silently return 0 if the maintainer is cd'd into a subdirectory). Run from any subdirectory of the marketplace; the count is always correct.
 
-- **<50 skills** (default progressive disclosure): no action.
-- **50–100 skills**: warning — descriptions start truncating silently under default settings. Recommend the maintainer run `trigger_eval.py stealing` on thematic clusters before cutting the release.
-- **100–200 skills**: warning — Pattern 2 (tool-facade hub) becomes appropriate. Recommend the CHANGELOG entry note which clusters were consolidated.
-- **>200 skills**: hard block — the marketplace has crossed the practical ceiling; the release cannot ship without a scaling plan. Stop the workflow and surface AGENTS.md → Marketplace Scaling to the user.
+Then cross-reference the count against AGENTS.md → Marketplace Scaling (the source of truth — do not invent new thresholds here):
 
-The block threshold is intentionally high (>200, not ≥50) because warnings at 50/100 are advisory; the *block* fires only when the marketplace is past the in-place pattern's reach.
+| Count range | AGENTS.md action | Gate severity |
+|---|---|---|
+| <50 skills | "Continue adding; run the trigger-eval harness on each new description." | Silent (progressive disclosure works). |
+| 25–50 skills | "Tighten descriptions toward the 50-word soft target; split long skills into hub + on-demand references." | Warning — surface to maintainer; do not block. |
+| 50–100 skills | "**Consolidation is mandatory**" (AGENTS.md wording). | **Block** — release cannot ship until the maintainer confirms a consolidation plan exists in the release notes. |
+| 100–200 skills | "Pattern 2 becomes appropriate toward the upper end of this range." | Warning — recommend noting which clusters were consolidated in the CHANGELOG. |
+| 200–500 skills | "Pattern 2 in full: collapse the catalog behind ~14 router tools." | **Block** — release cannot ship until Pattern 2 migration is complete. |
+| 500–1,000 skills | "Pattern 3 (external retrieval, semantic-index tier)." | **Block** — release cannot ship until Pattern 3 semantic-index is deployed. |
+| >1,000 skills | "Pattern 3 (external retrieval, trained-reranker tier) is **required**." | **Block** — release cannot ship until Pattern 3 trained-reranker is deployed. |
+
+The gate severity column comes from AGENTS.md's own wording — "mandatory" / "required" are block conditions; "appropriate" / "recommended" are warnings. The gate does not add new thresholds of its own. If the AGENTS.md table is updated, the gate severity follows.
 
 ### Step 2 — Determine scope and propose version
 

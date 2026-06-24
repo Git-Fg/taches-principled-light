@@ -82,20 +82,24 @@ Use for: implementation, review, judgment, auditing, fixes.
 
 ## Marketplace Scaling
 
-Routing quality degrades as the catalog grows. The constraint is **character-based, not count-based**: Claude Code's `skillListingBudgetFraction` defaults to 0.01 of context (8,000 chars at 200K). Per-skill name + description costs ~50 tokens; the budget caps a marketplace at **~16 skills at 500-char descriptions, ~40 at 200-char, ~80 at 100-char** — scale linearly with description length. (`skillListingBudgetFraction` and `skillListingMaxDescChars` are user-tunable overrides; `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var takes precedence.)
+Routing quality degrades as the catalog grows. The constraint is **character-based, not count-based**: Claude Code's `skillListingBudgetFraction` defaults to 0.01 of context (8,000 chars at 200K). The budget caps a marketplace at **~16 skills at 500-char descriptions, ~40 at 200-char, ~80 at 100-char** — scale linearly with description length. (`skillListingBudgetFraction` and `skillListingMaxDescChars` are user-tunable overrides; `SLASH_COMMAND_TOOL_CHAR_BUDGET` env var takes precedence.)
 
 | Catalog size | Symptom | Action |
 |---|---|---|
-| <50 skills | Progressive disclosure works as designed. | Continue adding; run the trigger-eval harness on each new description. |
-| 50–100 skills | Descriptions start getting silently truncated when any one skill approaches its 1,536-char cap, or when the cumulative listing exceeds the budget. Anthropic's `formatCommandsWithinBudget` falls back to "truncate" then "names-only" mode. | Tighten descriptions toward the 50-word soft target; split long skills into hub + on-demand references. |
-| 100–200 skills | Practical ceiling with default settings. Wrong-pick symptoms start appearing around 7–8 simultaneously-active skills per request (community observation, not a documented Anthropic cap). | Consolidate tightly-coupled clusters (Compendium Rule 2) or move to a tool-facade pattern: ~14 router skills that load on-demand sub-skills. |
-| >1,000 skills | Attention quality degrades continuously even with full body access — the agent starts making wrong picks on hand-eye-distinguishable cases. The curve does not plateau before catastrophic failure. | External routing required: semantic search over descriptions, or a trained reranker (SkillRouter-style). |
+| 5–15 skills | Practitioners first observe wrong-pick symptoms; descriptions start competing for attention. The "around 7–8 skills, things get weird" community observation lands here (PromptSpace 2026), not at the marketplace ceiling. | Run the shadow-skill check (AGENTS.md rule 6) before adding more; tighten near-miss boundaries. |
+| <50 skills | Progressive disclosure works as designed for sessions that load a handful of skills. | Continue adding; run the trigger-eval harness on each new description. |
+| 25–50 skills | Cumulative listing starts exceeding the budget for users with default settings. Anthropic's `formatCommandsWithinBudget` falls back to "truncate" mode: long descriptions are uniformly shortened. (Note: `skillListingMaxDescChars` 1,536 is a separate per-skill cap, not what triggers the budget cascade.) | Tighten descriptions toward the 50-word soft target; split long skills into hub + on-demand references. |
+| 50–100 skills | `formatCommandsWithinBudget` enters "names-only" mode: descriptions are removed entirely; only skill names appear in the system prompt. | Consolidation is mandatory — split the catalog into thematic hubs, each with ≤14 on-demand sub-skills. |
+| 100–200 skills | Practical ceiling with default settings; tight clusters still work but cross-cluster trigger rate degrades. | Pattern 2 (tool-facade hub, next section) becomes the right choice. |
+| >1,000 skills | Attention quality degrades continuously even with full body access — the agent starts making wrong picks on hand-eye-distinguishable cases. The curve does not plateau before catastrophic failure. | Pattern 3 (external retrieval, next section) is required. |
 
 **Three scaling patterns** that cover 50–80,000 skills without restructuring the skill format itself:
 
-1. **In-place tightening** (≤200 skills): keep the flat catalog, run SkillReducer-style compression to shorten descriptions ~48%, doubling the per-budget cap. Discipline cost: every addition must be re-evaluated.
-2. **Tool-facade hub** (~200–2,000 skills): collapse the catalog into ~14 router skills; each router loads on-demand sub-skills. Engineering cost: a registry layer + a routing policy per hub.
-3. **External retrieval** (≥2,000 skills): keep descriptions as a corpus, train or prompt a semantic-search index, return top-K descriptions at session start. Cost: an extra model call per turn; SkillRouter reports a 31–44pp Hit@1 drop if you remove the body, so the corpus alone is not enough.
+1. **In-place tightening** (≤100 skills): keep the flat catalog, run SkillReducer-style compression to shorten descriptions ~48%, doubling the per-budget cap from ~50 to ~100 skills. Discipline cost: every addition must be re-evaluated. Source: SkillReducer arXiv:2603.29919.
+2. **Tool-facade hub** (~200–500 skills): collapse the catalog behind ~14 router tools; each tool loads its own cluster of ~14 sub-skills on demand (Skill Hub's 14-tool registry exposing 200 skills). Engineering cost: a registry layer + a routing policy per hub. Source: Skill Hub.
+3. **External retrieval** (≥500 skills): keep descriptions as a corpus, retrieve top-K at session start.
+   - **Semantic index** (~500–5,000 skills): embed all descriptions, return top-K by similarity. Cheapest per-query cost.
+   - **Trained reranker** (~5,000–80,000 skills): two-stage retrieve-and-rerank with a 1.2B-param model (SkillRouter). Cost: an extra model call per turn. SkillRouter reports a 31–44pp Hit@1 drop if you remove the full body from candidates, so the corpus alone is not enough.
 
 When the marketplace crosses 50 skills, choose which pattern fits before adding more — adding past the knee without a scaling plan turns description-tuning into a treadmill.
 

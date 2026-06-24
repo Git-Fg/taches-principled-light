@@ -50,7 +50,7 @@ The corrections above force these corrections in the AGENTS.md → Marketplace S
 2. **What happens at 1M-context models?** claudefa.st reports 75–125 skills at 1M context with 1% — does the same recency + frequency protection apply, or does the larger budget introduce a different failure mode?
 3. **Is there empirical data on the "actively-used" hit rate** at 50-100 skills? The recency + frequency protection is plausible but the safety margin is unstudied in the public literature.
 4. **Does the Claude Code Opus 4.7 compliance cliff (issue #62562, 24-26 May 2026) interact with the budget system?** The two bugs may compound: a clamped description + a model that skips Skill tool_use = silent routing failure at any size.
-5. **Why did Anthropic lower the default from the implicit 2% scaling to explicit 1%?** The setting was added in v2.1.105; the lowered default in v2.1.129 suggests deliberate conservative positioning for users with small focused skill sets. Not yet documented in Anthropic's published changelog.
+5. **Why did Anthropic choose 1% as the explicit default (vs the v2.1.32 implicit 2% scaling formula)?** The setting was added in v2.1.105 with `0.01` as the default; the rationale is not yet documented in Anthropic's published changelog. Not yet documented in Anthropic's published changelog.
 
 ## Source URLs
 

@@ -4,7 +4,7 @@ This note captures the cross-platform comparison that the AGENTS.md → Marketpl
 
 ## Snapshot date
 
-2026-06-24. Source versions: Claude Code v2.1.159+ (current default `skillListingBudgetFraction = 0.01` since v2.1.129, May 2026), Cursor docs (current, ~v2.4), OpenAI Codex CLI docs (current snapshot, v0.142+ post June 2026), Microsoft Agent Framework (current docs), kimi-code v0.19.1 (released 2026-06-23).
+2026-06-24. Source versions: Claude Code v2.1.159+ (default `skillListingBudgetFraction = 0.01` since v2.1.105 when the setting was introduced; claudefa.st's v2.1.129 binary extraction first publicly documented the knob), Cursor docs (current, ~v2.4), OpenAI Codex CLI docs (current snapshot, v0.142+ post June 2026), Microsoft Agent Framework (current docs), kimi-code v0.19.1 (released 2026-06-23).
 
 ## Correction history
 
@@ -39,7 +39,7 @@ The single most actionable finding from this cross-platform survey: **for market
 
 Three Codex properties (CORRECTED from the prior version):
 
-1. **Lower absolute description budget (comparable to Claude Code after the v2.1.129 default lowering)**: Claude Code is currently 1% / ~2,000 tokens / ~8,000 chars at 200K (counts tokens natively); Codex is 2% of context with an 8,000-char fallback (counts chars directly). At 200K context, both runtimes have ~8,000 chars of description budget — roughly tied. Codex's "8,000 chars" figure is the *floor* when context is unknown; at known 200K context, 2% = ~4,000 chars (less than the fallback). The earlier note's claim "Codex has ~50% of Claude Code's budget" was based on the now-superseded 2% Claude Code default.
+1. **Lower absolute description budget (comparable to Claude Code after the v2.1.105 explicit 1% default)**: Claude Code is currently 1% / ~2,000 tokens / ~8,000 chars at 200K (counts tokens natively); Codex is 2% of context with an 8,000-char fallback (counts chars directly). At 200K context, both runtimes have ~8,000 chars of description budget — roughly tied. Codex's "8,000 chars" figure is the *floor* when context is unknown; at known 200K context, 2% = ~4,000 chars (less than the fallback). The earlier note's claim "Codex has ~50% of Claude Code's budget" was based on the now-superseded 2% Claude Code default.
 
 2. **Config-file disable mechanism (not runtime)**: `[[skills.config]]` with `enabled = false` per skill. Less convenient than Claude Code's runtime `/skills` toggle, but functional. Cross-runtime marketplaces will need a CI/automation layer that writes both `~/.claude/settings.json` (or equivalent) AND `~/.codex/config.toml` to keep disable lists in sync.
 

@@ -38,6 +38,26 @@ If the report has any hard failure (✗), the release is **blocked**. The skill 
 
 If the report passes (✓ with warnings allowed), proceed.
 
+**Scaling knee check.** Count shipped skills (excluding `.agents/skills/` meta-skills and the 4 marketplace maintainer skills in AGENTS.md):
+
+```bash
+python3 -c "
+import pathlib
+n = sum(1 for p in pathlib.Path('skills').glob('*/SKILL.md')
+         if p.parent.name not in {'marketplace-validator', 'marketplace-health', 'ingesting-skills', 'releasing-marketplace'})
+print(f'{n} shipped skills (excluding the 4 .agents/skills/ meta-skills)')
+"
+```
+
+Cross-reference the count against the AGENTS.md → Marketplace Scaling table:
+
+- **<50 skills** (default progressive disclosure): no action.
+- **50–100 skills**: warning — descriptions start truncating silently under default settings. Recommend the maintainer run `trigger_eval.py stealing` on thematic clusters before cutting the release.
+- **100–200 skills**: warning — Pattern 2 (tool-facade hub) becomes appropriate. Recommend the CHANGELOG entry note which clusters were consolidated.
+- **>200 skills**: hard block — the marketplace has crossed the practical ceiling; the release cannot ship without a scaling plan. Stop the workflow and surface AGENTS.md → Marketplace Scaling to the user.
+
+The block threshold is intentionally high (>200, not ≥50) because warnings at 50/100 are advisory; the *block* fires only when the marketplace is past the in-place pattern's reach.
+
 ### Step 2 — Determine scope and propose version
 
 Inspect the `git diff` between the current HEAD and the last release tag (or `main` if no tags):

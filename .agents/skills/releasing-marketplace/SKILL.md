@@ -60,7 +60,7 @@ Then cross-reference the count against AGENTS.md → Marketplace Scaling (the so
 | <50 skills | "Continue adding; run the trigger-eval harness on each new description." | Silent (progressive disclosure works). |
 | 25–50 skills | "Tighten descriptions toward the 50-word soft target; disable rarely-used skills (`/skills` → disable) instead of deleting them — disabled skills don't count against the budget." | Warning — surface to maintainer; do not block. |
 | 50–100 skills | "**Consolidation is mandatory**" (AGENTS.md wording). | **Block** — release cannot ship until the maintainer confirms a consolidation plan exists in the release notes. |
-| 100–200 skills | "Pattern 2 becomes appropriate toward the upper end of this range." | Warning — recommend noting which clusters were consolidated in the CHANGELOG. |
+| 100–200 skills | "Pattern 2 becomes appropriate toward the upper end of this range." | Warning — recommend noting which clusters were consolidated in the CHANGELOG; the lower end of this range does not require Pattern 2. |
 | 200–500 skills | "Pattern 2 in full: collapse the catalog behind ~14 router tools." | **Block** — release cannot ship until Pattern 2 migration is complete. |
 | 500–1,000 skills | "Pattern 3 (external retrieval, semantic-index tier)." | **Block** — release cannot ship until Pattern 3 semantic-index is deployed. |
 | >1,000 skills | "Pattern 3 (external retrieval, trained-reranker tier) is **required**." | **Block** — release cannot ship until Pattern 3 trained-reranker is deployed. |

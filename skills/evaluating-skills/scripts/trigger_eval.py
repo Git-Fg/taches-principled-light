@@ -160,6 +160,14 @@ def cmd_init(args) -> int:
     if args.n < 1:
         print(f"ERROR: --n must be >= 1; got {args.n}", file=sys.stderr)
         return 1
+    if args.n < 8:
+        print(
+            f"WARNING: --n {args.n} is below AGENTS.md Description-as-Routing-Signal "
+            f"rule 7's 8-10 minimum (per-half). The split will produce "
+            f"{args.n // 2}-or-fewer should-trigger queries in train and val — "
+            f"the trigger-rate estimate will be too noisy to be useful.",
+            file=sys.stderr,
+        )
     queries = []
     for i in range(1, args.n + 1):
         should_trigger = (i % 2 == 1)  # alternate T/F starting with T

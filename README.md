@@ -1,6 +1,6 @@
 # Taches Principled
 
-**Version:** 0.1.0 · 30 top-level skills
+**Version:** 0.2.0 · 31 top-level skills
 
 A specialist plugin for Claude Code, Kimi Code, Codex, and Cursor. Pairs with [superpowers](https://github.com/GoFaster/superpowers) for the complete development toolkit.
 

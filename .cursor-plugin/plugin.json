@@ -1,13 +1,13 @@
 {
   "name": "taches-principled-light",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Specialist Cursor plugin — DDD, first-principles reasoning, structured agent-driven dev, Rust lifecycle, MCP expertise, git workflow, security audit, wiki management, session analytics, full task lifecycle, 5 design skills (palette, typography, principles, examples, PDF), and evaluating-skills. Pairs with superpowers for the complete development toolkit.",
   "author": { "name": "Felix" },
   "skills": "./skills/",
   "skillInstructions": "Cursor tool mapping for taches-principled-light skills:\n\n- When a skill says to ask the user a clarifying question, present multiple-choice options, or wait for user choice, use Cursor's interactive prompts — describe the decision and options, do not hardcode tool names.\n- When a skill refers to tracking tasks, a todo list, or progress checkpoints, use Cursor's task tracking — describe what tasks exist and their state, the agent routes to the correct tool.\n- When a skill says to spawn a subagent explorer (read-only), use Cursor's agent mode in read-only mode — describe what to explore and that findings should be a bounded summary.\n- When a skill says to spawn a subagent generalist (edit access), use Cursor's agent mode with edit access — describe what to implement and that results should include what changed.\n- When a skill says to use web search, use Cursor's web search capability.\n- Skills use platform-agnostic phrasing throughout. Never invoke tools by internal names. Describe the intent; the agent selects the correct tool by reasoning about what the intent requires.",
   "interface": {
     "displayName": "Taches Principled Light",
-    "shortDescription": "30 specialist skills for Cursor: DDD, FPF, Rust, MCP, security, git, wiki, session analytics, design, evaluation",
+    "shortDescription": "31 specialist skills for Cursor: DDD, FPF, Rust, MCP, security, git, wiki, session analytics, design, evaluation, self-correction",
     "developerName": "Felix",
     "websiteURL": "https://github.com/Git-Fg/taches-principled-light"
   }

@@ -4,7 +4,19 @@ All notable changes to the taches-principled-light marketplace.
 
 ## [Unreleased]
 
-### Added — self-correcting: post-failure meta-analysis for tool-usage cascades.
+## [0.2.0] — self-correcting skill + marketplace-health refresh — 2026-06-24
+
+Adds the `self-correcting` discipline skill (post-failure meta-analysis for tool-usage cascades) and refreshes the marketplace-health audit. Closes the catalog gap that was the most-requested addition in the iter-7 evaluation retrospective. No behavioral data change, no validator warning change beyond a single documented advisory (description word count, 67 vs 50 soft target — acknowledged in the spec's "Decisions made during brainstorm" table). All 5 plugin manifests synchronized to 0.2.0; skill count 30 → 31 across all marketplace descriptions.
+
+### Added
+
+- **`skills/self-correcting/SKILL.md`** (104 lines): new discipline skill that fires when 3+ tool calls haven't converged, the result is bad, or the agent ignored a guidance field / system-reminder. Four-step protocol (verbatim tool-call listing → quote guidance → diagnose hypothesis vs execution → one specific fix), no tool calls during analysis, structured 5-line output block (Guidance said / What I did / Gap / Why / One fix). Cross-runtime portable (Claude Code, Codex, kimi-code). CONTRAST block explicitly disambiguates from `systematic-debugging` (bug root cause) and `reviewing-and-polishing` MEMORIZE (post-success insights).
+
+### Verified
+
+- `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/self-correcting/` → `0 failures, 1 warnings` (the single warning is `description_word_count: 67 words (target ≤50)`; spec §"Decisions" line 78 pre-acknowledged this trade-off).
+- `python3 .agents/skills/marketplace-health/scripts/health.py` → `HEALTH: pass`; 0 HIGH/MEDIUM findings; report at `docs/principled/marketplace-health/2026-06-24.md` (committed in this release).
+- Adversarial-sibling routing check: 5/5 should-trigger queries route to self-correcting; 3/3 should-NOT-trigger queries correctly route to `crafting-skills` / `evaluating-skills` / `reviewing-and-polishing`.
 
 ## [0.1.0] — marketplace scaling + cross-platform research + evaluating-skills trigger-eval harness — 2026-06-24
 

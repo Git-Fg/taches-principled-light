@@ -1,81 +1,101 @@
 # Cross-Platform Skill Budget Comparison (May–Jun 2026)
 
-This note captures the cross-platform comparison that the AGENTS.md → Marketplace Scaling → "Cross-platform behavior" subsection references. It is the audit trail for the actionable finding: **Codex is the binding constraint for cross-runtime marketplaces**, not Claude Code.
+This note captures the cross-platform comparison that the AGENTS.md → Marketplace Scaling → "Cross-platform behavior" subsection references. It is the audit trail for the actionable finding: **Codex is the binding constraint on absolute budget, but the mitigation strategy is similar to Claude Code** (Pattern 2 hub-and-sub-skill works on both, with different hub-count ceilings).
 
 ## Snapshot date
 
-2026-06-24. Source versions: Claude Code v2.1.159+ (with the 2% budget added in subsequent releases), Cursor docs (current, ~v2.4), OpenAI Codex CLI v0.133.0 (released May 2026), Microsoft Agent Framework (current docs), kimi-code v0.19.1 (released 2026-06-23).
+2026-06-24. Source versions: Claude Code v2.1.159+ (with the 2% budget added in subsequent releases), Cursor docs (current, ~v2.4), OpenAI Codex CLI docs (current snapshot, v0.137+ post May 2026), Microsoft Agent Framework (current docs), kimi-code v0.19.1 (released 2026-06-23).
 
-## Summary table
+## Correction history
+
+This note supersedes the version committed in `1a39f71`. Three claims in the prior version were wrong (sourced from issue `openai/codex#24299` against v0.133.0, May 2026):
+
+1. **Codex budget**: prior claim "5,440 chars hard budget (~2%)" was a model-specific calc by the issue author, not the spec. The official Codex skills docs state "8,000 characters when the context window is unknown" or 2% of the model's context window.
+2. **Codex disable mechanism**: prior claim "no exclude config" was incorrect. The Codex docs document `[[skills.config]]` blocks in `~/.codex/config.toml` with `enabled = false` per skill. The mechanism is **less convenient than Claude Code's runtime `/skills` toggle** (config edit + restart vs immediate runtime toggle), but it exists.
+3. **Codex warning visibility**: prior claim "truncation message documented only in the log file" was incomplete. The Codex docs state "Codex may omit some skills from the initial list and show a warning" — there IS a user-visible warning signal, in addition to the log file.
+4. **Codex progressive disclosure**: prior claim "eager flat loading" was partially incorrect. The Codex docs state "Codex starts with each skill's name, description, and file path. Codex loads the full SKILL.md instructions only when it decides to use a skill." Bodies load on-demand; only descriptions + paths are in the budget pool.
+
+The corrected understanding: Codex's UX is closer to Claude Code's than the issue suggested. Pattern 2 (hub-and-sub-skill) is viable on both. The differences are quantitative, not qualitative:
+
+- Claude Code: ~16,000 chars (~80 hubs at ~200 chars each) before warning
+- Codex: ~8,000 chars (~40 hubs at ~200 chars each) before omission warning
+- Codex disable: config file + restart, not runtime toggle
+- Codex selection: no documented recency + frequency protection (Codex docs do not mention frequency-based selection)
+
+## Summary table (corrected)
 
 | Runtime | Default budget | Truncation warning | Disable mechanism | Practical ceiling |
 |---|---|---|---|---|
-| Claude Code (current) | 2% (~16,000 chars at 200K) | Startup + /doctor + /context | /skills → disable | ~30–50 skills before warning |
+| Claude Code (current) | 2% (~16,000 chars at 200K) | Startup + /doctor + /context | /skills → disable (runtime toggle) | ~30–50 skills before warning; recency + frequency selection protects actively-used skills |
 | Claude Code (pre-v2.1.129) | 1% (~8,000 chars) | Same signals (added later) | /skills → disable | ~15–25 skills |
 | Cursor | None documented (path-scoped) | N/A | disable-model-invocation: true | Catalog size not the bottleneck |
-| OpenAI Codex CLI | 5,440 chars (~2%) | Not observed in v0.133.0 (only log file) | No exclude config | ~20 skills before mass truncation |
+| OpenAI Codex CLI | 8,000 chars (or 2% context) | Omission warning shown to user; per-skill log message in `~/.codex/log/codex-tui.log` | `[[skills.config]]` block in `~/.codex/config.toml` with `enabled = false` per skill; `allow_implicit_invocation = false` for explicit-only | ~20–25 skills before omission; progressive disclosure IS supported (bodies load on-demand) |
 | Microsoft Agent Framework | ~100 tokens per skill advertise | N/A (library, not CLI) | FilteringSkillsSource programmatic | 2-level discovery depth |
 | kimi-code | None documented | None documented | No per-skill disable; ships consolidation builtins | No formal budget |
 
-## Critical finding: Codex is the binding constraint
+## Critical finding (corrected): Codex is the binding constraint on absolute budget, not on pattern choice
 
-The single most actionable finding from this cross-platform survey: **for marketplaces targeting both Claude Code and Codex, Codex's 20-skill ceiling is the binding constraint, not Claude Code's 30-50 skill ceiling.**
+The single most actionable finding from this cross-platform survey: **for marketplaces targeting both Claude Code and Codex, Codex's 8,000-char budget is the binding absolute constraint, but Pattern 2 (hub-and-sub-skill) is viable on both runtimes with the constraint applied as a hub-count ceiling, not a flat skill ceiling.**
 
-Three Codex-specific properties make it the binding constraint:
+Three Codex properties (CORRECTED from the prior version):
 
-1. **Lower absolute ceiling**: 5,440 chars at ~232 chars/skill description = ~23 skills before the budget kicks in (vs Claude Code's 16,000 chars ÷ ~450 chars = ~35 skills). The Codex issue reports 103 of 119 descriptions truncated at 119 skills, which is 86% mass truncation at less than 2× the budget.
+1. **Lower absolute description budget**: 8,000 chars (or 2% context) vs Claude Code's 16,000 chars (or 2% context, but counted in tokens × 4 chars/token). For descriptions only, Codex has ~50% of Claude Code's budget. So a 40-hub marketplace with ~200-char descriptions fits in Codex but only barely; Claude Code allows 80 hubs.
 
-2. **No disable mechanism**: Unlike Claude Code's `/skills` → disable, Codex has no per-skill or per-directory exclude config. `~/.codex/skills/.system/` skills (imagegen, plugin-creator, skill-creator, skill-installer, openai-docs) auto-restore on every launch and cannot be permanently removed. So the "disable rarely-used skills" advice that works on Claude Code does not apply.
+2. **Config-file disable mechanism (not runtime)**: `[[skills.config]]` with `enabled = false` per skill. Less convenient than Claude Code's runtime `/skills` toggle, but functional. Cross-runtime marketplaces will need a CI/automation layer that writes both `~/.claude/settings.json` (or equivalent) AND `~/.codex/config.toml` to keep disable lists in sync.
 
-3. **Eager multi-directory loading**: Codex scans `~/.codex/skills/`, `~/.codex/skills/.system/`, and `~/.agents/skills/` with no filter. All discovered skills are unconditionally added to the budget pool. This means a 14-router hub with 196 sub-skills still produces 210 loaded skills, with 196 descriptions truncated to ~46 chars each — effectively undiscoverable.
+3. **Progressive disclosure IS supported**: full SKILL.md bodies load only when the skill is invoked. Only descriptions + paths count against the budget. This means Pattern 2 (hub routers as top-level skills, sub-skills loaded via Skill tool) works on Codex — the hub descriptions count against the budget, but sub-skill bodies are on-demand.
 
-## Implication for Pattern selection
-
-The three scaling patterns from AGENTS.md → Marketplace Scaling are tested against each platform:
+## Implication for Pattern selection (corrected)
 
 ### Pattern 1 (In-place tightening, ≤100 skills)
 
 - **Claude Code**: works. SkillReducer compression extends the budget by ~48%.
 - **Cursor**: irrelevant; no catalog-wide budget.
-- **Codex**: the **only viable strategy** if the marketplace ships to Codex. Keep the flat catalog ≤ 20 skills. Any Pattern 2/3 work on Codex requires verifying sub-skill support, which is not documented.
+- **Codex**: works. Keep the flat catalog ≤ 20 skills for safety. Beyond that, prefer Pattern 2.
 - **Microsoft Agent Framework**: applicable at the `FilteringSkillsSource` level.
 - **kimi-code**: applicable if the marketplace owner commits to running `sub-skill.consolidate`.
 
-### Pattern 2 (Tool-facade hub, ~200-500 skills)
+### Pattern 2 (Tool-facade hub, hub-count varies by runtime)
 
-- **Claude Code**: works (the design target).
-- **Cursor**: irrelevant; per-query relevance is the model.
-- **Codex**: **not yet verified** whether the agentskills.io spec supports on-demand sub-skill loading. The Codex issue shows flat eager loading; if this is structural, Pattern 2 does not help on Codex at any size.
-- **Microsoft Agent Framework**: works via `AggregatingSkillsSource` + `FilteringSkillsSource` composition.
-- **kimi-code**: the `sub-skill` builtin bundle (v0.11.0+, default-on since v0.12.0) is a primitive for this exact pattern.
+The hub-count ceiling differs by runtime (assuming ~200 chars per hub description):
+
+- **Claude Code**: ~80 hubs before warning (16,000 / 200); with recency + frequency protection, actively-used hubs survive past that.
+- **Codex**: ~40 hubs before omission warning (8,000 / 200). No documented frequency-based selection.
+- **Cursor**: irrelevant; per-query relevance.
+- **Microsoft Agent Framework**: works via `AggregatingSkillsSource` + `FilteringSkillsSource`.
+- **kimi-code**: ships the `sub-skill` builtin (v0.11.0+, default-on since v0.12.0).
+
+So for cross-runtime marketplaces, the binding Pattern 2 hub count is **≤40 (Codex)**.
 
 ### Pattern 3 (External retrieval, ≥500 skills)
 
 - **Claude Code**: works (SkillRouter, etc.).
-- **Cursor**: irrelevant; per-query model.
-- **Codex**: not applicable at any size given the 20-skill ceiling.
+- **Cursor**: irrelevant.
+- **Codex**: applicable if hub count exceeds 40; the external retrieval layer replaces the in-process hub router.
 - **Microsoft Agent Framework**: works via custom context providers.
 - **kimi-code**: not yet formalized.
 
-## Cross-platform marketplace strategy
+## Cross-platform marketplace strategy (corrected)
 
 For marketplaces that ship to multiple runtimes, the practical decision tree is:
 
-1. **If Codex is in scope**: bound the catalog at ~20 skills (Pattern 1 only). Sub-skills, hubs, and external retrieval do not help if Codex loads eagerly.
-2. **If Claude Code + MAF + kimi-code are in scope but not Codex**: Claude Code is the binding constraint. Pattern 1 ≤ 100, Pattern 2 at 200-500, Pattern 3 at 500+.
-3. **If Cursor is in scope**: Cursor is not a constraint; per-query `paths:` scoping handles relevance. The marketplace can scale freely on Cursor.
-4. **kimi-code**: ships the consolidation primitives; if the marketplace owner commits to running `sub-skill.consolidate` periodically, the catalog can grow beyond the kimi-code soft limits. No hard budget to enforce.
+1. **If Codex is in scope**: bound hub count at ≤40 (Pattern 2 ceiling). The disable mechanism requires a sync layer between Claude Code settings and Codex config.toml.
+2. **If Claude Code + MAF + kimi-code are in scope but not Codex**: Claude Code is the binding constraint (~80 hubs).
+3. **If Cursor is in scope**: Cursor is not a constraint; per-query `paths:` scoping handles relevance.
+4. **kimi-code**: ships consolidation primitives; commit to running `sub-skill.consolidate` periodically.
 
-## Open questions
+## Open questions (updated)
 
-1. **Does Codex support sub-skill discovery on demand?** The issue text shows flat eager loading; need to verify against the Codex loader spec.
-2. **What happens on MAF when the advertise block exceeds the per-skill budget?** The `~100 tokens` figure is the per-skill cost; the cumulative limit is undocumented in the public MAF docs.
-3. **Does Cursor's `paths:` glob have a budget cost at the catalog level?** Path-scoped skills are per-query relevant, but global skills (without `paths:`) still consume system prompt at startup.
-4. **kimi-code's flat catalog ceiling**: the v0.11.0 consolidation builtin acknowledges a scaling problem but no formal budget is documented. What's the practical ceiling in practice?
+1. **Codex selection logic**: does Codex have any analog to Claude Code's recency + frequency protection? The docs do not mention it, but absence-of-evidence. If Codex selection is purely positional or based on a fixed priority list, the safety margin for actively-used hubs may be lower than Claude Code's.
+2. **MAF cumulative advertise budget**: the `~100 tokens` figure is per-skill; what's the cumulative limit?
+3. **Cursor global-skill budget**: skills without `paths:` are surfaced globally — does this consume system prompt at startup?
+4. **kimi-code flat catalog ceiling**: consolidation builtin acknowledges the problem but no formal budget.
 
 ## Sources
 
-- Codex issue: https://github.com/openai/codex/issues/24299 (May 2026)
+- Codex skills docs (current): https://developers.openai.com/codex/skills
+- Codex changelog: https://developers.openai.com/codex/changelog
+- Codex issue #24299 (May 2026, v0.133.0 snapshot — partially superseded): https://github.com/openai/codex/issues/24299
 - Cursor skills docs: https://cursor.com/docs/skills
 - Microsoft Agent Framework skills docs: https://learn.microsoft.com/en-us/agent-framework/agents/skills
 - kimi-code changelog v0.7–v0.19.1: https://moonshotai.github.io/kimi-code/en/release-notes/changelog.html

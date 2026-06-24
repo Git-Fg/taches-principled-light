@@ -78,10 +78,18 @@ If `verdict` is `AMBIGUOUS` (scores too close, or evidence thin), re-review with
 
 ## Trigger-eval queries (for OPTIMIZE mode)
 
-When optimizing the skill's `description` frontmatter, write ~20 queries split should-trigger / should-not. The discipline that makes this work:
+When optimizing the skill's `description` frontmatter, scaffold the eval set with the trigger-eval harness rather than writing it by hand:
+
+```bash
+python scripts/trigger_eval.py init --out /tmp/queries.json --skill-name <name> --n 20
+# (the script warns on stderr when --n < 16, the AGENTS.md Description-as-
+# Routing-Signal rule 7 minimum: 8-10 should-trigger + 8-10 should-not.)
+```
+
+The discipline that makes this work:
 
 - **Realistic, not abstract.** Include file paths, column names, personal context, typos, casual speech. "ok so my boss just sent me this xlsx..." not "format this data".
 - **Should-not must be near-misses.** "Write a fibonacci function" as a negative for a PDF skill tests nothing. The valuable negatives share keywords/concepts with the skill but need something else — adjacent domains where a naive keyword match would wrongly fire.
 - **Substantive enough to need the skill.** Trivial one-step queries ("read file X") won't trigger any skill regardless of description quality, because the agent handles them with basic tools. The query must be complex enough that consulting the skill would actually help.
 
-For each query, the behavioral judgment is: did the with-skill run behave as the skill intends, and did the without-skill run behave differently? (Not: was the skill *loaded*.)
+For each query, the behavioral judgment is: did the with-skill run behave as the skill intends, and did the without-skill run behave differently? (Not: was the skill *loaded*.) After collecting ≥3 runs per query, use `trigger_eval.py score` (with the 60/40 train/val split from `trigger_eval.py split`) to compute the trigger-rate report; pick the description by **validation** pass rate, not train pass rate. See `references/trigger-eval-guide.md` for the full methodology.

@@ -13,12 +13,27 @@
 # The `check-risky-strings` hook enforces the scrub rules from
 # docs/principled/specs/2026-06-23-eval-cleanup-design.md (L145-162). It runs
 # only on text files; binary files are skipped by the framework.
+#
+# The `check-stale-skill-fragments` hook enforces a minimal set of high-
+# signal patterns corresponding to framings the 5-round independent
+# subagent self-critic arc caught at least once in the active tree
+# (commits 9927e3e, 5e26e36, a39e334). The full list of caught patterns
+# lives in scripts/check-stale-skill-fragments.py.
 repos:
   - repo: local
     hooks:
       - id: check-risky-strings
         name: Risky-string safety floor
         entry: python3 scripts/check-risky-strings.py
+        language: system
+        types: [text]
+        stages: [pre-commit]
+        pass_filenames: true
+        require_serial: false
+        # Local hook; no upstream repo to pin.
+      - id: check-stale-skill-fragments
+        name: Stale skill-fragment safety floor
+        entry: python3 scripts/check-stale-skill-fragments.py
         language: system
         types: [text]
         stages: [pre-commit]

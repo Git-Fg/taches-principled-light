@@ -53,6 +53,15 @@ sys.exit(0 if n < 50 else 1)
 
 The `git rev-parse --show-toplevel` anchor removes the cwd-fragility of `Path.cwd()` (which would silently return 0 if the maintainer is cd'd into a subdirectory). Run from any subdirectory of the marketplace; the count is always correct.
 
+> **High-risk path: changes to AGENTS.md → Marketplace Scaling.** If this release modifies the Marketplace Scaling section (or its cross-platform table, or the research notes at `research/claude-code-skill-budget-evolution.md` / `research/cross-platform-skill-budget-comparison.md`), spawn an **independent subagent critic** before cutting the release. The 5-round critic arc on commits `5adb44c`, `9927e3e`, `5e26e36`, `a39e334` demonstrated that this code path is high-risk for stale-reference drift: the parent doc is updated, but downstream references (catalog-size table, cross-platform table cells, user-facing reference docs, verification reports) routinely carry the prior framing. Five rounds of independent review were needed to converge. Treat the critic as required when:
+>
+> - The commit diff touches `AGENTS.md` Marketplace Scaling (anywhere in the section, including the audit-trail paragraph)
+> - The commit diff touches the cross-platform table (any cell)
+> - The commit diff touches `skills/crafting-skills/references/context-management.md` (this doc ships to users via the plugin and historically propagated the same class of error)
+> - The commit diff touches any research note that establishes or modifies a version-anchored claim
+>
+> **Minimal critic prompt:** *"Verify the changes against primary sources (Anthropic docs at `code.claude.com/docs/en/settings`, claudefa.st, anthropics/claude-code#64606). Specifically check for: (a) the v2.1.105 vs v2.1.129 distinction is preserved everywhere a Claude Code budget claim appears; (b) 'silently truncated' or 'silently dropped' framing has not been reintroduced; (c) the cross-platform table cells are mutually consistent; (d) the version reference in `context-management.md` line 79 matches the corrected 'silent AT v2.1.159; non-silent in post-v2.1.159 releases' framing. Report findings as HIGH/MEDIUM/LOW."*
+
 Then cross-reference the count against AGENTS.md → Marketplace Scaling (the source of truth — do not invent new thresholds here):
 
 > **Version anchor.** The defaults below assume **Claude Code v2.1.105+** (the release that introduced `skillListingBudgetFraction` as an explicit setting). Pre-v2.1.105 clients used an implicit 2% scaling formula from v2.1.32; both rows are documented in AGENTS.md's cross-platform table. If you need to support both, the binding constraint is the smaller budget — read both rows before deciding gate severity.

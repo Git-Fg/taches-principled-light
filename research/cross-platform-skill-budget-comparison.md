@@ -4,7 +4,7 @@ This note captures the cross-platform comparison that the AGENTS.md → Marketpl
 
 ## Snapshot date
 
-2026-06-24. Source versions: Claude Code v2.1.159+ (with the 2% budget added in subsequent releases), Cursor docs (current, ~v2.4), OpenAI Codex CLI docs (current snapshot, v0.137+ post May 2026), Microsoft Agent Framework (current docs), kimi-code v0.19.1 (released 2026-06-23).
+2026-06-24. Source versions: Claude Code v2.1.159+ (current default `skillListingBudgetFraction = 0.01` since v2.1.129, May 2026), Cursor docs (current, ~v2.4), OpenAI Codex CLI docs (current snapshot, v0.142+ post June 2026), Microsoft Agent Framework (current docs), kimi-code v0.19.1 (released 2026-06-23).
 
 ## Correction history
 
@@ -17,8 +17,8 @@ This note supersedes the version committed in `1a39f71`. Three claims in the pri
 
 The corrected understanding: Codex's UX is closer to Claude Code's than the issue suggested. Pattern 2 (hub-and-sub-skill) is viable on both. The differences are quantitative, not qualitative:
 
-- Claude Code: ~16,000 chars (~80 hubs at ~200 chars each) before warning
-- Codex: ~8,000 chars (~40 hubs at ~200 chars each) before omission warning
+- Claude Code: ≈8,000 chars at 200K context (~40 hubs at ~200 chars each) before warning; recency + frequency selection protects actively-used hubs
+- Codex: ~8,000 chars (fallback) or 2% of context (~40 hubs at ~200 chars each) before omission warning
 - Codex disable: config file + restart, not runtime toggle
 - Codex selection: no documented recency + frequency protection (Codex docs do not mention frequency-based selection)
 
@@ -26,10 +26,10 @@ The corrected understanding: Codex's UX is closer to Claude Code's than the issu
 
 | Runtime | Default budget | Truncation warning | Disable mechanism | Practical ceiling |
 |---|---|---|---|---|
-| Claude Code (current) | 2% (~16,000 chars at 200K) | Startup + /doctor + /context | /skills → disable (runtime toggle) | ~30–50 skills before warning; recency + frequency selection protects actively-used skills |
-| Claude Code (pre-v2.1.129) | 1% (~8,000 chars) | Same signals (added later) | /skills → disable | ~15–25 skills |
+| Claude Code (current) | **1% (~2,000 tokens / ~8,000 chars at 200K)** per `code.claude.com/docs/en/settings` and claudefa.st v2.1.129 binary extraction | Startup + /doctor + /context | /skills → disable (runtime toggle) | ~15–25 skills before warning at 200K; recency + frequency selection protects actively-used skills |
+| Claude Code (v2.1.32–v2.1.104; implicit 2% scaling pre-setting) | **2%** (implicit scaling formula, no user-tunable setting) | Same signals (added in subsequent releases) | /skills → disable (when added) | ~30–50 skills at 200K |
 | Cursor | None documented (path-scoped) | N/A | disable-model-invocation: true | Catalog size not the bottleneck |
-| OpenAI Codex CLI | 8,000 chars (or 2% context) | Omission warning shown to user; per-skill log message in `~/.codex/log/codex-tui.log` | `[[skills.config]]` block in `~/.codex/config.toml` with `enabled = false` per skill; `allow_implicit_invocation = false` for explicit-only | ~20–25 skills before omission; progressive disclosure IS supported (bodies load on-demand) |
+| OpenAI Codex CLI | 2% of context, with 8,000-char fallback when context window unknown | Omission warning shown to user; per-skill log message in `~/.codex/log/codex-tui.log` per issue #24299 from v0.133.0 (not re-confirmed in current docs) | `[[skills.config]]` block in `~/.codex/config.toml` with `enabled = false` per skill; `policy.allow_implicit_invocation = false` in skill's `agents/openai.yaml` for explicit-only | ~20–25 skills before omission at the 8,000-char fallback; progressive disclosure IS supported (bodies load on-demand) |
 | Microsoft Agent Framework | ~100 tokens per skill advertise | N/A (library, not CLI) | FilteringSkillsSource programmatic | 2-level discovery depth |
 | kimi-code | None documented | None documented | No per-skill disable; ships consolidation builtins | No formal budget |
 
@@ -39,7 +39,7 @@ The single most actionable finding from this cross-platform survey: **for market
 
 Three Codex properties (CORRECTED from the prior version):
 
-1. **Lower absolute description budget**: 8,000 chars (or 2% context) vs Claude Code's 16,000 chars (or 2% context, but counted in tokens × 4 chars/token). For descriptions only, Codex has ~50% of Claude Code's budget. So a 40-hub marketplace with ~200-char descriptions fits in Codex but only barely; Claude Code allows 80 hubs.
+1. **Lower absolute description budget (comparable to Claude Code after the v2.1.129 default lowering)**: Claude Code is currently 1% / ~2,000 tokens / ~8,000 chars at 200K (counts tokens natively); Codex is 2% of context with an 8,000-char fallback (counts chars directly). At 200K context, both runtimes have ~8,000 chars of description budget — roughly tied. Codex's "8,000 chars" figure is the *floor* when context is unknown; at known 200K context, 2% = ~4,000 chars (less than the fallback). The earlier note's claim "Codex has ~50% of Claude Code's budget" was based on the now-superseded 2% Claude Code default.
 
 2. **Config-file disable mechanism (not runtime)**: `[[skills.config]]` with `enabled = false` per skill. Less convenient than Claude Code's runtime `/skills` toggle, but functional. Cross-runtime marketplaces will need a CI/automation layer that writes both `~/.claude/settings.json` (or equivalent) AND `~/.codex/config.toml` to keep disable lists in sync.
 
@@ -59,13 +59,13 @@ Three Codex properties (CORRECTED from the prior version):
 
 The hub-count ceiling differs by runtime (assuming ~200 chars per hub description):
 
-- **Claude Code**: ~80 hubs before warning (16,000 / 200); with recency + frequency protection, actively-used hubs survive past that.
-- **Codex**: ~40 hubs before omission warning (8,000 / 200). No documented frequency-based selection.
+- **Claude Code**: ~40 hubs at 200K context before warning (8,000 / 200); ~200 hubs at 1M context (40,000 / 200). With recency + frequency protection, actively-used hubs survive past that.
+- **Codex**: ~40 hubs before omission warning at the 8,000-char fallback (8,000 / 200). No documented frequency-based selection.
 - **Cursor**: irrelevant; per-query relevance.
 - **Microsoft Agent Framework**: works via `AggregatingSkillsSource` + `FilteringSkillsSource`.
 - **kimi-code**: ships the `sub-skill` builtin (v0.11.0+, default-on since v0.12.0).
 
-So for cross-runtime marketplaces, the binding Pattern 2 hub count is **≤40 (Codex)**.
+So for cross-runtime marketplaces, the binding Pattern 2 hub count is **≤40 (Codex and Claude Code at 200K context; Claude Code extends to ~200 hubs at 1M context)**.
 
 ### Pattern 3 (External retrieval, ≥500 skills)
 
@@ -79,8 +79,8 @@ So for cross-runtime marketplaces, the binding Pattern 2 hub count is **≤40 (C
 
 For marketplaces that ship to multiple runtimes, the practical decision tree is:
 
-1. **If Codex is in scope**: bound hub count at ≤40 (Pattern 2 ceiling). The disable mechanism requires a sync layer between Claude Code settings and Codex config.toml.
-2. **If Claude Code + MAF + kimi-code are in scope but not Codex**: Claude Code is the binding constraint (~80 hubs).
+1. **If Codex is in scope**: bound hub count at ≤40 at 200K context (Pattern 2 ceiling). The disable mechanism requires a sync layer between Claude Code settings and Codex config.toml.
+2. **If Claude Code + MAF + kimi-code are in scope but not Codex**: Claude Code is the binding constraint at ~40 hubs at 200K context (~200 hubs at 1M context).
 3. **If Cursor is in scope**: Cursor is not a constraint; per-query `paths:` scoping handles relevance.
 4. **kimi-code**: ships consolidation primitives; commit to running `sub-skill.consolidate` periodically.
 

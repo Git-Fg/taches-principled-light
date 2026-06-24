@@ -76,7 +76,7 @@ Reference files provide deep detail only when SKILL.md explicitly mandates loadi
 
 ### The 1% Rule
 
-Skill descriptions collectively must fit within ~1% of the model's context window (≈2,000 tokens / ≈8,000 chars at 200K context, per `code.claude.com/docs/en/settings` and `claudefa.st`'s v2.1.129 binary extraction). Truncation was **silent at v2.1.159** per `anthropics/claude-code#64606` (filed 2026-06-02 against v2.1.159; no warning, no log, no status indicator). Post-v2.1.159 releases added three **user-visible signals**: a startup warning (`Skill listing will be truncated` with `X%/Y% of context`), the `/doctor` command listing which skills were dropped, and a `Skills:` percentage line in `/context`. Selection is recency + frequency — most-invoked survives, least-invoked drops.
+Skill descriptions collectively must fit within ~1% of the model's context window (≈2,000 tokens / ≈8,000 chars at 200K context, per `code.claude.com/docs/en/settings` and `claudefa.st`'s v2.1.129 binary extraction). Truncation was **silent in v2.1.159** per `anthropics/claude-code#64606` (bug filed against v2.1.159 documenting no warning, no log, no status indicator). Post-v2.1.159 releases added three **user-visible signals**: a startup warning (`Skill listing will be truncated` with `X%/Y% of context`), the `/doctor` command listing which skills were dropped, and a `Skills:` percentage line in `/context`. Selection is recency + frequency — most-invoked survives, least-invoked drops.
 
 **Mitigation:**
 1. Keep descriptions ≤150 characters

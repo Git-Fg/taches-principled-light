@@ -39,6 +39,31 @@ Description-quality eval harness for the `evaluating-skills` skill. Adds a scrip
 - Cross-runtime transcript normalizer — `detect` handles the 5 supported runtimes' event shapes inline; a separate normalizer would duplicate `references/runtime-adapters.md` and is premature.
 - Auto-running trigger evals in CI — the trigger-eval loop is interactive (LLM-dependent at the score step), not a CI gate. `marketplace-health` remains the pre-release gate.
 
+### Subsequent fixes (2026-06-24)
+
+Post-implementation self-critic pass + deep-research codification. 8 atomic commits across 3 files.
+
+- **`trigger_eval.py` docstring/help** — re-aligned to say "an `--n`-query trigger-eval set (default 20)" instead of "20-query" so the `--n` override is visible.
+- **`SKILL.md` OPTIMIZE mode** — body-iteration loop now reuses the trigger-eval queries scaffolded in the TRIGGER-EVAL PRE-STEP instead of re-authoring them; OPTIMIZE-mode intro + sibling-stealing section now cite AGENTS.md rule 7 (for the three floors: ≥3 runs, 0.5 threshold, 60/40 train/val) and the trigger-stealing paragraph (for the 10pp threshold), not rule 6 (which is the shadow-skill generation step).
+- **`trigger_eval.py init` --n warning** — added stderr warning when `--n < 16` (AGENTS.md rule 7 total floor: 8-10 should-trigger + 8-10 should-not). Initial commit used `args.n < 8` (off by 2×, conflated per-half with total); self-critic round 2 caught it.
+- **`AGENTS.md` Marketplace Scaling section** — codifies the deep-research findings (`research/marketplace-routing-scaling/`):
+  - Reframes the prior "~8 simultaneously-active" claim as community observation (PromptSpace 2026 "around 7-8 things get weird") — not a documented Anthropic cap.
+  - Adds an 8-row catalog-size table (5-15, <50, 25-50, 50-100, 100-200, 200-500, 500-1000, >1000) with the knee-curve symptom and action at each size.
+  - Codifies three scaling patterns that cover 50-80,000 skills: in-place tightening (≤100), tool-facade hub (~200-500), external retrieval (≥500, with semantic-index and trained-reranker tiers).
+  - Replaces the prior "Marketplace recall degrades past ~8" sentence.
+- **`releasing-marketplace` Step 1 scaling knee check** — added a skill-count sub-check that warns at 50/100 skills (per AGENTS.md Marketplace Scaling) and hard-blocks at >200. Excludes the 4 `.agents/skills/` meta-skills from the count.
+- **`references/behavioral-review.md` §trigger-evals** — now references the `trigger_eval.py init/split/score` pipeline and clarifies the ≥16 total floor; delegates the full methodology to `references/trigger-eval-guide.md`.
+
+### Verified (post-fixes, 2026-06-24)
+
+- `python3 scripts/trigger_eval.py init --out /tmp/q.json --n 8` → stderr warning, exit 0
+- `python3 scripts/trigger_eval.py init --out /tmp/q.json --n 16` → silent (floor met), exit 0
+- `python3 scripts/trigger_eval.py init --out /tmp/q.json --n 0` → stderr error, exit 1
+- All 5 subcommands (`init`/`split`/`detect`/`score`/`stealing`) verified end-to-end against the original smoke matrix.
+- `python3 .agents/skills/marketplace-validator/scripts/validate.py skills/` → `OK: 30 skills validated, no issues.`
+- `python3 .agents/skills/marketplace-health/scripts/health.py` → `HEALTH: pass (validator=0/0)`
+- `python3 scripts/check-risky-strings.py <modified-files>` → clean
+
 ## [0.0.9] — design-hub flatten (canonical flat-sibling layout) — 2026-06-23
 
 Restructure release. No new skills, no behavioral data change, no validator warning change. The 5 design sub-skills (previously nested under `skills/design-hub/<name>/`) are promoted to flat top-level siblings at `skills/<name>/`, and the `design-hub` router `SKILL.md` is removed. This matches the canonical [agentskills.io (Dec 2025)](https://agentskills.io/specification) flat-directory pattern: one skill = one directory = one SKILL.md, with progressive disclosure through `scripts/`, `references/`, `assets/` *inside* each skill directory.

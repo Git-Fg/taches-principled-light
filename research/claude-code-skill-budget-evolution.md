@@ -50,7 +50,16 @@ The corrections above force these corrections in the AGENTS.md → Marketplace S
 2. **What happens at 1M-context models?** claudefa.st reports 75–125 skills at 1M context with 1% — does the same recency + frequency protection apply, or does the larger budget introduce a different failure mode?
 3. **Is there empirical data on the "actively-used" hit rate** at 50-100 skills? The recency + frequency protection is plausible but the safety margin is unstudied in the public literature.
 4. **Does the Claude Code Opus 4.7 compliance cliff (issue #62562, 24-26 May 2026) interact with the budget system?** The two bugs may compound: a clamped description + a model that skips Skill tool_use = silent routing failure at any size.
-5. **Why did Anthropic choose 1% as the explicit default (vs the v2.1.32 implicit 2% scaling formula)?** The setting was added in v2.1.105 with `0.01` as the default; the rationale is not yet documented in Anthropic's published changelog. Not yet documented in Anthropic's published changelog.
+5. **Why did Anthropic choose 1% as the explicit default (vs the v2.1.32 implicit 2% scaling formula)?** The setting was added in v2.1.105 with `0.01` as the default; the rationale is not yet documented in Anthropic's published changelog.
+
+## Source tension on the v2.1.105 vs v2.1.129 introduction date
+
+Two primary sources disagree on when `skillListingBudgetFraction` was introduced:
+
+- **Anthropic docs** (`code.claude.com/docs/en/settings`) mark the setting's min-version as `2.1.105`. A third-party settings-reference (`shanraisshan/claude-code-best-practice`) agrees.
+- **claudefa.st blog post** (May 2026) + **danielmiessler/Personal_AI_Infrastructure#1307** (27 May 2026) both report v2.1.129 as the introduction version, based on binary analysis.
+
+The marketplace chose v2.1.105 as authoritative because Anthropic docs are the canonical source for runtime min-version annotations. The binary-analysis community may have observed v2.1.129 because that's when the setting became prominently configurable or when Anthropic's docs lag caught up. This tension is unresolved; future research should pull the Anthropic changelog entry for v2.1.105 to confirm whether the setting was mentioned there.
 
 ## Source URLs
 
@@ -60,4 +69,6 @@ The corrections above force these corrections in the AGENTS.md → Marketplace S
 - Anthropic bug #23406 (docs still claim 15,000-char fixed default after v2.1.32): https://github.com/anthropics/claude-code/issues/23406
 - Anthropic bug #62562 (Opus 4.7 compliance cliff, May 2026): https://github.com/anthropics/claude-code/issues/62562
 - claudefa.st "Hidden Skill Budget Setting" (May 2026, v2.1.129 binary extraction): https://claudefa.st/blog/guide/mechanics/skill-listing-budget
+- danielmiessler Personal_AI_Infrastructure#1307 (27 May 2026, binary analysis): https://github.com/danielmiessler/Personal_AI_Infrastructure/issues/1307
+- shanraisshan claude-code-best-practice (third-party settings reference): https://github.com/shanraisshan/claude-code-best-practice
 - Claude Code CHANGELOG (current): https://code.claude.com/docs/en/changelog

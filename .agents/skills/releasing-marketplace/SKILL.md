@@ -55,6 +55,8 @@ The `git rev-parse --show-toplevel` anchor removes the cwd-fragility of `Path.cw
 
 Then cross-reference the count against AGENTS.md → Marketplace Scaling (the source of truth — do not invent new thresholds here):
 
+> **Version anchor.** The defaults below assume **Claude Code v2.1.105+** (the release that introduced `skillListingBudgetFraction` as an explicit setting). Pre-v2.1.105 clients used an implicit 2% scaling formula from v2.1.32; both rows are documented in AGENTS.md's cross-platform table. If you need to support both, the binding constraint is the smaller budget — read both rows before deciding gate severity.
+
 | Count range | AGENTS.md action | Gate severity |
 |---|---|---|
 | <50 skills | "Continue adding; run the trigger-eval harness on each new description." | Silent (progressive disclosure works). |

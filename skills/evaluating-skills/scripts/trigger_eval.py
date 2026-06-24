@@ -9,7 +9,7 @@ description quality (does the description cause correct routing?).
 
 Five subcommands, one entry point, all read/write JSON:
 
-  init      Scaffold a 20-query trigger-eval set (10 should-trigger, 10 should-not)
+  init      Scaffold an --n-query trigger-eval set (default 20: 10 should-trigger, 10 should-not)
   split     Stratified 60/40 train/val split, preserving the should_trigger ratio
   detect    Parse a transcript, return 0/1 for whether <skill_name> triggered
   score     Per-query + aggregate trigger rate, threshold breach report
@@ -156,7 +156,7 @@ DETECTORS = {
 # ---------- init ----------
 
 def cmd_init(args) -> int:
-    """Scaffold a 20-query trigger-eval set with empty query text."""
+    """Scaffold an --n-query trigger-eval set (default 20) with empty query text."""
     if args.n < 1:
         print(f"ERROR: --n must be >= 1; got {args.n}", file=sys.stderr)
         return 1
@@ -601,7 +601,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     # init
-    p_init = sub.add_parser("init", help="Scaffold a 20-query trigger-eval set.")
+    p_init = sub.add_parser("init", help="Scaffold an --n-query trigger-eval set (default 20).")
     p_init.add_argument("--out", required=True, help="Output JSON path.")
     p_init.add_argument("--skill-name", default="", help="Skill name (for metadata).")
     p_init.add_argument("--n", type=int, default=20, help="Total queries (default 20).")

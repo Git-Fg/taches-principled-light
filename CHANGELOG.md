@@ -2,7 +2,7 @@
 
 All notable changes to the taches-principled-light marketplace.
 
-## [Unreleased] — evaluating-skills trigger-eval harness — 2026-06-23
+## [Unreleased] — evaluating-skills trigger-eval harness — 2026-06-24
 
 Description-quality eval harness for the `evaluating-skills` skill. Adds a scriptable, stdlib-only loop for the OPTIMIZE mode that was previously described inline-only. No new skills, no behavioral data change, no validator warning change.
 
@@ -41,18 +41,21 @@ Description-quality eval harness for the `evaluating-skills` skill. Adds a scrip
 
 ### Subsequent fixes (2026-06-24)
 
-Post-implementation self-critic pass + deep-research codification. 8 atomic commits across 3 files.
+Post-implementation self-critic pass + deep-research codification. 8 atomic fix commits across 3 files, plus the deep-research and health-report inputs that frame them:
 
-- **`trigger_eval.py` docstring/help** — re-aligned to say "an `--n`-query trigger-eval set (default 20)" instead of "20-query" so the `--n` override is visible.
-- **`SKILL.md` OPTIMIZE mode** — body-iteration loop now reuses the trigger-eval queries scaffolded in the TRIGGER-EVAL PRE-STEP instead of re-authoring them; OPTIMIZE-mode intro + sibling-stealing section now cite AGENTS.md rule 7 (for the three floors: ≥3 runs, 0.5 threshold, 60/40 train/val) and the trigger-stealing paragraph (for the 10pp threshold), not rule 6 (which is the shadow-skill generation step).
-- **`trigger_eval.py init` --n warning** — added stderr warning when `--n < 16` (AGENTS.md rule 7 total floor: 8-10 should-trigger + 8-10 should-not). Initial commit used `args.n < 8` (off by 2×, conflated per-half with total); self-critic round 2 caught it.
-- **`AGENTS.md` Marketplace Scaling section** — codifies the deep-research findings (`research/marketplace-routing-scaling/`):
-  - Reframes the prior "~8 simultaneously-active" claim as community observation (PromptSpace 2026 "around 7-8 things get weird") — not a documented Anthropic cap.
-  - Adds an 8-row catalog-size table (5-15, <50, 25-50, 50-100, 100-200, 200-500, 500-1000, >1000) with the knee-curve symptom and action at each size.
-  - Codifies three scaling patterns that cover 50-80,000 skills: in-place tightening (≤100), tool-facade hub (~200-500), external retrieval (≥500, with semantic-index and trained-reranker tiers).
-  - Replaces the prior "Marketplace recall degrades past ~8" sentence.
-- **`releasing-marketplace` Step 1 scaling knee check** — added a skill-count sub-check that warns at 50/100 skills (per AGENTS.md Marketplace Scaling) and hard-blocks at >200. Excludes the 4 `.agents/skills/` meta-skills from the count.
-- **`references/behavioral-review.md` §trigger-evals** — now references the `trigger_eval.py init/split/score` pipeline and clarifies the ≥16 total floor; delegates the full methodology to `references/trigger-eval-guide.md`.
+- `0c1f4af` — marketplace-health report refresh (auto-generated sweep confirming the harness passes the health gate).
+- `c629a33` — research: deep-research on marketplace routing-scaling curve + 5-platform implementations. 7 files in `research/marketplace-routing-scaling/` (question/background/judgment/analysis/research_plan/document/final); the AGENTS.md Marketplace Scaling section below codifies its findings.
+- `c70e6f9` — `trigger_eval.py` docstring/help re-alignment for `--n` override.
+- `c621f8e` — `SKILL.md` OPTIMIZE mode: body-iteration loop now reuses the trigger-eval queries scaffolded in the TRIGGER-EVAL PRE-STEP instead of re-authoring them; OPTIMIZE-mode intro + sibling-stealing section now cite AGENTS.md rule 7 (for the three floors: ≥3 runs, 0.5 threshold, 60/40 train/val) and the trigger-stealing paragraph (for the 10pp threshold), not rule 6 (which is the shadow-skill generation step).
+- `268de46` — `trigger_eval.py init` `--n < 16` stderr warning (AGENTS.md rule 7 total floor: 8-10 should-trigger + 8-10 should-not).
+- `5ff5c61` — `AGENTS.md` initial Marketplace Scaling section (later restructured — see `d2d3921` / `0ad7bcb`).
+- `68790f3` — `SKILL.md` correct AGENTS.md rule cross-refs (rule 7 + trigger-stealing paragraph, drop rule 6).
+- `d2d3921` — `AGENTS.md` Marketplace Scaling restructure: 5-15 row added, 50-100 split into 25-50 + 50-100, three scaling-pattern ranges realigned to the deep-research source.
+- `798446c` — `trigger_eval.py` --n threshold corrected to < 16 (was checking per-half against total; off by 2×).
+- `0ad7bcb` — `AGENTS.md` Marketplace Scaling: added 200-500 + 500-1000 table rows to close the gap between Pattern 2 and Pattern 3 ranges.
+- `88be63d` — `references/behavioral-review.md` §trigger-evals now references the `trigger_eval.py init/split/score` pipeline and clarifies the ≥16 total floor; delegates full methodology to `references/trigger-eval-guide.md`.
+- `45211c1` — `releasing-marketplace` Step 1 scaling-knee check, with severity levels aligned to AGENTS.md's own "mandatory" / "required" / "appropriate" wording. (The first version of this commit invented a ">200 hard block" that AGENTS.md does not have; the gate severity now follows AGENTS.md verbatim.)
+- `2403acc` — this CHANGELOG entry.
 
 ### Verified (post-fixes, 2026-06-24)
 

@@ -113,7 +113,22 @@ The selection logic for which skills survive is **recency + frequency** (most-in
 
 When the marketplace crosses 50 skills, choose which pattern fits before adding more — adding past the knee without a scaling plan turns description-tuning into a treadmill.
 
-**Research audit trail.** The current section's facts about Claude Code's budget system evolved significantly between May and June 2026 (default raised from 1% to 2%, truncation is no longer silent, selection is recency + frequency). The audit trail is at `research/claude-code-skill-budget-evolution.md`; supersedes the prior budget claims in `research/marketplace-routing-scaling/final.md` from earlier in this work arc.
+### Cross-platform behavior
+
+The thresholds and warnings above are Claude-Code-specific. Other agentskills.io-compatible runtimes implement the same progressive-disclosure pattern but diverge sharply on budget, warnings, and disable mechanisms. If the marketplace ships to multiple runtimes, the lowest-common-denominator constraint applies:
+
+| Runtime | Default budget | Truncation warning | Disable mechanism | Practical ceiling (default settings) |
+|---|---|---|---|---|
+| **Claude Code** (current) | 2% of context (~16,000 chars at 200K) | Startup warning + `/doctor` breakdown + `/context` percentage line | `/skills` → disable per-skill; disabled skills don't count against the budget | ~30–50 skills before warning; recency + frequency selection protects actively-used skills past that |
+| **Claude Code** (pre-v2.1.129) | 1% of context (~8,000 chars at 200K) | Same signals (added in subsequent releases) | Same `/skills` → disable | ~15–25 skills before warning |
+| **Cursor** | No documented character budget; skills are surfaced per-query via the `paths:` frontmatter glob — fundamentally different model | N/A (no catalog-wide budget) | `disable-model-invocation: true` per skill; or omit the skill from the catalog directory entirely | Catalog size not the bottleneck; per-query relevance is |
+| **OpenAI Codex CLI** (v0.133.0+, May 2026) | **5,440 chars hard budget (~2%)** | **None visible to user** — only the log file `~/.codex/log/codex-tui.log` | **No exclude config**; `.system/` skills auto-restore on every launch and cannot be permanently removed | **~20 skills before mass truncation begins** (119 skills → 103 of 119 descriptions truncated, per `openai/codex#24299`) |
+| **Microsoft Agent Framework** | ~100 tokens per skill in the advertise block (provider-controlled) | N/A (library, not CLI) | `FilteringSkillsSource` programmatic filter, applied at agent construction | Provider-controlled; 2-level discovery depth caps the natural directory walk |
+| **kimi-code** | No documented character budget | None documented | None documented; `KIMI_CODE_EXPERIMENTAL_SUB_SKILL` env var gates a `sub-skill.consolidate` builtin | Ships consolidation primitives (`sub-skill.review`, `sub-skill.consolidate`) but no formal budget — the scaling problem is acknowledged but not yet formalized |
+
+**Practical implication for cross-runtime marketplaces.** If the marketplace targets both Claude Code and Codex, Codex is the binding constraint — its 20-skill ceiling and lack of a disable mechanism mean the marketplace must apply Pattern 2 (tool-facade hub) at the lowest end of its scale range, not the upper end. The Claude Code-specific advice in the table above ("disable rarely-used skills", "split into hubs at 50+") does not translate directly to Codex. Sources: `openai/codex#24299` (May 2026), Microsoft Agent Framework docs, kimi-code changelog (May–June 2026).
+
+**Research audit trail.** The current section's facts about Claude Code's budget system evolved significantly between May and June 2026 (default raised from 1% to 2%, truncation is no longer silent, selection is recency + frequency). The audit trail is at `research/claude-code-skill-budget-evolution.md`; supersedes the prior budget claims in `research/marketplace-routing-scaling/final.md` from earlier in this work arc. The cross-platform comparison above comes from a separate web-research pass on Cursor/Codex/MAF/kimi-code docs and changelogs; not yet captured as a separate research note.
 
 ## Marketplace Maintenance (.agents/skills/)
 

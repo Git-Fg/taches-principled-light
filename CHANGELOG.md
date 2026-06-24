@@ -2,6 +2,10 @@
 
 All notable changes to the taches-principled-light marketplace.
 
+## [Unreleased]
+
+### Added — self-correcting: post-failure meta-analysis for tool-usage cascades.
+
 ## [0.1.0] — marketplace scaling + cross-platform research + evaluating-skills trigger-eval harness — 2026-06-24
 
 Description-quality eval harness for the `evaluating-skills` skill. Adds a scriptable, stdlib-only loop for the OPTIMIZE mode that was previously described inline-only. Major Marketplace Scaling section work: corrected Claude Code `skillListingBudgetFraction` default direction (1%, not 2%); added cross-platform comparison table (Claude Code, Cursor, Codex, MAF, kimi-code); codified 5-round critic-arc lessons into pre-commit safety nets. No new skills, no behavioral data change, no validator warning change.

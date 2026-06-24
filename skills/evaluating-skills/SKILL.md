@@ -109,7 +109,7 @@ You already have `with_skill.jsonl` and `without_skill.jsonl` (user-supplied, or
 
 ## OPTIMIZE Mode
 
-Improve the skill's `description` frontmatter for correct triggering. The numeric floors below (≥3 runs, 0.5 threshold, 60/40 train/val stratified, 10pp sibling-stealing threshold) come from **AGENTS.md → Description as Routing Signal → rule 7** and **rule 6** — do not loosen them.
+Improve the skill's `description` frontmatter for correct triggering. The numeric floors below come from **AGENTS.md → Description as Routing Signal → rule 7** (≥3 runs per query, 0.5 threshold, 60/40 train/val stratified) and from the **trigger-stealing paragraph** that follows rule 7 (>10pp sibling-trigger-rate drop is a regression) — do not loosen them.
 
 ### TRIGGER-EVAL PRE-STEP (scriptable, preferred)
 
@@ -142,7 +142,7 @@ If the runtime can't be driven as a subprocess or can't capture transcripts, **s
 
 ### Sibling-stealing regression check
 
-When adding or modifying any skill in the catalog, run a `stealing` regression check on the before/after trigger-rate reports of every sibling in the same thematic cluster (**AGENTS.md → Description as Routing Signal → rule 6**):
+When adding or modifying any skill in the catalog, run a `stealing` regression check on the before/after trigger-rate reports of every sibling in the same thematic cluster (per the **trigger-stealing paragraph** in AGENTS.md → Description as Routing Signal, which follows rule 7):
 
 ```bash
 python scripts/trigger_eval.py stealing before.json after.json --threshold 0.10

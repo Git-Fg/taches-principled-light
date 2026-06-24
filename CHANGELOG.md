@@ -60,6 +60,11 @@ Post-implementation self-critic pass + deep-research codification. 8 atomic fix 
 - `f6e5de3` — `releasing-marketplace` Step 1 gate severity table: 25-50 row quoted text updated to match new AGENTS.md wording.
 - `97a3512` — `research/claude-code-skill-budget-evolution.md` research note documenting the 5 corrections and 4 open questions from the web research.
 - `36742dc` — `evaluating-skills` SKILL.md Stage 5: ≥3-run floor is a statistical aggregation floor (not AGENTS.md rule 7's trigger-eval prescription). Dropped the rule 7 citation; added rationale-anchored statement.
+- `3557988` — `AGENTS.md` Marketplace Scaling: cross-platform comparison table added (Claude Code current+legacy, Cursor, Codex, MAF, kimi-code). Initial Codex row cited openai/codex#24299 against v0.133.0 — later corrected by `d18aef4`.
+- `fe71405` — `AGENTS.md` 6 critic fixes in the cross-platform comparison (kimi-code env var stale, Pattern 2 callout assumed Codex sub-skill support, Codex "no warning" softening, Cursor `paths:` nuance, kimi-code disable reframing).
+- `1a39f71` — `research/cross-platform-skill-budget-comparison.md` initial research note. Later superseded by `3d43c95`.
+- `d18aef4` — `AGENTS.md` Codex corrections: budget is 8,000 chars (or 2% context), disable mechanism exists (`[[skills.config]] enabled = false`), warning IS user-visible, progressive disclosure IS supported. Headline finding shifts from "Pattern 1 only on Codex" to "Pattern 2 viable on both runtimes, hub-count-bounded: ≤40 on Codex, ≤80 on Claude Code".
+- `3d43c95` — `research/cross-platform-skill-budget-comparison.md` corrected: drops the prior "Codex loads eagerly" open question, adds "does Codex have recency + frequency selection" as the new open question, and aligns the headline finding with the AGENTS.md update.
 
 ### Verified (post-fixes, 2026-06-24)
 

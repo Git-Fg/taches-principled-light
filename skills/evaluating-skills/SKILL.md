@@ -77,7 +77,7 @@ Fill the eval's `expectations[]` now (from the deviation annotations) if they we
 
 ### Stage 5 — Aggregate
 
-Compute `benchmark.json` (schema in `references/schemas.md`): per-configuration `pass_rate / time / tokens` as `mean ± stddev` + `delta`. Meaningful stddev needs ≥3 runs per configuration (`--runs`, default 3).
+Compute `benchmark.json` (schema in `references/schemas.md`): per-configuration `pass_rate / time / tokens` as `mean ± stddev` + `delta`. Meaningful stddev needs ≥3 runs per configuration (`--runs`, default 3) — this is the same ≥3-run floor as **AGENTS.md → Description as Routing Signal → rule 7**, do not loosen it.
 
 If you have a Python interpreter, the portable aggregator handles this deterministically:
 
